@@ -1,0 +1,24 @@
+.App {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.playground {
+  margin: auto;
+
+  .row {
+    display: flex;
+
+    .col {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #000000;
+    }
+  }
+}
