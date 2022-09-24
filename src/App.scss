@@ -46,6 +46,7 @@
     position: absolute;
     background: black;
     margin: auto;
+    transform-origin: center;
 
     &.turret1 {
       top: 0;

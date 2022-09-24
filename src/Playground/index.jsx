@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import Projectile from './Projectile';
 
-const PROJECTILE_SPEED = 100; //ms per pixel
+const PROJECTILE_SPEED = 50; //ms per pixel
 
 const Playground = () => {
   const [ units, setUnits ] = useState([
@@ -9,19 +10,19 @@ const Playground = () => {
       turrets: [
         {
           name: 'turret1',
-          angle: 0,
+          angle: 35,
         },
         {
           name: 'turret2',
-          angle: 90,
+          angle: 120,
         },
         {
           name: 'turret3',
-          angle: 180,
+          angle: 195,
         },
         {
           name: 'turret4',
-          angle: 270,
+          angle: 280,
         }
       ],
     },
@@ -50,7 +51,7 @@ const Playground = () => {
   };
 
   const onClick = (e, id) => {
-    const { target, currentTarget } = e;
+    const { currentTarget } = e;
     const { value, turrets } = units[id];
 
     const { top: fieldTop, left: fieldLeft } = document.querySelector('#field').getBoundingClientRect()
@@ -69,11 +70,7 @@ const Playground = () => {
       projectiles.push({ top: top - fieldTop, left: left - fieldLeft, angle });
     })
 
-    console.log(projectiles);
-
     setProjectiles(projectiles);
-
-    //increaseCoordinates(id, 0, 9);
   }
 
   const BULLET_WIDTH = 20;
@@ -82,9 +79,9 @@ const Playground = () => {
 
   const ITEM_RADIUS = 40;
 
-  const hasIntersection = (rectangle, cirlce) => {
+  const hasIntersection = (rectangle, circle) => {
     const { rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle } = rectangle;
-    const { circleX, circleY, radius } = cirlce;
+    const { circleX, circleY, radius } = circle;
 
     const { nx: newCircleX, ny: newCircleY } = rotate(rectangleX, rectangleY, circleX, circleY, angle);
 
@@ -146,25 +143,29 @@ const Playground = () => {
 
   return (
     <>
-      <div className="theBulletPivot">
+      <div className="theBulletPivot" style={{ display: 'none' }}>
         <div
           className="theBullet"
           style={{ '--width': `${BULLET_WIDTH}px`, '--height': `${BULLET_HEIGHT}px`, '--angle': `${BULLET_ANGLE}deg` }}
         />
       </div>
-      <div className="theItemPivot">
+      <div className="theItemPivot" style={{ display: 'none' }}>
         <div
           className="theItem"
           style={{ '--radius': `${ITEM_RADIUS}px` }}
         />
       </div>
 
-      <div className="field" id="field" style={{ display: 'none' }}>
+      <div className="field" id="field">
         <div className="projectileLayer">
-          {projectiles.map(({ top, left }) => (
-            <div className="projectile" style={{ top: `${top}px`, left: `${left}px` }}>
-              <div className="projectile-hitBox" />
-            </div>
+          {projectiles.map(({ top, left, angle }, ixd) => (
+            <Projectile
+              key={ixd}
+              top={top}
+              left={left}
+              angle={angle}
+              speed={PROJECTILE_SPEED}
+            />
           ))}
         </div>
         <div className="unitsLayer">
