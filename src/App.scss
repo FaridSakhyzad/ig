@@ -10,7 +10,6 @@
   margin: auto;
   padding: 20px;
   outline: 1px solid #000000;
-  position: relative;
 
   .unitsLayer {
     display: grid;
@@ -74,7 +73,7 @@
   }
 
   .weapon {
-    width: 4px;
+    width: 2px;
     height: 6px;
     background: blue;
     position: absolute;
@@ -93,12 +92,14 @@
 }
 
 .projectileLayer {
+  /*
   position: absolute;
   left: 0;
   top: 0;
   width: 0;
   height: 0;
   z-index: 5;
+  */
 }
 
 .projectile {
@@ -116,7 +117,6 @@
   flex: 0 0 6px;
   width: 6px;
   height: 6px;
-  border-radius: 50%;
   background: aqua;
   opacity: 0.5;
 }

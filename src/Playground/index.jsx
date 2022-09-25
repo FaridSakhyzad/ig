@@ -38,23 +38,9 @@ const Playground = () => {
 
   const [ projectiles, setProjectiles ] = useState([]);
 
-  const increaseCoordinates = (id, from, to) => {
-    let current = from;
-
-    if (current < to) {
-      current++;
-
-      setTimeout(() => {
-        increaseCoordinates(id, current, to);
-      }, PROJECTILE_SPEED);
-    }
-  };
-
   const onClick = (e, id) => {
     const { currentTarget } = e;
     const { value, turrets } = units[id];
-
-    const { top: fieldTop, left: fieldLeft } = document.querySelector('#field').getBoundingClientRect()
 
     const projectiles = [];
 
@@ -67,7 +53,7 @@ const Playground = () => {
 
       const { top, left } = gunpoint.getBoundingClientRect();
 
-      projectiles.push({ top: top - fieldTop, left: left - fieldLeft, angle });
+      projectiles.push({ top, left, angle });
     })
 
     setProjectiles(projectiles);
@@ -121,8 +107,8 @@ const Playground = () => {
     const bullet = document.querySelector('.theBulletPivot');
     const item = document.querySelector('.theItemPivot');
 
-    const { top: rectangleY, left: rectangleX } = bullet.getBoundingClientRect()
-    const { top: circleY, left: circleX } = item.getBoundingClientRect()
+    const { top: rectangleY, left: rectangleX } = bullet.getBoundingClientRect();
+    const { top: circleY, left: circleX } = item.getBoundingClientRect();
 
     const rectangle = {
       rectangleX,
@@ -157,17 +143,15 @@ const Playground = () => {
       </div>
 
       <div className="field" id="field">
-        <div className="projectileLayer">
-          {projectiles.map(({ top, left, angle }, ixd) => (
-            <Projectile
-              key={ixd}
-              top={top}
-              left={left}
-              angle={angle}
-              speed={PROJECTILE_SPEED}
-            />
-          ))}
-        </div>
+        {projectiles.map(({ top, left, angle }, ixd) => (
+          <Projectile
+            key={ixd}
+            top={top}
+            left={left}
+            angle={angle}
+            speed={PROJECTILE_SPEED}
+          />
+        ))}
         <div className="unitsLayer">
           {units.map(({ turrets }, itemIndex) => (
             <div className="unit" id={itemIndex} key={itemIndex} onClick={(e) => onClick(e, itemIndex)}>
