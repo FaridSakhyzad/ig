@@ -1,0 +1,83 @@
+.unit-pivot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 0;
+  margin: auto;
+}
+
+.unit {
+  width: var(--unit-width);
+  min-width: var(--unit-width);
+  height: var(--unit-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(211, 211, 211, 0.4);
+  position: relative;
+}
+
+.unit-hitBox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background: rgba(0, 0, 0, 0.3);
+  width: calc(var(--unit-hitBox--radius) * 2);
+  height: calc(var(--unit-hitBox--radius) * 2);
+  border-radius: 50%;
+}
+
+.turret {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  background: black;
+  margin: auto;
+  transform-origin: center;
+
+  &.turret1 {
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &.turret2 {
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  &.turret3 {
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &.turret4 {
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+}
+
+.weapon {
+  width: 2px;
+  height: 6px;
+  background: blue;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  .gunpoint {
+    width: 0;
+    height: 0;
+    background: red;
+    margin: auto;
+  }
+}

@@ -2,9 +2,16 @@ import React, { useEffect, useState, useRef } from 'react';
 
 const PROJECTILE_MOVE_STEP = 1;
 
-const Projectile = ({ top, left, angle, speed }) => {
+const Projectile = ({ top, left, angle, parentId, speed }) => {
   const [ coordinates, setCoordinates ] = useState({ projectileX: left, projectileY: top,  });
   const [ isInFlight, setIsInFlight ] = useState(false);
+
+  const computedStyle = getComputedStyle(document.documentElement);
+
+  const unitRadius = parseInt(computedStyle.getPropertyValue('--unit-hitBox--radius'), 10);
+
+  const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
+  const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
 
   const coordinatesRef = useRef(coordinates);
   coordinatesRef.current = coordinates;
@@ -37,15 +44,6 @@ const Projectile = ({ top, left, angle, speed }) => {
       }, speed);
     }
   };
-
-  useEffect(() => {
-    if (isInFlight) {
-      return;
-    }
-
-    setIsInFlight(true);
-    increaseCoordinates({ coordinateX: left, coordinateY: top }, 40);
-  });
 
   const hasIntersection = (rectangle, circle) => {
     const { rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle } = rectangle;
@@ -86,25 +84,33 @@ const Projectile = ({ top, left, angle, speed }) => {
   }
 
   const detectCollision = () => {
-    const units = document.querySelectorAll('.unit-hitBox');
+    const units = document.querySelectorAll('.unit-pivot');
 
     const { projectileX, projectileY } = coordinatesRef.current;
 
-    return !![ ...units ].find(unit => {
+    const searchUnits = [ ...units ]
+
+    searchUnits[parentId] = undefined;
+
+    return !!searchUnits.find(unit => {
+      if (!unit) {
+        return false;
+      }
+
       const { top: circleY, left: circleX, width } = unit.getBoundingClientRect();
 
       const rectangle = {
         rectangleX: projectileX,
         rectangleY: projectileY,
-        rectangleWidth: 6,
-        rectangleHeight: 6,
+        rectangleWidth: projectileWidth,
+        rectangleHeight: projectileHeight,
         angle,
       };
 
       const circle = {
-        circleX: circleX + width / 2,
-        circleY: circleY + width / 2,
-        radius: width / 2
+        circleX: circleX,
+        circleY: circleY,
+        radius: unitRadius
       };
 
       return hasIntersection(rectangle, circle);
@@ -112,6 +118,15 @@ const Projectile = ({ top, left, angle, speed }) => {
   }
 
   const { projectileX, projectileY } = coordinates;
+
+  useEffect(() => {
+    if (isInFlight) {
+      return;
+    }
+
+    setIsInFlight(true);
+    increaseCoordinates({ coordinateX: left, coordinateY: top }, 120);
+  });
 
   return (
     <div className="projectile" style={{ top: `${projectileY}px`, left: `${projectileX}px`, transform: `rotate(${angle}deg)` }}>

@@ -1,0 +1,36 @@
+:root {
+  --projectile-hitBox--width: 6px;
+  --projectile-hitBox--height: 6px;
+}
+
+@media screen and (min-width: 375px) {
+  :root {
+    --projectile-hitBox--width: 6px;
+    --projectile-hitBox--height: 6px;
+  }
+}
+
+.projectile {
+  display: flex;
+  position: absolute;
+  width: 0;
+  height: 0;
+  background: aliceblue;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.projectile-hitBox {
+  flex: 0 0 var(--projectile-hitBox--width);
+  width: var(--projectile-hitBox--width);
+  height: var(--projectile-hitBox--height);
+  min-height: var(--projectile-hitBox--height);
+  background: aqua;
+  opacity: 1;
+}
+
+.projectile-image {
+
+}
