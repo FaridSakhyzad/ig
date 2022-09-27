@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 
@@ -38,10 +38,22 @@ const Playground = () => {
   ]);
 
   const [ projectiles, setProjectiles ] = useState([]);
+  const [ unitsMap, setUnitsInfo ] = useState([]);
 
   const onClick = (e, id) => {
     const { currentTarget } = e;
     const { value, turrets } = units[id];
+
+    const { top: fieldTop, left: fieldLeft } = document.querySelector('#field').getBoundingClientRect()
+
+    setUnitsInfo([ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
+      const { top, left } = unit.getBoundingClientRect();
+
+      return {
+        top: top - fieldTop,
+        left: left - fieldLeft,
+      };
+    }));
 
     const projectiles = [];
 
@@ -54,7 +66,12 @@ const Playground = () => {
 
       const { top, left } = gunpoint.getBoundingClientRect();
 
-      projectiles.push({ top, left, angle, parentId: id });
+      projectiles.push({
+        top: top - fieldTop,
+        left: left - fieldLeft,
+        angle,
+        parentId: id
+      });
     })
 
     setProjectiles(projectiles);
@@ -71,6 +88,7 @@ const Playground = () => {
             angle={angle}
             parentId={parentId}
             speed={PROJECTILE_SPEED}
+            unitsMap={unitsMap}
           />
         ))}
       </div>

@@ -1,3 +1,8 @@
+:root {
+  --unit-width: 32px;
+  --unit-hitBox--radius: 10px;
+}
+
 .unit-pivot {
   display: flex;
   align-items: center;

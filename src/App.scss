@@ -10,11 +10,7 @@
   margin: auto;
   padding: 20px;
   outline: 1px solid #000000;
-}
-
-:root {
-  --unit-width: 32px;
-  --unit-hitBox--radius: 10px;
+  position: relative;
 }
 
 .unitsLayer {

@@ -2,7 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 
 const PROJECTILE_MOVE_STEP = 1;
 
-const Projectile = ({ top, left, angle, parentId, speed }) => {
+const Projectile = (props) => {
+  const { top, left, angle, parentId, speed, unitsMap } = props;
+
   const [ coordinates, setCoordinates ] = useState({ projectileX: left, projectileY: top,  });
   const [ isInFlight, setIsInFlight ] = useState(false);
 
@@ -34,15 +36,18 @@ const Projectile = ({ top, left, angle, parentId, speed }) => {
       return;
     }
 
-    if (currentStep < stepsToMake) {
-      currentStep += 1;
-
-      setTimeout(() => {
-        setCoordinates({ projectileX: currentX, projectileY: currentY });
-
-        increaseCoordinates({ coordinateX: currentX, coordinateY: currentY }, stepsToMake, currentStep);
-      }, speed);
+    if (currentStep >= stepsToMake) {
+      console.log('stop');
+      return;
     }
+
+    currentStep += 1;
+
+    setTimeout(() => {
+      setCoordinates({ projectileX: currentX, projectileY: currentY });
+
+      increaseCoordinates({ coordinateX: currentX, coordinateY: currentY }, stepsToMake, currentStep);
+    }, speed);
   };
 
   const hasIntersection = (rectangle, circle) => {
@@ -84,20 +89,14 @@ const Projectile = ({ top, left, angle, parentId, speed }) => {
   }
 
   const detectCollision = () => {
-    const units = document.querySelectorAll('.unit-pivot');
-
     const { projectileX, projectileY } = coordinatesRef.current;
 
-    const searchUnits = [ ...units ]
-
-    searchUnits[parentId] = undefined;
-
-    return !!searchUnits.find(unit => {
-      if (!unit) {
+    return !!unitsMap.find((unit, idx) => {
+      if (!unit || parentId === idx) {
         return false;
       }
 
-      const { top: circleY, left: circleX, width } = unit.getBoundingClientRect();
+      const { top: circleY, left: circleX } = unit;
 
       const rectangle = {
         rectangleX: projectileX,
