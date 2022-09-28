@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 const PROJECTILE_MOVE_STEP = 1;
 
 const Projectile = (props) => {
-  const { top, left, angle, parentId, speed, unitsMap } = props;
+  const { top, left, angle, parentId, speed, unitsMap, filedInfo } = props;
 
   const [ coordinates, setCoordinates ] = useState({ projectileX: left, projectileY: top,  });
   const [ isInFlight, setIsInFlight ] = useState(false);
@@ -29,13 +29,6 @@ const Projectile = (props) => {
   const increaseCoordinates = ({ coordinateX, coordinateY }, stepsToMake, currentStep = 0 ) => {
     const { coordinateX: currentX, coordinateY: currentY } = calculateNewCoords(coordinateX, coordinateY)
 
-    const collision = detectCollision();
-
-    if (collision) {
-      console.log('collision', collision);
-      return;
-    }
-
     if (currentStep >= stepsToMake) {
       console.log('stop');
       return;
@@ -44,6 +37,13 @@ const Projectile = (props) => {
     currentStep += 1;
 
     setTimeout(() => {
+      const collision = detectCollision();
+
+      if (collision) {
+        // console.log('collision', collision);
+        return;
+      }
+
       setCoordinates({ projectileX: currentX, projectileY: currentY });
 
       increaseCoordinates({ coordinateX: currentX, coordinateY: currentY }, stepsToMake, currentStep);
@@ -88,6 +88,26 @@ const Projectile = (props) => {
     return { nx, ny };
   }
 
+  const isOutOfField = (projectile) => {
+    const { projectileX, projectileY } = projectile;
+
+    const { fieldWidth, fieldHeight } = filedInfo;
+
+    const topLeftX = projectileX - (projectileWidth / 2);
+    const topLeftY = projectileY - (projectileHeight / 2);
+
+    const topRightX = projectileX + (projectileWidth / 2);
+    const topRightY = projectileY + (projectileHeight / 2);
+
+    const { nx: topLeftNewX, ny: topLeftNewY } = rotate(projectileX, projectileY, topLeftX, topLeftY, angle * -1);
+    const { nx: topRightNewX, ny: topRightNewY } = rotate(projectileX, projectileY, topRightX, topRightY, angle * -1);
+
+    const topLeftIsOut = topLeftNewX <= 0 || topLeftNewY <= 0 || topLeftNewX >= fieldWidth || topLeftNewY >= fieldHeight;
+    const topRightIsOut = topRightNewX <= 0 || topRightNewY <= 0 || topRightNewX >= fieldWidth || topRightNewY >= fieldHeight;
+
+    return topLeftIsOut || topRightIsOut;
+  }
+
   const detectCollision = () => {
     const { projectileX, projectileY } = coordinatesRef.current;
 
@@ -112,7 +132,7 @@ const Projectile = (props) => {
         radius: unitRadius
       };
 
-      return hasIntersection(rectangle, circle);
+      return hasIntersection(rectangle, circle) || isOutOfField(coordinatesRef.current);
     });
   }
 
@@ -124,7 +144,7 @@ const Projectile = (props) => {
     }
 
     setIsInFlight(true);
-    increaseCoordinates({ coordinateX: left, coordinateY: top }, 120);
+    increaseCoordinates({ coordinateX: left, coordinateY: top }, 140);
   });
 
   return (

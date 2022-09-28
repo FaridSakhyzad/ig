@@ -1,12 +1,12 @@
 :root {
-  --projectile-hitBox--width: 6px;
-  --projectile-hitBox--height: 6px;
+  --projectile-hitBox--width: 2px;
+  --projectile-hitBox--height: 12px;
 }
 
 @media screen and (min-width: 375px) {
   :root {
     --projectile-hitBox--width: 6px;
-    --projectile-hitBox--height: 6px;
+    --projectile-hitBox--height: 12px;
   }
 }
 

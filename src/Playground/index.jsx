@@ -15,7 +15,7 @@ const Playground = () => {
         },
         {
           name: 'turret2',
-          angle: 120,
+          angle: 112,
         },
         {
           name: 'turret3',
@@ -38,13 +38,16 @@ const Playground = () => {
   ]);
 
   const [ projectiles, setProjectiles ] = useState([]);
+  const [ filedInfo, setFiledInfo ] = useState({});
   const [ unitsMap, setUnitsInfo ] = useState([]);
 
   const onClick = (e, id) => {
     const { currentTarget } = e;
     const { value, turrets } = units[id];
 
-    const { top: fieldTop, left: fieldLeft } = document.querySelector('#field').getBoundingClientRect()
+    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
+
+    setFiledInfo({ fieldWidth, fieldHeight });
 
     setUnitsInfo([ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
       const { top, left } = unit.getBoundingClientRect();
@@ -89,6 +92,7 @@ const Playground = () => {
             parentId={parentId}
             speed={PROJECTILE_SPEED}
             unitsMap={unitsMap}
+            filedInfo={filedInfo}
           />
         ))}
       </div>
