@@ -7,7 +7,8 @@ const PROJECTILE_SPEED = 50; //ms per pixel
 const Playground = () => {
   const [ units, setUnits ] = useState([
     {
-      value: 11,
+      id: Math.random().toString(16).substring(2),
+      value: 1,
       turrets: [
         {
           name: 'turret1',
@@ -27,36 +28,65 @@ const Playground = () => {
         }
       ],
     },
-    { value: 12 },
-    { value: 13 },
-    { value: 21 },
-    { value: 22 },
-    { value: 23 },
-    { value: 31 },
-    { value: 32 },
-    { value: 33 },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 2
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 3
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 2
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 3
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 4
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 4
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 1
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 2
+    },
   ]);
 
   const [ projectiles, setProjectiles ] = useState([]);
   const [ fieldInfo, setFieldInfo ] = useState({});
   const [ unitsMap, setUnitsMap ] = useState([]);
 
+  const generateUnitsMap = (fieldTop, fieldLeft) => {
+    return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
+      const { top, left } = unit.getBoundingClientRect();
+
+      return {
+        id: unit.id,
+        top: top - fieldTop,
+        left: left - fieldLeft,
+      };
+    })
+  }
+
   const onClick = (e, id) => {
     const { currentTarget } = e;
-    const { value, turrets } = units[id];
+    const { turrets } = units[id];
 
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
 
     setFieldInfo({ fieldWidth, fieldHeight });
 
-    setUnitsMap([ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
-      const { top, left } = unit.getBoundingClientRect();
-
-      return {
-        top: top - fieldTop,
-        left: left - fieldLeft,
-      };
-    }));
+    setUnitsMap(generateUnitsMap(fieldTop, fieldLeft));
 
     const projectiles = [];
 
@@ -70,6 +100,7 @@ const Playground = () => {
       const { top, left } = gunpoint.getBoundingClientRect();
 
       projectiles.push({
+        id: Math.random().toString(16).substring(2),
         top: top - fieldTop,
         left: left - fieldLeft,
         angle,
@@ -80,12 +111,27 @@ const Playground = () => {
     setProjectiles(projectiles);
   }
 
+  const onOutOfFiled = (id) => {
+    console.log('Out of field', id);
+  }
+
+  const onImpact = (projectileId, unitId) => {
+    const unitIdx = units.findIndex(({ id }) => id === unitId);
+
+    const newUnits = [ ...units ];
+
+    newUnits[unitIdx].value += 1;
+
+    setUnits(newUnits);
+  }
+
   return (
     <div className="field" id="field">
       <div className="projectileLayer">
-        {projectiles.map(({ top, left, angle, parentId }, ixd) => (
+        {projectiles.map(({ id, top, left, angle, parentId }) => (
           <Projectile
-            key={ixd}
+            key={id}
+            id={id}
             top={top}
             left={left}
             angle={angle}
@@ -93,16 +139,20 @@ const Playground = () => {
             speed={PROJECTILE_SPEED}
             unitsMap={unitsMap}
             fieldInfo={fieldInfo}
+            onOutOfFiled={onOutOfFiled}
+            onImpact={onImpact}
           />
         ))}
       </div>
       <div className="unitsLayer">
-        {units.map(({ turrets }, itemIndex) => (
+        {units.map(({ turrets, value, id }, itemIndex) => (
           <Unit
-            key={itemIndex}
-            id={itemIndex}
+            key={id}
+            id={id}
+            index={itemIndex}
             turrets={turrets}
             onClickHandler={onClick}
+            value={value}
           />
         ))}
       </div>
