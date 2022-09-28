@@ -77,10 +77,8 @@ const Projectile = (props) => {
         return;
       }
 
-      console.log('inner setProjectileState');
       setProjectileState({ projectileX: currentX, projectileY: currentY, projectileStatus: 'inFlight' });
 
-      console.log('inner launchProjectile');
       launchProjectile({ coordinateX: currentX, coordinateY: currentY }, stepsToMake, currentStep);
     }, speed);
   };
