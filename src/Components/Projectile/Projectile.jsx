@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 const PROJECTILE_MOVE_STEP = 1;
 
 const Projectile = (props) => {
-  const { top, left, angle, parentId, speed, unitsMap, filedInfo } = props;
+  const { top, left, angle, parentId, speed, unitsMap, fieldInfo } = props;
 
   const [ coordinates, setCoordinates ] = useState({ projectileX: left, projectileY: top,  });
   const [ isInFlight, setIsInFlight ] = useState(false);
@@ -40,7 +40,7 @@ const Projectile = (props) => {
       const collision = detectCollision();
 
       if (collision) {
-        // console.log('collision', collision);
+        console.log('collision', collision);
         return;
       }
 
@@ -91,7 +91,7 @@ const Projectile = (props) => {
   const isOutOfField = (projectile) => {
     const { projectileX, projectileY } = projectile;
 
-    const { fieldWidth, fieldHeight } = filedInfo;
+    const { fieldWidth, fieldHeight } = fieldInfo;
 
     const topLeftX = projectileX - (projectileWidth / 2);
     const topLeftY = projectileY - (projectileHeight / 2);
