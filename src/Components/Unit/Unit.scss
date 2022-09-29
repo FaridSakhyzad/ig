@@ -37,12 +37,13 @@
 }
 
 .turret {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
   position: absolute;
   background: black;
   margin: auto;
   transform-origin: center;
+  border-radius: 3px;
 
   &.turret1 {
     top: 0;
@@ -71,13 +72,14 @@
 
 .weapon {
   width: 2px;
-  height: 6px;
+  height: 8px;
   background: blue;
   position: absolute;
-  bottom: 0;
+  bottom: 2px;
   left: 0;
   right: 0;
   margin: auto;
+  border-radius: 1px;
 
   .gunpoint {
     width: 0;

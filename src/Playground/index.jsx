@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 
-const PROJECTILE_SPEED = 50; //ms per pixel
+const PROJECTILE_SPEED = 25; //ms per pixel
 
 const Playground = () => {
   const [ units, setUnits ] = useState([
@@ -30,19 +30,55 @@ const Playground = () => {
     },
     {
       id: Math.random().toString(16).substring(2),
+      value: 2,
+      turrets: [
+        {
+          name: 'turret1',
+          angle: 35,
+        },
+        {
+          name: 'turret2',
+          angle: 112,
+        },
+        {
+          name: 'turret3',
+          angle: 195,
+        },
+        {
+          name: 'turret4',
+          angle: 280,
+        }
+      ],
+    },
+    {
+      id: Math.random().toString(16).substring(2),
+      value: 3,
+    },
+    {
+      id: Math.random().toString(16).substring(2),
       value: 2
     },
     {
       id: Math.random().toString(16).substring(2),
-      value: 3
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 2
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 3
+      value: 3,
+      turrets: [
+        {
+          name: 'turret1',
+          angle: 35,
+        },
+        {
+          name: 'turret2',
+          angle: 112,
+        },
+        {
+          name: 'turret3',
+          angle: 195,
+        },
+        {
+          name: 'turret4',
+          angle: 280,
+        }
+      ],
     },
     {
       id: Math.random().toString(16).substring(2),
@@ -66,49 +102,88 @@ const Playground = () => {
   const [ fieldInfo, setFieldInfo ] = useState({});
   const [ unitsMap, setUnitsMap ] = useState([]);
 
-  const generateUnitsMap = (fieldTop, fieldLeft) => {
+  const generateUnitsMap = () => {
+    const { fieldTop, fieldLeft } = fieldInfo;
+
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
+      const { id } = unit;
       const { top, left } = unit.getBoundingClientRect();
+      const turretsData = [];
+
+      const { turrets } = units.find(unit => (unit.id === id));
+
+      unit.querySelectorAll('.turret').forEach(turret => {
+        const gunpoint = turret.querySelector('.gunpoint');
+        const { name: turretName } = turret.dataset;
+        const { top: gunpointTop, left: gunpointLeft } = gunpoint.getBoundingClientRect();
+
+        const { angle } = turrets.find(({ name }) => (name === turretName));
+
+        turretsData.push({
+          turretName,
+          gunpointTop,
+          gunpointLeft,
+          angle,
+        })
+      });
 
       return {
         id: unit.id,
         top: top - fieldTop,
         left: left - fieldLeft,
+        turrets: turretsData,
       };
     })
   }
 
-  const onClick = (e, id) => {
-    const { currentTarget } = e;
-    const { turrets } = units[id];
-
-    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
-
-    setFieldInfo({ fieldWidth, fieldHeight });
-
-    setUnitsMap(generateUnitsMap(fieldTop, fieldLeft));
+  const dischargeAllTurrets = (unitIndex) => {
+    const { fieldTop, fieldLeft } = fieldInfo;
 
     const projectiles = [];
 
-    currentTarget.querySelectorAll('.turret').forEach(turret => {
-      const gunpoint = turret.querySelector('.gunpoint');
-
-      const { name: turretName } = turret.dataset;
-
-      const { angle } = turrets.find(({ name }) => (name === turretName));
-
-      const { top, left } = gunpoint.getBoundingClientRect();
+    unitsMap[unitIndex].turrets.forEach(turret => {
+      const { gunpointTop, gunpointLeft, angle } = turret
 
       projectiles.push({
         id: Math.random().toString(16).substring(2),
-        top: top - fieldTop,
-        left: left - fieldLeft,
+        top: gunpointTop - fieldTop,
+        left: gunpointLeft - fieldLeft,
         angle,
-        parentId: id
+        parentId: unitIndex
       });
     })
 
     setProjectiles(projectiles);
+  }
+
+  const increaseUnitValue = (unitIndex, onValueExceed) => {
+    const newUnits = [ ...units ];
+    const { value } = newUnits[unitIndex];
+
+    let newValue;
+
+    if (value >= 4) {
+      onValueExceed();
+      newValue = 0;
+    } else {
+      newValue = 1 + value;
+    }
+
+    newUnits[unitIndex].value = newValue;
+
+    setUnits(newUnits);
+  }
+
+  const onClick = (e, unitIndex) => {
+    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
+
+    setFieldInfo({ fieldTop, fieldLeft, fieldWidth, fieldHeight });
+
+    setUnitsMap(generateUnitsMap());
+
+    increaseUnitValue(unitIndex, () => {
+      dischargeAllTurrets(unitIndex);
+    });
   }
 
   const onOutOfFiled = (id) => {
@@ -145,11 +220,11 @@ const Playground = () => {
         ))}
       </div>
       <div className="unitsLayer">
-        {units.map(({ turrets, value, id }, itemIndex) => (
+        {units.map(({ turrets, value, id }, unitIndex) => (
           <Unit
             key={id}
             id={id}
-            index={itemIndex}
+            index={unitIndex}
             turrets={turrets}
             onClickHandler={onClick}
             value={value}
