@@ -10,6 +10,7 @@ const Projectile = (props) => {
     angle,
     parentId,
     speed,
+    units,
     unitsMap,
     fieldInfo,
     onOutOfFiled,
@@ -43,7 +44,7 @@ const Projectile = (props) => {
     const { coordinateX: currentX, coordinateY: currentY } = calculateNewCoords(coordinateX, coordinateY)
 
     if (currentStep >= stepsToMake) {
-      console.log('stop');
+      console.log('Stopped by Steps Limit', id);
       return;
     }
 
@@ -59,20 +60,20 @@ const Projectile = (props) => {
           projectileY: currentY,
           projectileStatus: 'impact',
         });
+
         onOutOfFiled(id);
 
         return;
       }
 
-      if (impactedUnit) {
+      if (impactedUnit && impactedUnit.value > 0) {
         setProjectileState({
           projectileX: currentX,
           projectileY: currentY,
           projectileStatus: 'impact',
         });
 
-        const { id: unitId } = impactedUnit;
-        onImpact(id, unitId);
+        onImpact(id, impactedUnit.id);
 
         return;
       }
@@ -144,12 +145,18 @@ const Projectile = (props) => {
   const projectileDidImpact = () => {
     const { projectileX, projectileY } = projectileStateRef.current;
 
-    return unitsMap.find((unit, idx) => {
-      if (!unit || parentId === idx) {
+    return unitsMap.find((unitsMapItem) => {
+      if (!unitsMapItem || unitsMapItem.id === parentId) {
         return false;
       }
 
-      const { top: circleY, left: circleX } = unit;
+      const { value } = units.find(unit => (unit.id === unitsMapItem.id));
+
+      if (value === 0) {
+        return false;
+      }
+
+      const { top: circleY, left: circleX } = unitsMapItem;
 
       const rectangle = {
         rectangleX: projectileX,
@@ -169,18 +176,18 @@ const Projectile = (props) => {
     });
   }
 
-  const { projectileX, projectileY, projectileStatus } = projectileState;
-
   useEffect(() => {
     if (projectileStatus !== 'rest') {
       return;
     }
 
-    launchProjectile({ coordinateX: left, coordinateY: top }, 140);
+    launchProjectile({ coordinateX: left, coordinateY: top }, 200);
   });
 
+  const { projectileX, projectileY, projectileStatus } = projectileState;
+
   return (
-    <div className="projectile" style={{ top: `${projectileY}px`, left: `${projectileX}px`, transform: `rotate(${angle}deg)` }}>
+    <div className="projectile" id={id} style={{ top: `${projectileY}px`, left: `${projectileX}px`, transform: `rotate(${angle}deg)` }}>
       <div className="projectile-hitBox" />
       {projectileStatus === 'inFlight' && (
         <div className="projectile-image" />

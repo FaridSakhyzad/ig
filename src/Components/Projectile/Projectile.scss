@@ -8,7 +8,7 @@
 
 @media screen and (min-width: 375px) {
   :root {
-    --projectile-hitBox--width: 6px;
+    --projectile-hitBox--width: 2px;
     --projectile-hitBox--height: 12px;
 
     --projectile-image--width: 4px;
@@ -62,7 +62,7 @@
   margin: auto -10px;
   border-radius: 50%;
   background: red;
-  animation: explosion 1s ease;
+  animation: explosion 0.3s ease;
   opacity: 0;
   scale: 0;
 }

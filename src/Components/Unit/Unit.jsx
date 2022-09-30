@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Unit = ({ turrets, value, id, index, onClickHandler }) => {
+const Unit = ({ turrets, value, id, onClickHandler }) => {
   return (
     <div className="unit-pivot" id={id}>
-      <div className="unit" onClick={(e) => onClickHandler(e, index)}>
+      <div className="unit" onClick={(e) => onClickHandler(e, id)}>
         <div className="unit-hitBox" />
         {value}
         {turrets && turrets.map(({ angle, name}, turretIndex) => (

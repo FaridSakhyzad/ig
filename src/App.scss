@@ -4,6 +4,7 @@
   display: flex;
   align-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .field {
@@ -17,8 +18,8 @@
   display: grid;
   grid-template-rows: 33px 33px 33px;
   grid-template-columns: 33px 33px 33px;
-  grid-row-gap: 10px;
-  grid-column-gap: 10px;
+  grid-row-gap: 30px;
+  grid-column-gap: 30px;
 }
 
 .projectileLayer {
