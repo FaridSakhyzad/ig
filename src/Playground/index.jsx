@@ -1,210 +1,48 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 
-const PROJECTILE_SPEED = 50; //ms per pixel
+const PROJECTILE_MOVE_DELAY = 25; //ms per pixel
+const UNIT_MIN_VALUE = 0;
+const UNIT_MAX_VALUE = 4;
+
+const MOCK_UNITS = ((m, n) => {
+  const result = [];
+
+  for (let i = 0; i < m * n; i++) {
+    result.push({
+      id: Math.random().toString(16).substring(2),
+      minValue: UNIT_MIN_VALUE,
+      maxValue: UNIT_MAX_VALUE,
+      value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
+      turrets: [
+        {
+          name: 'turret1',
+          angle: 0,
+        },
+        {
+          name: 'turret2',
+          angle: 90,
+        },
+        {
+          name: 'turret3',
+          angle: 180,
+        },
+        {
+          name: 'turret4',
+          angle: 270,
+        }
+      ],
+    });
+  }
+
+  return result;
+})(3, 3)
+
+console.log(MOCK_UNITS);
 
 const Playground = () => {
-  const [ units, setUnits ] = useState([
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 4,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 4,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 4,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 2,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 0,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 4,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 4,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 1,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-    {
-      id: Math.random().toString(16).substring(2),
-      value: 2,
-      turrets: [
-        {
-          name: 'turret1',
-          angle: 0,
-        },
-        {
-          name: 'turret2',
-          angle: 90,
-        },
-        {
-          name: 'turret3',
-          angle: 180,
-        },
-        {
-          name: 'turret4',
-          angle: 270,
-        }
-      ],
-    },
-  ]);
+  const [ units, setUnits ] = useState(MOCK_UNITS);
 
   const [ projectiles, setProjectiles ] = useState(new Map());
 
@@ -244,8 +82,8 @@ const Playground = () => {
     })
   }
 
-  const dischargeAllTurrets = (unitId, unitsMap, fieldTop, fieldLeft) => {
-    const unitIndex = units.findIndex(unit => (unit.id === unitId));
+  const dischargeAllTurrets = (parentId, unitsMap, fieldTop, fieldLeft) => {
+    const unitIndex = units.findIndex(unit => (unit.id === parentId));
 
     const { turrets } = unitsMap[unitIndex];
 
@@ -259,10 +97,11 @@ const Playground = () => {
         top: gunpointTop - fieldTop,
         left: gunpointLeft - fieldLeft,
         angle,
-        parentId: unitId
+        parentId
       })
     })
 
+    console.log('dischargeAllTurrets', projectiles.size);
     setProjectiles(new Map(projectiles));
   }
 
@@ -270,13 +109,15 @@ const Playground = () => {
     const unitIndex = units.findIndex(unit => (unit.id === unitId));
 
     const newUnits = [ ...units ];
-    const { value } = newUnits[unitIndex];
+    const { value, maxValue, minValue } = newUnits[unitIndex];
 
     let newValue;
 
-    if (value >= 4) {
+    console.log(maxValue)
+
+    if (value >= maxValue) {
       onValueExceed();
-      newValue = 0;
+      newValue = minValue;
     } else {
       newValue = 1 + value;
     }
@@ -287,6 +128,9 @@ const Playground = () => {
   }
 
   const onClick = (e, unitId) => {
+    projectiles.clear();
+    setProjectiles(new Map(projectiles));
+
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
 
     const fieldInfo = { fieldTop, fieldLeft, fieldWidth, fieldHeight };
@@ -301,25 +145,30 @@ const Playground = () => {
   }
 
   const onOutOfFiled = (projectileId) => {
-    projectiles.delete(projectileId);
-    setProjectiles(new Map(projectiles));
+    //projectiles.delete(projectileId);
+    //setProjectiles(new Map(projectiles));
 
-    console.log('Out of field projectiles', projectiles);
+    console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
+    console.log('\n\n');
   }
 
   const onImpact = (projectileId, impactedUnitId) => {
-    projectiles.delete(projectileId);
-    setProjectiles(new Map(projectiles));
+    //projectiles.delete(projectileId);
+    //setProjectiles(new Map(projectiles));
 
     const { fieldTop, fieldLeft } = fieldInfo;
+
+    console.log('impactedUnitId', impactedUnitId);
+    console.log(`Impact! Projectile Id ${projectileId} Projectiles:`, projectiles);
 
     increaseUnitValue(impactedUnitId, () => {
       dischargeAllTurrets(impactedUnitId, unitsMap, fieldTop, fieldLeft);
     });
-
-    console.log('impactedUnitId', impactedUnitId);
-    console.log('Impact projectiles', projectiles);
   }
+
+  useEffect(() => {
+    console.log('USE EFFECT');
+  });
 
   return (
     <div className="field" id="field">
@@ -333,7 +182,7 @@ const Playground = () => {
               left={left}
               angle={angle}
               parentId={parentId}
-              speed={PROJECTILE_SPEED}
+              moveDelay={PROJECTILE_MOVE_DELAY}
               units={units}
               unitsMap={unitsMap}
               fieldInfo={fieldInfo}
@@ -344,7 +193,7 @@ const Playground = () => {
         </div>
       )}
       <div className="unitsLayer">
-        {units.map(({ turrets, value, id }, unitIndex) => (
+        {units.map(({ turrets, value, id }) => (
           <Unit
             key={id}
             id={id}

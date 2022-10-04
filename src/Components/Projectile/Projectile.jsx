@@ -9,7 +9,7 @@ const Projectile = (props) => {
     left,
     angle,
     parentId,
-    speed,
+    moveDelay,
     units,
     unitsMap,
     fieldInfo,
@@ -40,11 +40,17 @@ const Projectile = (props) => {
     return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
   }
 
-  const launchProjectile = ({ coordinateX, coordinateY }, stepsToMake, currentStep = 0 ) => {
+  const launchProjectile = (coordinateX, coordinateY, stepsToMake, currentStep = 0 ) => {
+    const { projectileStatus } = projectileState;
     const { coordinateX: currentX, coordinateY: currentY } = calculateNewCoords(coordinateX, coordinateY)
 
     if (currentStep >= stepsToMake) {
       console.log('Stopped by Steps Limit', id);
+      return;
+    }
+
+    if (projectileStatus === 'impact') {
+      console.log('RE Launch Prevented');
       return;
     }
 
@@ -80,8 +86,8 @@ const Projectile = (props) => {
 
       setProjectileState({ projectileX: currentX, projectileY: currentY, projectileStatus: 'inFlight' });
 
-      launchProjectile({ coordinateX: currentX, coordinateY: currentY }, stepsToMake, currentStep);
-    }, speed);
+      launchProjectile(currentX, currentY, stepsToMake, currentStep);
+    }, moveDelay);
   };
 
   const findIntersection = (rectangle, circle) => {
@@ -177,11 +183,14 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    if (projectileStatus !== 'rest') {
+    const { projectileStatus } = projectileState;
+
+    if (projectileStatus !== 'rest' || projectileStatus === 'impact') {
       return;
     }
 
-    launchProjectile({ coordinateX: left, coordinateY: top }, 200);
+    console.log(`Launch Projectile. ID ${id}. Status ${projectileStatus}`);
+    launchProjectile(left, top, 200);
   });
 
   const { projectileX, projectileY, projectileStatus } = projectileState;

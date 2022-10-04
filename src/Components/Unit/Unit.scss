@@ -37,16 +37,16 @@
 }
 
 .turret {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   position: absolute;
-  background: black;
+  background: rgba(0, 0, 0, 0.5);
   margin: auto;
   transform-origin: center;
   border-radius: 3px;
 
   &.turret1 {
-    top: 0;
+    top: calc(50% - 10px);
     left: 0;
     right: 0;
   }
@@ -54,11 +54,11 @@
   &.turret2 {
     top: 0;
     bottom: 0;
-    right: 0;
+    right: calc(50% - 10px);
   }
 
   &.turret3 {
-    bottom: 0;
+    bottom: calc(50% - 10px);
     left: 0;
     right: 0;
   }
@@ -66,13 +66,13 @@
   &.turret4 {
     top: 0;
     bottom: 0;
-    left: 0;
+    left: calc(50% - 10px);
   }
 }
 
 .weapon {
   width: 2px;
-  height: 8px;
+  height: 6px;
   background: blue;
   position: absolute;
   bottom: 2px;

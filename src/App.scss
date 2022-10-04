@@ -6,27 +6,3 @@
   align-items: center;
   flex-direction: column;
 }
-
-.field {
-  margin: auto;
-  padding: 20px;
-  outline: 1px solid #000000;
-  position: relative;
-}
-
-.unitsLayer {
-  display: grid;
-  grid-template-rows: 33px 33px 33px;
-  grid-template-columns: 33px 33px 33px;
-  grid-row-gap: 30px;
-  grid-column-gap: 30px;
-}
-
-.projectileLayer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  z-index: 5;
-}

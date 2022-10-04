@@ -1,18 +1,20 @@
 :root {
-  --projectile-hitBox--width: 2px;
-  --projectile-hitBox--height: 12px;
+  --projectile-hitBox--width: 4px;
+  --projectile-hitBox--height: 8px;
 
-  --projectile-image--width: 2px;
-  --projectile-image--height: 12px;
+  --projectile-image--width: 4px;
+  --projectile-image--height: 8px;
+
+  --projectile-explosion--radius: 5px;
 }
 
 @media screen and (min-width: 375px) {
   :root {
-    --projectile-hitBox--width: 2px;
-    --projectile-hitBox--height: 12px;
+    --projectile-hitBox--width: 4px;
+    --projectile-hitBox--height: 8px;
 
     --projectile-image--width: 4px;
-    --projectile-image--height: 12px;
+    --projectile-image--height: 8px;
   }
 }
 
@@ -52,14 +54,12 @@
 }
 
 .projectile-explosion {
-  width: 20px;
-  height: 20px;
+  width: calc(var(--projectile-explosion--radius) * 2);
+  min-width: calc(var(--projectile-explosion--radius) * 2);
+  height: calc(var(--projectile-explosion--radius) * 2);
+  min-height: calc(var(--projectile-explosion--radius) * 2);
   position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto -10px;
+  margin: auto;
   border-radius: 50%;
   background: red;
   animation: explosion 0.3s ease;
