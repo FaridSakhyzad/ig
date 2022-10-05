@@ -18,6 +18,8 @@
   justify-content: center;
   flex-direction: column;
   z-index: 100;
+  //transition: all 25ms linear;
+  will-change: transform;
 }
 
 .projectile-hitBox {

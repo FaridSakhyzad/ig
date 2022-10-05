@@ -3,9 +3,9 @@ import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 
 const UNIT_MIN_VALUE = 0;
-const UNIT_MAX_VALUE = 4;
-const MAP_WIDTH = 3;
-const MAP_HEIGHT = 3;
+const UNIT_MAX_VALUE = 2;
+const MAP_WIDTH = 9;
+const MAP_HEIGHT = 9;
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
@@ -15,7 +15,7 @@ const MOCK_UNITS = ((m, n) => {
       id: Math.random().toString(16).substring(2),
       minValue: UNIT_MIN_VALUE,
       maxValue: UNIT_MAX_VALUE,
-      value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
+      value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
       turrets: [
         {
           name: 'turret1',
@@ -43,7 +43,7 @@ const MOCK_UNITS = ((m, n) => {
 const Playground = () => {
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
-  const [ projectiles, setProjectiles ] = useState(new Map());
+  const [ projectiles, setProjectiles ] = useState([]);
 
   const [ fieldInfo, setFieldInfo ] = useState({});
   const [ unitsMap, setUnitsMap ] = useState([]);
@@ -95,17 +95,17 @@ const Playground = () => {
 
       const id = Math.random().toString(16).substring(2);
 
-      projectiles.set(id, {
+      projectiles.push({
         id,
         top: gunpointTop - fieldTop,
         left: gunpointLeft - fieldLeft,
         angle,
         parentId
-      })
+      });
     })
 
-    console.log('dischargeAllTurrets', projectiles.size);
-    setProjectiles(new Map(projectiles));
+    console.log('Discharge All Turrets. Projectiles count: ', projectiles.length);
+    setProjectiles(projectiles);
   }
 
   const increaseUnitValue = (unitId, onValueExceed) => {
@@ -129,8 +129,7 @@ const Playground = () => {
   }
 
   const onClick = (e, unitId) => {
-    projectiles.clear();
-    setProjectiles(new Map(projectiles));
+    setProjectiles([]);
 
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
 
@@ -163,33 +162,29 @@ const Playground = () => {
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
-
-    console.log('projectiles', projectiles);
   })
 
   return (
     <div className="field" id="field">
-      {(projectiles.size > 0) && (
-        <div className="projectileLayer">
-          {[...projectiles].map(item => item[1]).map(({ id, top, left, angle, parentId }) => (
-            <Projectile
-              key={id}
-              id={id}
-              top={top}
-              left={left}
-              angle={angle}
-              parentId={parentId}
-              units={units}
-              unitsMap={unitsMap}
-              fieldInfo={fieldInfo}
-              onOutOfFiled={onOutOfFiled}
-              onImpact={onImpact}
-            />
-          ))}
-        </div>
-      )}
+      <div className="projectileLayer">
+        {projectiles && projectiles.map(({ id, top, left, angle, parentId }) => (
+          <Projectile
+            key={id}
+            id={id}
+            top={top}
+            left={left}
+            angle={angle}
+            parentId={parentId}
+            units={units}
+            unitsMap={unitsMap}
+            fieldInfo={fieldInfo}
+            onOutOfFiled={onOutOfFiled}
+            onImpact={onImpact}
+          />
+        ))}
+      </div>
       <div className="unitLayer">
-        {units.map(({ turrets, value, id }, index) => (
+        {units.map(({ turrets, value, maxValue, id }, index) => (
           <Unit
             key={id}
             id={id}
@@ -197,6 +192,7 @@ const Playground = () => {
             turrets={turrets}
             onClickHandler={onClick}
             value={value}
+            maxValue={maxValue}
           />
         ))}
       </div>
