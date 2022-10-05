@@ -1,21 +1,11 @@
 :root {
-  --projectile-hitBox--width: 4px;
-  --projectile-hitBox--height: 8px;
+  --projectile-hitBox--width: 2px;
+  --projectile-hitBox--height: 2px;
 
   --projectile-image--width: 4px;
-  --projectile-image--height: 8px;
+  --projectile-image--height: 4px;
 
   --projectile-explosion--radius: 5px;
-}
-
-@media screen and (min-width: 375px) {
-  :root {
-    --projectile-hitBox--width: 4px;
-    --projectile-hitBox--height: 8px;
-
-    --projectile-image--width: 4px;
-    --projectile-image--height: 8px;
-  }
 }
 
 .projectile {
@@ -42,7 +32,7 @@
   width: var(--projectile-image--width);
   height: var(--projectile-image--height);
   min-height: var(--projectile-image--height);
-  background: #33bbff;
+  background: #4733ff;
   opacity: 1;
   position: absolute;
   left: 0;

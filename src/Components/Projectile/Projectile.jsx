@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 const PROJECTILE_MOVE_STEP = 1;
+const PROJECTILE_MOVE_DELAY = 25; //ms per pixel
 
 const Projectile = (props) => {
   const {
@@ -9,7 +10,6 @@ const Projectile = (props) => {
     left,
     angle,
     parentId,
-    moveDelay,
     units,
     unitsMap,
     fieldInfo,
@@ -34,8 +34,8 @@ const Projectile = (props) => {
 
   const calculateNewCoords = (coordinateX, coordinateY) => {
     const theAngle = 90 - angle;
-    const newCoordinateX = PROJECTILE_MOVE_STEP * Math.cos(theAngle * Math.PI /180);
-    const newCoordinateY = PROJECTILE_MOVE_STEP * Math.sin(theAngle * Math.PI /180);
+    const newCoordinateX = PROJECTILE_MOVE_STEP * Math.cos(theAngle * Math.PI / 180);
+    const newCoordinateY = PROJECTILE_MOVE_STEP * Math.sin(theAngle * Math.PI / 180);
 
     return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
   }
@@ -87,7 +87,7 @@ const Projectile = (props) => {
       setProjectileState({ projectileX: currentX, projectileY: currentY, projectileStatus: 'inFlight' });
 
       launchProjectile(currentX, currentY, stepsToMake, currentStep);
-    }, moveDelay);
+    }, PROJECTILE_MOVE_DELAY);
   };
 
   const findIntersection = (rectangle, circle) => {
@@ -185,18 +185,22 @@ const Projectile = (props) => {
   useEffect(() => {
     const { projectileStatus } = projectileState;
 
-    if (projectileStatus !== 'rest' || projectileStatus === 'impact') {
+    if (projectileStatus === 'inFlight' || projectileStatus === 'impact') {
       return;
     }
 
     console.log(`Launch Projectile. ID ${id}. Status ${projectileStatus}`);
-    launchProjectile(left, top, 200);
+    launchProjectile(left, top, 600);
   });
 
   const { projectileX, projectileY, projectileStatus } = projectileState;
 
   return (
-    <div className="projectile" id={id} style={{ top: `${projectileY}px`, left: `${projectileX}px`, transform: `rotate(${angle}deg)` }}>
+    <div className="projectile"
+      id={id}
+      style={{ top: `${projectileY}px`, left: `${projectileX}px`, transform: `rotate(${angle}deg)` }}
+      data-status={projectileStatus}
+    >
       <div className="projectile-hitBox" />
       {projectileStatus === 'inFlight' && (
         <div className="projectile-image" />

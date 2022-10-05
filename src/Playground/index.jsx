@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 
-const PROJECTILE_MOVE_DELAY = 25; //ms per pixel
 const UNIT_MIN_VALUE = 0;
 const UNIT_MAX_VALUE = 4;
+const MAP_WIDTH = 9;
+const MAP_HEIGHT = 9;
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
@@ -37,9 +38,7 @@ const MOCK_UNITS = ((m, n) => {
   }
 
   return result;
-})(3, 3)
-
-console.log(MOCK_UNITS);
+})(MAP_WIDTH, MAP_HEIGHT)
 
 const Playground = () => {
   const [ units, setUnits ] = useState(MOCK_UNITS);
@@ -113,8 +112,6 @@ const Playground = () => {
 
     let newValue;
 
-    console.log(maxValue)
-
     if (value >= maxValue) {
       onValueExceed();
       newValue = minValue;
@@ -145,17 +142,10 @@ const Playground = () => {
   }
 
   const onOutOfFiled = (projectileId) => {
-    //projectiles.delete(projectileId);
-    //setProjectiles(new Map(projectiles));
-
     console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
-    console.log('\n\n');
   }
 
   const onImpact = (projectileId, impactedUnitId) => {
-    //projectiles.delete(projectileId);
-    //setProjectiles(new Map(projectiles));
-
     const { fieldTop, fieldLeft } = fieldInfo;
 
     console.log('impactedUnitId', impactedUnitId);
@@ -167,8 +157,9 @@ const Playground = () => {
   }
 
   useEffect(() => {
-    console.log('USE EFFECT');
-  });
+    document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
+    document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
+  })
 
   return (
     <div className="field" id="field">
@@ -182,7 +173,6 @@ const Playground = () => {
               left={left}
               angle={angle}
               parentId={parentId}
-              moveDelay={PROJECTILE_MOVE_DELAY}
               units={units}
               unitsMap={unitsMap}
               fieldInfo={fieldInfo}
@@ -192,7 +182,7 @@ const Playground = () => {
           ))}
         </div>
       )}
-      <div className="unitsLayer">
+      <div className="unitLayer">
         {units.map(({ turrets, value, id }) => (
           <Unit
             key={id}
