@@ -1,6 +1,6 @@
 :root {
   --unit-width: 32px;
-  --unit-hitBox--radius: 2px;
+  --unit-hitBox--radius: 12px;
 }
 
 .unit-pivot {
@@ -48,6 +48,7 @@
   height: calc(var(--unit-image--radius, 0px) * 2);
   border-radius: 50%;
   transition: all 0.1s ease-out;
+  opacity: 0.3;
 }
 
 .turret {

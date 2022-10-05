@@ -18,6 +18,8 @@
   justify-content: center;
   flex-direction: column;
   z-index: 100;
+  //transition: all 25ms linear;
+  will-change: transform;
 }
 
 .projectile-hitBox {
@@ -25,6 +27,7 @@
   width: var(--projectile-hitBox--width);
   height: var(--projectile-hitBox--height);
   min-height: var(--projectile-hitBox--height);
+  background: rgba(71, 51, 255, 0);
 }
 
 .projectile-image {
