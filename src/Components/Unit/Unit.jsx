@@ -1,8 +1,8 @@
 import React from 'react';
 
-const Unit = ({ turrets, value, id, onClickHandler }) => {
+const Unit = ({ turrets, value, id, idx, onClickHandler }) => {
   return (
-    <div className="unit-pivot" id={id}>
+    <div className="unit-pivot" id={id} data-index={idx}>
       <div className="unit" onClick={(e) => onClickHandler(e, id)}>
         <div className="unit-hitBox" />
         <div className="unit-image" style={{ '--unit-image--radius': `${value * 25 / 2}%` }} />

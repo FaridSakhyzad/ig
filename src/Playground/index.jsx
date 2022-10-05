@@ -4,8 +4,8 @@ import Unit from '../Components/Unit/Unit';
 
 const UNIT_MIN_VALUE = 0;
 const UNIT_MAX_VALUE = 4;
-const MAP_WIDTH = 9;
-const MAP_HEIGHT = 9;
+const MAP_WIDTH = 3;
+const MAP_HEIGHT = 3;
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
@@ -50,8 +50,11 @@ const Playground = () => {
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
-      const { id } = unit;
+      const { id, dataset } = unit;
+      const { index } = dataset;
+
       const { top, left } = unit.getBoundingClientRect();
+
       const turretsData = [];
 
       const { turrets, value } = units.find(unit => (unit.id === id));
@@ -73,6 +76,7 @@ const Playground = () => {
 
       return {
         id: unit.id,
+        index: parseInt(index, 10),
         value,
         top: top - fieldTop,
         left: left - fieldLeft,
@@ -159,6 +163,8 @@ const Playground = () => {
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
+
+    console.log('projectiles', projectiles);
   })
 
   return (
@@ -183,10 +189,11 @@ const Playground = () => {
         </div>
       )}
       <div className="unitLayer">
-        {units.map(({ turrets, value, id }) => (
+        {units.map(({ turrets, value, id }, index) => (
           <Unit
             key={id}
             id={id}
+            idx={index}
             turrets={turrets}
             onClickHandler={onClick}
             value={value}
