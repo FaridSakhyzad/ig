@@ -10,6 +10,12 @@
   width: 0;
   height: 0;
   margin: auto;
+
+  &:nth-child(181) {
+    .unit {
+      outline: 1px solid #4733ff;
+    }
+  }
 }
 
 .unit {
