@@ -46,14 +46,14 @@ const Playground = () => {
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
-      const { id, dataset } = unit;
+      const { dataset } = unit;
       const { index } = dataset;
 
       const { top, left } = unit.getBoundingClientRect();
 
       const turretsData = [];
 
-      const { turrets, value } = units.find(unit => (unit.id === id));
+      const { turrets, value } = units[index];
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
@@ -81,9 +81,7 @@ const Playground = () => {
     })
   }
 
-  const dischargeAllTurrets = (parentId, unitsMap) => {
-    const unitIndex = units.findIndex(unit => (unit.id === parentId));
-
+  const dischargeAllTurrets = (unitIndex, unitsMap) => {
     const { turrets } = unitsMap[unitIndex];
 
     turrets.forEach(turret => {
@@ -96,8 +94,6 @@ const Playground = () => {
         top,
         left,
         angle,
-        parentId,
-        parentIndex: unitIndex
       });
     })
 
@@ -105,9 +101,7 @@ const Playground = () => {
     setProjectiles(projectiles);
   }
 
-  const increaseUnitValue = (unitId, onValueExceed) => {
-    const unitIndex = units.findIndex(unit => (unit.id === unitId));
-
+  const increaseUnitValue = (unitId, unitIndex, onValueExceed) => {
     const newUnits = [ ...units ];
     const { value, maxValue, minValue } = newUnits[unitIndex];
 
@@ -125,7 +119,7 @@ const Playground = () => {
     setUnits(newUnits);
   }
 
-  const onClick = (e, unitId) => {
+  const onClick = (e, unitId, unitIndex) => {
     setProjectiles([]);
 
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
@@ -136,8 +130,8 @@ const Playground = () => {
     setFieldInfo(fieldInfo);
     setUnitsMap(unitsMap);
 
-    increaseUnitValue(unitId, () => {
-      dischargeAllTurrets(unitId, unitsMap);
+    increaseUnitValue(unitId, unitIndex, () => {
+      dischargeAllTurrets(unitIndex, unitsMap);
     });
   }
 
@@ -145,12 +139,12 @@ const Playground = () => {
     //console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
   }
 
-  const onImpact = (projectileId, impactedUnitId) => {
+  const onImpact = (projectileId, impactedUnitId, impactedUnitIndex) => {
     console.log('impactedUnitId', impactedUnitId);
     console.log(`Impact! Projectile Id ${projectileId} Projectiles:`, projectiles);
 
-    increaseUnitValue(impactedUnitId, () => {
-      dischargeAllTurrets(impactedUnitId, unitsMap);
+    increaseUnitValue(impactedUnitId, impactedUnitIndex, () => {
+      dischargeAllTurrets(impactedUnitIndex, unitsMap);
     });
   }
 
@@ -214,13 +208,10 @@ const Playground = () => {
   }
 
   const makePotentialTargetsMap = (projectileProps) => {
-    // console.log('makePotentialTargetsMap', projectileProps);
     const { parentId, angle, left: projectileLeft, top: projectileTop } = projectileProps;
 
     const theK = Math.tan((Math.PI / 180) * (90 + angle));
     const theB = projectileTop - theK * projectileLeft;
-
-    // console.log('theK', theK, 'theB', theB)
 
     return unitsMap.filter(unit => {
       const { id, left: circleX, top: circleY } = unit;
@@ -238,9 +229,6 @@ const Playground = () => {
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
-
-    // console.log('findCircleLineIntersections', findCircleLineIntersections(50, 100, 100, theK, theB));
-    // console.log('doesLineInterceptCircle', doesLineInterceptCircle({ x: 0, y: 0 }, { x: 99, y: 99 }, { x: 100, y: 100 }, 1.4143))
   });
 
   return (

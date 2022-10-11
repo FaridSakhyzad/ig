@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP } from '../../Config/config';
+import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP, MAX_DISTANCE } from '../../Config/config';
 
 const Projectile = (props) => {
   const {
@@ -34,16 +34,14 @@ const Projectile = (props) => {
     return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
   }
 
-  const launchProjectile = (maxDistance, currentDistance = 0, coordinateX = left, coordinateY = top) => {
+  const launchProjectile = (maxDistance, currentDistance = 0) => {
     if (currentDistance >= maxDistance) {
       console.log('Stopped by Steps Limit', id);
       return;
     }
 
-    const { coordinateX: currentLeft, coordinateY: currentTop } = calculateNewCoords(coordinateX, coordinateY)
-
     const timer = setTimeout(() => {
-      currentDistance = Math.sqrt(Math.pow((currentTop - top), 2) + Math.pow((currentLeft - left), 2));
+      currentDistance += 1;
 
       const outOfField = projectileIsOutOfField(currentDistance);
 
@@ -60,7 +58,7 @@ const Projectile = (props) => {
       const impactedUnit = projectileDidImpact(currentDistance);
 
       if (impactedUnit && impactedUnit.value > 0) {
-        onImpact(id, impactedUnit.id);
+        onImpact(id, impactedUnit.id, impactedUnit.index);
 
         //console.log('clearTimeout');
         clearTimeout(timer);
@@ -70,11 +68,11 @@ const Projectile = (props) => {
       }
 
       ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
-      launchProjectile(maxDistance, currentDistance, currentLeft, currentTop);
+      launchProjectile(maxDistance, currentDistance);
     }, PROJECTILE_MOVE_DELAY);
   };
 
-  const findIntersection = (rectangle, circle) => {
+  const findRectangleCircleIntersection = (rectangle, circle) => {
     const { rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle } = rectangle;
     const { circleX, circleY, radius } = circle;
 
@@ -167,7 +165,7 @@ const Projectile = (props) => {
         radius: unitRadius
       };
 
-      if (findIntersection(rectangle, circle)) {
+      if (findRectangleCircleIntersection(rectangle, circle)) {
         impactedUnit = potentialTarget;
         break;
       }
@@ -176,10 +174,7 @@ const Projectile = (props) => {
     return impactedUnit;
   }
 
-  const MAX_DISTANCE = 900;
-
   useEffect(() => {
-    console.log(potentialTargetsMap);
     launchProjectile(MAX_DISTANCE);
   }, []);
 
