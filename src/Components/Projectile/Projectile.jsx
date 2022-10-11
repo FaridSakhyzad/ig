@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-
-const PROJECTILE_MOVE_DELAY = 25; //ms per pixel
-const PROJECTILE_MOVE_STEP = 1;
+import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP } from '../../Config/config';
 
 const Projectile = (props) => {
   const {
@@ -9,19 +7,14 @@ const Projectile = (props) => {
     top,
     left,
     angle,
-    parentId,
     units,
-    unitsMap,
+    potentialTargetsMap,
     fieldInfo,
     onOutOfFiled,
     onImpact,
   } = props;
 
-  const [ projectileDistance, setProjectileDistance ] = useState(0);
-  const projectileDistanceRef = useRef(projectileDistance);
-  projectileDistanceRef.current = projectileDistance;
-
-  const [ projectileState, setProjectileState ] = useState('rest');
+  const [ projectileState, setProjectileState ] = useState('inFlight');
   const projectileStateRef = useRef(projectileState);
   projectileStateRef.current = projectileState;
 
@@ -47,20 +40,9 @@ const Projectile = (props) => {
       return;
     }
 
-    if (projectileState !== 'inFlight') {
-      setProjectileState('inFlight');
-    }
-
     const { coordinateX: currentLeft, coordinateY: currentTop } = calculateNewCoords(coordinateX, coordinateY)
 
     const timer = setTimeout(() => {
-      // const { top: currentAbsTop, left: currentAbsLeft } = ref.current.getBoundingClientRect();
-      // const currentTop = currentAbsTop - fieldTop;
-      // const currentLeft = currentAbsLeft - fieldLeft;
-
-      console.log('left, top', left, top);
-      console.log('currentLeft, currentTop', currentLeft, currentTop);
-
       currentDistance = Math.sqrt(Math.pow((currentTop - top), 2) + Math.pow((currentLeft - left), 2));
 
       const outOfField = projectileIsOutOfField(currentDistance);
@@ -68,7 +50,7 @@ const Projectile = (props) => {
       if (outOfField) {
         onOutOfFiled(id);
 
-        console.log('clearTimeout');
+        //console.log('clearTimeout');
         clearTimeout(timer);
 
         setProjectileState('impact');
@@ -80,14 +62,14 @@ const Projectile = (props) => {
       if (impactedUnit && impactedUnit.value > 0) {
         onImpact(id, impactedUnit.id);
 
-        console.log('clearTimeout');
+        //console.log('clearTimeout');
         clearTimeout(timer);
 
         setProjectileState('impact');
         return;
       }
 
-      setProjectileDistance(currentDistance);
+      ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
       launchProjectile(maxDistance, currentDistance, currentLeft, currentTop);
     }, PROJECTILE_MOVE_DELAY);
   };
@@ -158,18 +140,18 @@ const Projectile = (props) => {
     const { nx: projectileX, ny: projectileY } =
       rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY - distance, angle * -1);
 
-    return unitsMap.find((unitsMapItem) => {
-      if (!unitsMapItem || unitsMapItem.id === parentId) {
-        return false;
-      }
+    let impactedUnit = null;
 
-      const { value } = units[unitsMapItem.index];
+    for (let i = 0; i < potentialTargetsMap.length; ++i) {
+      const potentialTarget = potentialTargetsMap[i];
+
+      const { value } = units[potentialTarget.index];
 
       if (value === 0) {
-        return false;
+        continue;
       }
 
-      const { top: circleY, left: circleX } = unitsMapItem;
+      const { top: circleY, left: circleX } = potentialTarget;
 
       const rectangle = {
         rectangleX: projectileX,
@@ -185,22 +167,21 @@ const Projectile = (props) => {
         radius: unitRadius
       };
 
-      return findIntersection(rectangle, circle);
-    });
+      if (findIntersection(rectangle, circle)) {
+        impactedUnit = potentialTarget;
+        break;
+      }
+    }
+
+    return impactedUnit;
   }
 
   const MAX_DISTANCE = 900;
 
   useEffect(() => {
-    if (projectileState === 'inFlight' || projectileState === 'impact') {
-      return;
-    }
-
-    console.log(`Launch Projectile. ID ${id}. Status ${projectileState}`, '\n\n');
+    console.log(potentialTargetsMap);
     launchProjectile(MAX_DISTANCE);
   }, []);
-
-  console.log('projectileDistance', projectileDistance);
 
   return (
     <div className="projectile"
@@ -209,13 +190,8 @@ const Projectile = (props) => {
       style={{
         top,
         left,
-        // '--angle': `${angle}deg`,
-        // '--distance': `${MAX_DISTANCE * -1}px`,
-        // '--duration': `${MAX_DISTANCE * PROJECTILE_MOVE_DELAY}ms`,
-        // animationPlayState: projectileState === 'inFlight' ? 'running' : 'paused'
-        transform: `rotate(${angle}deg) translateY(${-1 * projectileDistance}px)`
+        transform: `rotate(${angle}deg) translateY(var(--distance))`
       }}
-      data-state={projectileState}
     >
       <div className="projectile-hitBox" />
       {projectileState === 'inFlight' && (
