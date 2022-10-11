@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-
-const PROJECTILE_MOVE_DELAY = 25; //ms per pixel
+import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP } from '../../Config/config';
 
 const Projectile = (props) => {
   const {
@@ -8,21 +7,18 @@ const Projectile = (props) => {
     top,
     left,
     angle,
-    parentId,
     units,
-    unitsMap,
+    potentialTargetsMap,
     fieldInfo,
     onOutOfFiled,
     onImpact,
   } = props;
 
-  const [ projectileDistance, setProjectileDistance ] = useState(0);
-  const projectileDistanceRef = useRef(projectileDistance);
-  projectileDistanceRef.current = projectileDistance;
-
-  const [ projectileState, setProjectileState ] = useState('rest');
+  const [ projectileState, setProjectileState ] = useState('inFlight');
   const projectileStateRef = useRef(projectileState);
   projectileStateRef.current = projectileState;
+
+  const ref = useRef(null);
 
   const computedStyle = getComputedStyle(document.documentElement);
 
@@ -30,40 +26,51 @@ const Projectile = (props) => {
   const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
   const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
 
-  const launchProjectile = (distance, currentDistance = 0 ) => {
-    if (currentDistance >= distance) {
+  const calculateNewCoords = (coordinateX, coordinateY) => {
+    const theAngle = 90 - angle;
+    const newCoordinateX = PROJECTILE_MOVE_STEP * Math.cos(theAngle * Math.PI / 180);
+    const newCoordinateY = PROJECTILE_MOVE_STEP * Math.sin(theAngle * Math.PI / 180);
+
+    return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
+  }
+
+  const launchProjectile = (maxDistance, currentDistance = 0, coordinateX = left, coordinateY = top) => {
+    if (currentDistance >= maxDistance) {
       console.log('Stopped by Steps Limit', id);
       return;
     }
 
-    if (projectileState !== 'inFlight') {
-      setProjectileState('inFlight');
-    }
+    const { coordinateX: currentLeft, coordinateY: currentTop } = calculateNewCoords(coordinateX, coordinateY)
 
-    currentDistance += 1;
+    const timer = setTimeout(() => {
+      currentDistance = Math.sqrt(Math.pow((currentTop - top), 2) + Math.pow((currentLeft - left), 2));
 
-    setTimeout(() => {
       const outOfField = projectileIsOutOfField(currentDistance);
 
       if (outOfField) {
-        setProjectileState('impact');
-
         onOutOfFiled(id);
 
+        //console.log('clearTimeout');
+        clearTimeout(timer);
+
+        setProjectileState('impact');
         return;
       }
 
       const impactedUnit = projectileDidImpact(currentDistance);
-      if (impactedUnit && impactedUnit.value > 0) {
-        setProjectileState('impact');
 
+      if (impactedUnit && impactedUnit.value > 0) {
         onImpact(id, impactedUnit.id);
 
+        //console.log('clearTimeout');
+        clearTimeout(timer);
+
+        setProjectileState('impact');
         return;
       }
 
-      setProjectileDistance(currentDistance);
-      launchProjectile(distance, currentDistance);
+      ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
+      launchProjectile(maxDistance, currentDistance, currentLeft, currentTop);
     }, PROJECTILE_MOVE_DELAY);
   };
 
@@ -133,18 +140,18 @@ const Projectile = (props) => {
     const { nx: projectileX, ny: projectileY } =
       rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY - distance, angle * -1);
 
-    return unitsMap.find((unitsMapItem) => {
-      if (!unitsMapItem || unitsMapItem.id === parentId) {
-        return false;
-      }
+    let impactedUnit = null;
 
-      const { value } = units[unitsMapItem.index];
+    for (let i = 0; i < potentialTargetsMap.length; ++i) {
+      const potentialTarget = potentialTargetsMap[i];
+
+      const { value } = units[potentialTarget.index];
 
       if (value === 0) {
-        return false;
+        continue;
       }
 
-      const { top: circleY, left: circleX } = unitsMapItem;
+      const { top: circleY, left: circleX } = potentialTarget;
 
       const rectangle = {
         rectangleX: projectileX,
@@ -160,28 +167,31 @@ const Projectile = (props) => {
         radius: unitRadius
       };
 
-      return findIntersection(rectangle, circle);
-    });
-  }
-
-  useEffect(() => {
-    if (projectileState === 'inFlight' || projectileState === 'impact') {
-      return;
+      if (findIntersection(rectangle, circle)) {
+        impactedUnit = potentialTarget;
+        break;
+      }
     }
 
-    //console.log(`Launch Projectile. ID ${id}. Status ${projectileState}`, '\n\n');
-    launchProjectile(600);
+    return impactedUnit;
+  }
+
+  const MAX_DISTANCE = 900;
+
+  useEffect(() => {
+    console.log(potentialTargetsMap);
+    launchProjectile(MAX_DISTANCE);
   }, []);
 
   return (
     <div className="projectile"
       id={id}
+      ref={ref}
       style={{
         top,
         left,
-        transform: `rotate(${angle}deg) translateY(${-1 * projectileDistance}px)`
+        transform: `rotate(${angle}deg) translateY(var(--distance))`
       }}
-      data-state={projectileState}
     >
       <div className="projectile-hitBox" />
       {projectileState === 'inFlight' && (

@@ -18,8 +18,17 @@
   justify-content: center;
   flex-direction: column;
   z-index: 100;
-  //transition: all 25ms linear;
   will-change: transform;
+  //animation: passing var(--duration) linear;
+}
+
+@keyframes passing {
+  0% {
+    transform: rotate(var(--angle)) translateY(0);
+  }
+  100% {
+    transform: rotate(var(--angle)) translateY(var(--distance));
+  }
 }
 
 .projectile-hitBox {
