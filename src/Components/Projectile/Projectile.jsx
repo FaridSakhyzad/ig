@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP, MAX_DISTANCE } from '../../Config/config';
+import { PROJECTILE_MOVE_DELAY, MAX_DISTANCE } from '../../Config/config';
+import { rotate, findRectangleCircleIntersection, projectileIsOutOfField } from '../../utils';
 
 const Projectile = (props) => {
   const {
@@ -26,14 +27,6 @@ const Projectile = (props) => {
   const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
   const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
 
-  const calculateNewCoords = (coordinateX, coordinateY) => {
-    const theAngle = 90 - angle;
-    const newCoordinateX = PROJECTILE_MOVE_STEP * Math.cos(theAngle * Math.PI / 180);
-    const newCoordinateY = PROJECTILE_MOVE_STEP * Math.sin(theAngle * Math.PI / 180);
-
-    return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
-  }
-
   const launchProjectile = (maxDistance, currentDistance = 0) => {
     if (currentDistance >= maxDistance) {
       console.log('Stopped by Steps Limit', id);
@@ -43,7 +36,7 @@ const Projectile = (props) => {
     const timer = setTimeout(() => {
       currentDistance += 1;
 
-      const outOfField = projectileIsOutOfField(currentDistance);
+      const outOfField = projectileIsOutOfField(currentDistance, left, top, projectileWidth, projectileHeight, angle, fieldInfo.fieldWidth, fieldInfo.fieldHeight);
 
       if (outOfField) {
         onOutOfFiled(id);
@@ -71,65 +64,6 @@ const Projectile = (props) => {
       launchProjectile(maxDistance, currentDistance);
     }, PROJECTILE_MOVE_DELAY);
   };
-
-  const findRectangleCircleIntersection = (rectangle, circle) => {
-    const { rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle } = rectangle;
-    const { circleX, circleY, radius } = circle;
-
-    const { nx: newCircleX, ny: newCircleY } = rotate(rectangleX, rectangleY, circleX, circleY, angle);
-
-    const centersDistanceX = rectangleX > newCircleX ? rectangleX - newCircleX : newCircleX - rectangleX;
-    const centersDistanceY = rectangleY > newCircleY ? rectangleY - newCircleY : newCircleY - rectangleY;
-
-    if (centersDistanceX >= ((rectangleWidth / 2) + radius)) {
-      return false;
-    }
-
-    if (centersDistanceY >= ((rectangleHeight / 2) + radius)) {
-      return false;
-    }
-
-    const closestCornerX = newCircleX < rectangleX ? rectangleX - (rectangleWidth / 2) : rectangleX + (rectangleWidth / 2);
-    const closestCornerY = newCircleY < rectangleY ? rectangleY - (rectangleHeight / 2) : rectangleX + (rectangleHeight / 2);
-
-    const deltaX = newCircleX < closestCornerX ? newCircleX - closestCornerX : closestCornerX - newCircleX;
-    const deltaY = newCircleY < closestCornerY ? newCircleY - closestCornerY : closestCornerY - newCircleY;
-
-    const cornerDistancePow = Math.pow(deltaX, 2) + Math.pow(deltaY, 2);
-
-    return cornerDistancePow < Math.pow(radius, 2);
-  }
-
-  const rotate = (cx, cy, x, y, angle) => {
-    const radians = (Math.PI / 180) * angle,
-      cos = Math.cos(radians),
-      sin = Math.sin(radians),
-      nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-      ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-
-    return { nx, ny };
-  }
-
-  const projectileIsOutOfField = (distance) => {
-    const projectilePivotX = left;
-    const projectilePivotY = top;
-
-    const { fieldWidth, fieldHeight } = fieldInfo;
-
-    const topLeftX = projectilePivotX - (projectileWidth / 2);
-    const topLeftY = projectilePivotY - (projectileHeight / 2) - distance;
-
-    const topRightX = projectilePivotX + (projectileWidth / 2);
-    const topRightY = projectilePivotY + (projectileHeight / 2) - distance;
-
-    const { nx: topLeftNewX, ny: topLeftNewY } = rotate(projectilePivotX, projectilePivotY, topLeftX, topLeftY, angle * -1);
-    const { nx: topRightNewX, ny: topRightNewY } = rotate(projectilePivotX, projectilePivotY, topRightX, topRightY, angle * -1);
-
-    const topLeftIsOut = topLeftNewX <= 0 || topLeftNewY <= 0 || topLeftNewX >= fieldWidth || topLeftNewY >= fieldHeight;
-    const topRightIsOut = topRightNewX <= 0 || topRightNewY <= 0 || topRightNewX >= fieldWidth || topRightNewY >= fieldHeight;
-
-    return topLeftIsOut || topRightIsOut;
-  }
 
   const projectileDidImpact = (distance) => {
     const projectilePivotX = left;
