@@ -7,7 +7,7 @@ const Unit = ({ turrets, value, maxValue, id, idx, onClickHandler }) => {
         <div className="unit-hitBox" />
         <div className="unit-image" style={{ '--unit-image--radius': `${value * (100 / maxValue) / 2}%` }} />
         {turrets && turrets.map(({ angle, name}, turretIndex) => (
-          <div className={`turret ${name}`} data-name={name} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>
+          <div className={`turret ${name}`} data-name={name} data-index={turretIndex} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>
             <div className="weapon">
               <div className="gunpoint" />
             </div>

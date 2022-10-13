@@ -16,8 +16,6 @@ const Projectile = (props) => {
   } = props;
 
   const [ projectileState, setProjectileState ] = useState('inFlight');
-  const projectileStateRef = useRef(projectileState);
-  projectileStateRef.current = projectileState;
 
   const ref = useRef(null);
 
@@ -122,9 +120,11 @@ const Projectile = (props) => {
         transform: `rotate(${angle}deg) translateY(var(--distance))`
       }}
     >
-      <div className="projectile-hitBox" />
       {projectileState === 'inFlight' && (
-        <div className="projectile-image" />
+        <>
+          <div className="projectile-hitBox" />
+          <div className="projectile-image" />
+        </>
       )}
 
       {projectileState === 'impact' && (

@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 import { UNIT_MIN_VALUE, UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../Config/config';
-import { findCircleLineIntersections } from '../utils';
+import ProjectileLayer from '../Components/ProjectileLayer/ProjectileLayer';
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
@@ -42,8 +41,8 @@ const Playground = () => {
 
   const [ projectiles, setProjectiles ] = useState([]);
 
-  const [ fieldInfo, setFieldInfo ] = useState({});
-  const [ unitsMap, setUnitsMap ] = useState([]);
+  const [ fieldInfo, setFieldInfo ] = useState();
+  const [ unitsMap, setUnitsMap ] = useState();
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
@@ -123,14 +122,6 @@ const Playground = () => {
   const onClick = (e, unitId, unitIndex) => {
     setProjectiles([]);
 
-    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
-
-    const fieldInfo = { fieldTop, fieldLeft, fieldWidth, fieldHeight };
-    const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
-
-    setFieldInfo(fieldInfo);
-    setUnitsMap(unitsMap);
-
     increaseUnitValue(unitId, unitIndex, () => {
       dischargeAllTurrets(unitIndex, unitsMap);
     });
@@ -149,53 +140,44 @@ const Playground = () => {
     });
   }
 
-  const makePotentialTargetsMap = (projectileProps) => {
-    const { parentId, angle, left: projectileLeft, top: projectileTop } = projectileProps;
 
-    const theK = Math.tan((Math.PI / 180) * (90 + angle));
-    const theB = projectileTop - theK * projectileLeft;
-
-    return unitsMap.filter(unit => {
-      const { id, left: circleX, top: circleY } = unit;
-
-      if (id === parentId) {
-        return false;
-      }
-
-      const intersection = findCircleLineIntersections(12, circleX, circleY, theK, theB);
-
-      return intersection.length > 0;
-    });
-  }
 
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
   });
 
+  useEffect(() => {
+    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
+
+    if (!unitsMap) {
+      setUnitsMap(generateUnitsMap(fieldTop, fieldLeft));
+    }
+
+    if (!fieldInfo) {
+      setFieldInfo({ fieldTop, fieldLeft, fieldWidth, fieldHeight });
+    }
+  }, []);
+
   return (
     <div className="field" id="field">
+      {unitsMap && fieldInfo && (
+        <ProjectileLayer
+          units={units}
+          unitsMap={unitsMap}
+          fieldInfo={fieldInfo}
+          onOutOfFiled={onOutOfFiled}
+          onImpact={onImpact}
+        />
+      )}
+
+      {/*
       <div className="projectileLayer">
-        {/*{units.map(({ turrets, id }) => (
-          turrets.map((turret) => (
-            <Projectile
-              id={}
-              top={}
-              left={}
-              angle={}
-              units={units}
-              potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
-              fieldInfo={fieldInfo}
-              onOutOfFiled={onOutOfFiled}
-              onImpact={onImpact}
-            />
-          ))
-        ))}*/}
-        {projectiles && projectiles.map((projectileProps) => (
+        {unitsMap && projectiles && projectiles.map((projectileProps) => (
           <Projectile
             key={projectileProps.id}
             units={units}
-            potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
+            potentialTargetsMap={makePotentialTargetsMap(projectileProps, unitsMap)}
             fieldInfo={fieldInfo}
             onOutOfFiled={onOutOfFiled}
             onImpact={onImpact}
@@ -203,6 +185,7 @@ const Playground = () => {
           />
         ))}
       </div>
+      */}
       <div className="unitLayer">
         {units.map(({ turrets, value, maxValue, id }, index) => (
           <Unit
