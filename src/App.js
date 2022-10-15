@@ -1,3 +1,5 @@
+import React from 'react';
+
 import './App.scss';
 import './Playground/Playground.scss';
 import './Components/Unit/Unit.scss';
