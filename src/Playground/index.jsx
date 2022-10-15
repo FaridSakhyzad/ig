@@ -15,19 +15,19 @@ const MOCK_UNITS = ((m, n) => {
       turrets: [
         {
           name: 'turret1',
-          angle: 1,
+          angle: 0,
         },
         {
           name: 'turret2',
-          angle: 91,
+          angle: 90,
         },
         {
           name: 'turret3',
-          angle: 181,
+          angle: 180,
         },
         {
           name: 'turret4',
-          angle: 271,
+          angle: 270,
         }
       ],
     });
@@ -36,7 +36,10 @@ const MOCK_UNITS = ((m, n) => {
   return result;
 })(MAP_WIDTH, MAP_HEIGHT)
 
+let unitHitBoxRadius;
+
 const Playground = () => {
+
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
   const [ projectiles, setProjectiles ] = useState([]);
@@ -208,10 +211,22 @@ const Playground = () => {
   }
 
   const makePotentialTargetsMap = (projectileProps) => {
-    const { parentId, angle, left: projectileLeft, top: projectileTop } = projectileProps;
+    const { parentId, angle, left: projectileX, top: projectileY } = projectileProps;
+
+    if (angle / 90 % 2 === 0) {
+      return unitsMap.filter(unit => {
+        const { left: circleX } = unit;
+        return Math.abs(circleX - projectileX) <= unitHitBoxRadius;
+      });
+    } else if (angle / 90 % 2 === 1) {
+      return unitsMap.filter(unit => {
+        const { top: circleY } = unit;
+        return Math.abs(circleY - projectileY) <= unitHitBoxRadius;
+      });
+    }
 
     const theK = Math.tan((Math.PI / 180) * (90 + angle));
-    const theB = projectileTop - theK * projectileLeft;
+    const theB = projectileY - theK * projectileX;
 
     return unitsMap.filter(unit => {
       const { id, left: circleX, top: circleY } = unit;
@@ -220,7 +235,7 @@ const Playground = () => {
         return false;
       }
 
-      const intersection = findCircleLineIntersections(12, circleX, circleY, theK, theB);
+      const intersection = findCircleLineIntersections(unitHitBoxRadius, circleX, circleY, theK, theB);
 
       return intersection.length > 0;
     });
@@ -229,37 +244,43 @@ const Playground = () => {
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
-  });
+
+    unitHitBoxRadius = parseInt(getComputedStyle(document.body).getPropertyValue('--unit-hitBox--radius'));
+
+    console.log('unitHitBoxRadius', unitHitBoxRadius);
+  }, []);
 
   return (
-    <div className="field" id="field">
-      <div className="projectileLayer">
-        {projectiles && projectiles.map((projectileProps) => (
-          <Projectile
-            key={projectileProps.id}
-            units={units}
-            potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
-            fieldInfo={fieldInfo}
-            onOutOfFiled={onOutOfFiled}
-            onImpact={onImpact}
-            {...projectileProps}
-          />
-        ))}
+    <>
+      <div className="field" id="field">
+        <div className="projectileLayer">
+          {projectiles && projectiles.map((projectileProps) => (
+            <Projectile
+              key={projectileProps.id}
+              units={units}
+              potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
+              fieldInfo={fieldInfo}
+              onOutOfFiled={onOutOfFiled}
+              onImpact={onImpact}
+              {...projectileProps}
+            />
+          ))}
+        </div>
+        <div className="unitLayer">
+          {units.map(({ turrets, value, maxValue, id }, index) => (
+            <Unit
+              key={id}
+              id={id}
+              idx={index}
+              turrets={turrets}
+              onClickHandler={onClick}
+              value={value}
+              maxValue={maxValue}
+            />
+          ))}
+        </div>
       </div>
-      <div className="unitLayer">
-        {units.map(({ turrets, value, maxValue, id }, index) => (
-          <Unit
-            key={id}
-            id={id}
-            idx={index}
-            turrets={turrets}
-            onClickHandler={onClick}
-            value={value}
-            maxValue={maxValue}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   )
 }
 

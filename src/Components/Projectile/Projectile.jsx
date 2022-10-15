@@ -15,8 +15,6 @@ const Projectile = (props) => {
   } = props;
 
   const [ projectileState, setProjectileState ] = useState('inFlight');
-  const projectileStateRef = useRef(projectileState);
-  projectileStateRef.current = projectileState;
 
   const ref = useRef(null);
 
@@ -34,8 +32,49 @@ const Projectile = (props) => {
     return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
   }
 
-  const launchProjectile = (maxDistance, currentDistance = 0) => {
-    if (currentDistance >= maxDistance) {
+  const moveProjectile = () => {
+    function animate({duration}) {
+
+      let start = performance.now();
+
+      requestAnimationFrame(function animate(time) {
+        // timeFraction изменяется от 0 до 1
+        let timeFraction = (time - start) / duration;
+        if (timeFraction > 1) timeFraction = 1;
+
+        const currentDistance = timeFraction * MAX_DISTANCE;
+
+        const outOfField = projectileIsOutOfField(currentDistance, left, top, projectileWidth, projectileHeight, angle, fieldInfo.fieldWidth, fieldInfo.fieldHeight);
+
+        if (outOfField) {
+          onOutOfFiled(id);
+
+          setProjectileState('impact');
+          return;
+        }
+
+        const impactedUnit = projectileDidImpact(currentDistance);
+
+        if (impactedUnit && impactedUnit.value > 0) {
+          onImpact(id, impactedUnit.id, impactedUnit.index);
+
+          setProjectileState('impact');
+          return;
+        }
+
+        ref.current.style.transform = `rotate(${angle}deg) translateY(${`${-1 * currentDistance}px`})`
+
+        if (timeFraction < 1) {
+          requestAnimationFrame(animate);
+        }
+      });
+    }
+
+    animate({ duration: PROJECTILE_MOVE_DELAY * MAX_DISTANCE });
+  };
+
+  const launchProjectile = (currentDistance = 0) => {
+    if (currentDistance >= MAX_DISTANCE) {
       console.log('Stopped by Steps Limit', id);
       return;
     }
@@ -68,7 +107,7 @@ const Projectile = (props) => {
       }
 
       ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
-      launchProjectile(maxDistance, currentDistance);
+      launchProjectile(currentDistance);
     }, PROJECTILE_MOVE_DELAY);
   };
 
@@ -175,7 +214,7 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    launchProjectile(MAX_DISTANCE);
+    launchProjectile();
   }, []);
 
   return (
@@ -186,6 +225,8 @@ const Projectile = (props) => {
         top,
         left,
         transform: `rotate(${angle}deg) translateY(var(--distance))`
+        // '--angle': `${angle}deg`,
+        // animationPlayState: projectileState === 'inFlight' ? 'running' : 'paused'
       }}
     >
       <div className="projectile-hitBox" />
