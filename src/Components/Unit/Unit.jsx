@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Unit = ({ turrets, value, maxValue, id, idx, onClickHandler }) => {
   return (
@@ -17,5 +18,14 @@ const Unit = ({ turrets, value, maxValue, id, idx, onClickHandler }) => {
     </div>
   )
 }
+
+Unit.propTypes = {
+  turrets: PropTypes.array,
+  value: PropTypes.number,
+  maxValue: PropTypes.number,
+  id: PropTypes.string,
+  idx: PropTypes.number,
+  onClickHandler: PropTypes.func
+};
 
 export default Unit;

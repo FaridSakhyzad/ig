@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { PROJECTILE_MOVE_DELAY, PROJECTILE_MOVE_STEP, MAX_DISTANCE } from '../../Config/config';
+import PropTypes from 'prop-types';
 
 const Projectile = (props) => {
   const {
@@ -24,7 +25,7 @@ const Projectile = (props) => {
   const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
   const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
 
-  const calculateNewCoords = (coordinateX, coordinateY) => {
+  const calculateNewCoords = (coordinateX, coordinateY) => { // eslint-disable-line
     const theAngle = 90 - angle;
     const newCoordinateX = PROJECTILE_MOVE_STEP * Math.cos(theAngle * Math.PI / 180);
     const newCoordinateY = PROJECTILE_MOVE_STEP * Math.sin(theAngle * Math.PI / 180);
@@ -32,7 +33,7 @@ const Projectile = (props) => {
     return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
   }
 
-  const moveProjectile = () => {
+  const moveProjectile = () => { // eslint-disable-line
     function animate({duration}) {
 
       let start = performance.now();
@@ -240,5 +241,17 @@ const Projectile = (props) => {
     </div>
   )
 }
+
+Projectile.propTypes = {
+  id: PropTypes.string,
+  top: PropTypes.number,
+  left: PropTypes.number,
+  angle: PropTypes.number,
+  units: PropTypes.array,
+  potentialTargetsMap: PropTypes.array,
+  fieldInfo: PropTypes.object,
+  onOutOfFiled: PropTypes.func,
+  onImpact: PropTypes.func,
+};
 
 export default Projectile;

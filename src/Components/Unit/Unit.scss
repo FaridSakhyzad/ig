@@ -1,6 +1,6 @@
 :root {
   --unit-width: 32px;
-  --unit-hitBox--radius: 12px;
+  --unit-hitBox--radius: 1px;
 }
 
 .unit-pivot {
@@ -99,7 +99,7 @@
 .weapon {
   width: 2px;
   height: 2px;
-  background: blue;
+  //background: blue;
   position: absolute;
   bottom: 2px;
   left: 0;

@@ -138,7 +138,7 @@ const Playground = () => {
     });
   }
 
-  const onOutOfFiled = (projectileId) => {
+  const onOutOfFiled = (projectileId) => { // eslint-disable-line
     //console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
   }
 
@@ -184,7 +184,7 @@ const Playground = () => {
     return [];
   }
 
-  function doesLineInterceptCircle(A, B, C, radius) {
+  function doesLineInterceptCircle(A, B, C, radius) { // eslint-disable-line
     var dist;
     const v1x = B.x - A.x;
     const v1y = B.y - A.y;
