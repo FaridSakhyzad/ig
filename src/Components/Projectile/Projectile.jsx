@@ -79,24 +79,20 @@ const Projectile = (props) => {
       const outOfField = projectileIsOutOfField(currentDistance);
 
       if (outOfField) {
-        onOutOfFiled(id);
-
-        //console.log('clearTimeout');
         clearTimeout(timer);
-
         setProjectileState('impact');
+
+        onOutOfFiled(id);
         return;
       }
 
       const impactedUnit = projectileDidImpact(currentDistance);
 
       if (impactedUnit && impactedUnit.value > 0) {
-        onImpact(id, impactedUnit.id, impactedUnit.index);
-
-        //console.log('clearTimeout');
         clearTimeout(timer);
-
         setProjectileState('impact');
+
+        onImpact(id, impactedUnit.id, impactedUnit.index);
         return;
       }
 
