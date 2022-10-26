@@ -13,6 +13,7 @@ const MOCK_UNITS = ((m, n) => {
       minValue: UNIT_MIN_VALUE,
       maxValue: UNIT_MAX_VALUE,
       value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+      angle: 0,
       turrets: [
         {
           name: 'turret1',
@@ -40,7 +41,6 @@ const MOCK_UNITS = ((m, n) => {
 let unitHitBoxRadius;
 
 const Playground = () => {
-
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
   const [ projectiles, setProjectiles ] = useState([]);
@@ -57,7 +57,7 @@ const Playground = () => {
 
       const turretsData = [];
 
-      const { turrets, value } = units[index];
+      const { turrets, angle: unitAngle, value } = units[index];
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
@@ -70,7 +70,7 @@ const Playground = () => {
           turretName,
           gunpointTop: gunpointTop - fieldTop,
           gunpointLeft: gunpointLeft - fieldLeft,
-          angle,
+          angle: unitAngle + angle,
         })
       });
 
@@ -207,13 +207,14 @@ const Playground = () => {
           ))}
         </div>
         <div className="unitLayer">
-          {units.map(({ turrets, value, maxValue, id }, index) => (
+          {units.map(({ turrets, angle, value, maxValue, id }, index) => (
             <Unit
               key={id}
               id={id}
               idx={index}
               turrets={turrets}
               onClickHandler={onClick}
+              angle={angle}
               value={value}
               maxValue={maxValue}
             />
