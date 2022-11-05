@@ -5,7 +5,7 @@ import './Playground/Playground.scss';
 import './Components/Unit/Unit.scss';
 import './Components/Projectile/Projectile.scss';
 
-import Playground from './Playground';
+import Playground from './Playground/Playground';
 
 function App() {
   return (

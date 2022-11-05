@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Unit = ({ turrets, value, angle, maxValue, id, idx, onClickHandler }) => {
+const Unit = ({ id, type, turrets, value, angle, maxValue,  idx, onClickHandler }) => {
   return (
-    <div className="unit-pivot" id={id} data-index={idx} style={{ transform: `rotate(${angle}deg)` }}>
+    <div className={`unit-pivot ${type}`} id={id} data-index={idx} style={{ transform: `rotate(${angle}deg)` }}>
       <div className="unit" onClick={(e) => onClickHandler(e, id, idx)}>
         <div className="unit-hitBox" />
         <div className="unit-image" style={{ '--unit-image--radius': `${value * (100 / maxValue) / 2}%` }} />
@@ -21,13 +21,14 @@ const Unit = ({ turrets, value, angle, maxValue, id, idx, onClickHandler }) => {
 }
 
 Unit.propTypes = {
-  turrets: PropTypes.array,
+  id: PropTypes.string,
+  type: PropTypes.string,
   value: PropTypes.number,
   angle: PropTypes.number,
   maxValue: PropTypes.number,
-  id: PropTypes.string,
-  idx: PropTypes.number,
-  onClickHandler: PropTypes.func
+  turrets: PropTypes.array,
+  onClickHandler: PropTypes.func,
+  idx: PropTypes.number
 };
 
 export default Unit;

@@ -55,6 +55,12 @@
   border-radius: 3px 3px 0 0;
 }
 
+.laser {
+  .projectile-image {
+    background: #FF4D00;
+  }
+}
+
 .projectile-explosion {
   width: calc(var(--projectile-explosion--radius) * 2);
   min-width: calc(var(--projectile-explosion--radius) * 2);

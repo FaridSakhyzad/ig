@@ -10,9 +10,10 @@ const MOCK_UNITS = ((m, n) => {
   for (let i = 0; i < m * n; i++) {
     result.push({
       id: Math.random().toString(16).substring(2),
+      type: 'default',
       minValue: UNIT_MIN_VALUE,
       maxValue: UNIT_MAX_VALUE,
-      value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+      value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
       angle: 0,
       turrets: [
         {
@@ -33,6 +34,51 @@ const MOCK_UNITS = ((m, n) => {
         }
       ],
     });
+  }
+
+  result[MAP_WIDTH + 3] = {
+    id: Math.random().toString(16).substring(2),
+    type: 'wall',
+    minValue: UNIT_MIN_VALUE,
+    maxValue: UNIT_MAX_VALUE,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+    angle: 0,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default'},
+      { name: 'turret2', angle: 90, type: 'default' },
+      { name: 'turret3', angle: 180, type: 'default' },
+      { name: 'turret4', angle: 270, type: 'default' }
+    ],
+  }
+
+  result[MAP_WIDTH * 3 + 3] = {
+    id: Math.random().toString(16).substring(2),
+    type: 'hidden',
+    minValue: UNIT_MIN_VALUE,
+    maxValue: UNIT_MAX_VALUE,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+    angle: 0,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default' },
+      { name: 'turret2', angle: 90, type: 'default' },
+      { name: 'turret3', angle: 180, type: 'default' },
+      { name: 'turret4', angle: 270, type: 'default' }
+    ],
+  }
+
+  result[MAP_WIDTH * 7 + 3] = {
+    id: Math.random().toString(16).substring(2),
+    type: 'laser',
+    minValue: UNIT_MIN_VALUE,
+    maxValue: UNIT_MAX_VALUE,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+    angle: 0,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'laser' },
+      { name: 'turret2', angle: 90, type: 'laser' },
+      { name: 'turret3', angle: 180, type: 'laser' },
+      { name: 'turret4', angle: 270, type: 'laser' }
+    ],
   }
 
   return result;
@@ -57,25 +103,29 @@ const Playground = () => {
 
       const turretsData = [];
 
-      const { turrets, angle: unitAngle, value } = units[index];
+      const { turrets, angle: unitAngle, value, type } = units[index];
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
         const { name: turretName } = turret.dataset;
         const { top: gunpointTop, left: gunpointLeft } = gunpoint.getBoundingClientRect();
 
-        const { angle } = turrets.find(({ name }) => (name === turretName));
+        const { angle, type } = turrets.find(({ name }) => (name === turretName));
+
+        console.log('type', type);
 
         turretsData.push({
           turretName,
           gunpointTop: gunpointTop - fieldTop,
           gunpointLeft: gunpointLeft - fieldLeft,
           angle: unitAngle + angle,
+          type,
         })
       });
 
       return {
         id: unit.id,
+        type,
         index: parseInt(index, 10),
         value,
         top: top - fieldTop,
@@ -89,7 +139,7 @@ const Playground = () => {
     const { turrets } = unitsMap[unitIndex];
 
     turrets.forEach(turret => {
-      const { gunpointTop: top, gunpointLeft: left, angle } = turret;
+      const { gunpointTop: top, gunpointLeft: left, angle, type } = turret;
 
       const id = Math.random().toString(16).substring(2);
 
@@ -98,6 +148,7 @@ const Playground = () => {
         top,
         left,
         angle,
+        type
       });
     })
 
@@ -144,12 +195,14 @@ const Playground = () => {
   }
 
   const onImpact = (projectileId, impactedUnitId, impactedUnitIndex) => {
-    console.log('impactedUnitId', impactedUnitId);
-    console.log(`Impact! Projectile Id ${projectileId} Projectiles:`, projectiles);
+    //console.log('impactedUnitId', impactedUnitId);
+    // console.log(`Impact! Projectile Id ${projectileId} Projectiles:`, projectiles);
 
-    increaseUnitValue(impactedUnitId, impactedUnitIndex, () => {
-      dischargeAllTurrets(impactedUnitIndex, unitsMap);
-    });
+    if (units[impactedUnitIndex].type !== 'wall') {
+      increaseUnitValue(impactedUnitId, impactedUnitIndex, () => {
+        dischargeAllTurrets(impactedUnitIndex, unitsMap);
+      });
+    }
   }
 
   const makePotentialTargetsMap = (projectileProps) => {
@@ -207,16 +260,17 @@ const Playground = () => {
           ))}
         </div>
         <div className="unitLayer">
-          {units.map(({ turrets, angle, value, maxValue, id }, index) => (
+          {units.map(({ id, type, angle, value, maxValue, turrets }, index) => (
             <Unit
               key={id}
               id={id}
-              idx={index}
-              turrets={turrets}
-              onClickHandler={onClick}
+              type={type}
               angle={angle}
               value={value}
               maxValue={maxValue}
+              turrets={turrets}
+              onClickHandler={onClick}
+              idx={index}
             />
           ))}
         </div>

@@ -9,6 +9,7 @@ const Projectile = (props) => {
     top,
     left,
     angle,
+    type,
     units,
     potentialTargetsMap,
     fieldInfo,
@@ -88,7 +89,7 @@ const Projectile = (props) => {
 
       const impactedUnit = projectileDidImpact(currentDistance);
 
-      if (impactedUnit && impactedUnit.value > 0) {
+      if (impactedUnit && impactedUnit.value > 0 && impactedUnit.type !== 'hidden') {
         clearTimeout(timer);
         setProjectileState('impact');
 
@@ -170,7 +171,7 @@ const Projectile = (props) => {
   }, []);
 
   return (
-    <div className="projectile"
+    <div className={`projectile ${type}`}
       id={id}
       ref={ref}
       style={{
@@ -197,6 +198,7 @@ Projectile.propTypes = {
   id: PropTypes.string,
   top: PropTypes.number,
   left: PropTypes.number,
+  type: PropTypes.string,
   angle: PropTypes.number,
   units: PropTypes.array,
   potentialTargetsMap: PropTypes.array,

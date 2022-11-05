@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(211, 211, 211, 0);
+  outline: 1px solid rgba(211, 211, 211, 1);
   position: relative;
 }
 
@@ -55,6 +55,26 @@
   border-radius: 50%;
   transition: all 0.1s ease-out;
   opacity: 0.3;
+}
+
+.wall {
+  .unit-image {
+    background: rgb(192, 192, 192);
+    opacity: 1;
+  }
+}
+
+.hidden {
+  .unit-image {
+    opacity: 0.1;
+  }
+}
+
+.laser {
+  .unit-image {
+    background: #FF4D00;
+    opacity: 1;
+  }
 }
 
 .turret {
