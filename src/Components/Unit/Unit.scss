@@ -77,6 +77,13 @@
   }
 }
 
+.bobomb {
+  .unit-image {
+    background: yellow;
+    opacity: 1;
+  }
+}
+
 .turret {
   width: 4px;
   height: 4px;
@@ -88,32 +95,6 @@
   right: 0;
   top: 0;
   bottom: 0;
-
-  /*
-  &.turret1 {
-    top: calc(50% - 4px);
-    left: 0;
-    right: 0;
-  }
-
-  &.turret2 {
-    top: 0;
-    bottom: 0;
-    right: calc(50% - 4px);
-  }
-
-  &.turret3 {
-    bottom: calc(50% - 4px);
-    left: 0;
-    right: 0;
-  }
-
-  &.turret4 {
-    top: 0;
-    bottom: 0;
-    left: calc(50% - 4px);
-  }
-  */
 }
 
 .weapon {

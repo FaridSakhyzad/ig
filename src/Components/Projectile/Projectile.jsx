@@ -9,7 +9,8 @@ const Projectile = (props) => {
     top,
     left,
     angle,
-    type,
+    type: projectileType,
+    maxDistance,
     units,
     potentialTargetsMap,
     fieldInfo,
@@ -33,7 +34,6 @@ const Projectile = (props) => {
       let start = performance.now();
 
       requestAnimationFrame(function animate(time) {
-        // timeFraction изменяется от 0 до 1
         let timeFraction = (time - start) / duration;
         if (timeFraction > 1) timeFraction = 1;
 
@@ -68,9 +68,15 @@ const Projectile = (props) => {
     animate({ duration: PROJECTILE_MOVE_DELAY * MAX_DISTANCE });
   };
 
+  let impactedUnitId = null;
+
   const launchProjectile = (currentDistance = 0) => {
-    if (currentDistance >= MAX_DISTANCE) {
-      console.log('Stopped by Steps Limit', id);
+    const maxDist = maxDistance || MAX_DISTANCE;
+
+    if (currentDistance >= maxDist) {
+      impactedUnitId = null;
+      setProjectileState('impact');
+
       return;
     }
 
@@ -89,12 +95,60 @@ const Projectile = (props) => {
 
       const impactedUnit = projectileDidImpact(currentDistance);
 
-      if (impactedUnit && impactedUnit.value > 0 && impactedUnit.type !== 'hidden') {
-        clearTimeout(timer);
-        setProjectileState('impact');
+      if (impactedUnit && impactedUnitId !== impactedUnit.id) {
+        const { id, type: impactedUnitType } = impactedUnit;
 
-        onImpact(id, impactedUnit.id, impactedUnit.index);
-        return;
+        impactedUnitId = id;
+
+        if (impactedUnitType === 'default') {
+          if (projectileType === 'default') {
+            if (impactedUnit.value > 0) {
+              clearTimeout(timer);
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+              return;
+            }
+          }
+
+          if (projectileType === 'laser') {
+            if (impactedUnit.value > 0) {
+              onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+            }
+          }
+        }
+
+        if (impactedUnitType === 'wall') {
+          clearTimeout(timer);
+          impactedUnitId = null;
+          setProjectileState('impact');
+
+          onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+          return;
+        }
+
+        if (impactedUnitType === 'laser') {
+          if (projectileType === 'laser') {
+            clearTimeout(timer);
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+            return;
+          }
+        }
+
+        if (impactedUnitType === 'default') {
+          if (projectileType === 'bobomb') {
+            clearTimeout(timer);
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+            return;
+          }
+        }
       }
 
       ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
@@ -171,7 +225,7 @@ const Projectile = (props) => {
   }, []);
 
   return (
-    <div className={`projectile ${type}`}
+    <div className={`projectile ${projectileType}`}
       id={id}
       ref={ref}
       style={{
@@ -199,6 +253,7 @@ Projectile.propTypes = {
   top: PropTypes.number,
   left: PropTypes.number,
   type: PropTypes.string,
+  maxDistance: PropTypes.number,
   angle: PropTypes.number,
   units: PropTypes.array,
   potentialTargetsMap: PropTypes.array,

@@ -59,6 +59,20 @@
   .projectile-image {
     background: #FF4D00;
   }
+
+  .projectile-explosion {
+    background: red;
+  }
+}
+
+.bobomb {
+  .projectile-image {
+    background: yellow;
+  }
+
+  .projectile-explosion {
+    background: yellow;
+  }
 }
 
 .projectile-explosion {
@@ -69,7 +83,7 @@
   position: absolute;
   margin: auto;
   border-radius: 50%;
-  background: red;
+  background: #4733ff;
   animation: explosion 0.3s ease;
   opacity: 0;
   scale: 0;
