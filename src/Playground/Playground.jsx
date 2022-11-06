@@ -39,6 +39,21 @@ const MOCK_UNITS = ((m, n) => {
     ],
   }
 
+  result[MAP_WIDTH * 1 + 4] = {
+    id: Math.random().toString(16).substring(2),
+    type: 'hidden',
+    minValue: UNIT_MIN_VALUE,
+    maxValue: UNIT_MAX_VALUE,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+    angle: 0,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default' },
+      { name: 'turret2', angle: 90, type: 'default' },
+      { name: 'turret3', angle: 180, type: 'default' },
+      { name: 'turret4', angle: 270, type: 'default' }
+    ],
+  }
+
   result[MAP_WIDTH * 2 + 2] = {
     id: Math.random().toString(16).substring(2),
     type: 'bobomb',
@@ -252,6 +267,11 @@ const Playground = () => {
         });
       },
       wall: () => {},
+      hidden: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, unitsMap);
+        });
+      },
       laser: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
