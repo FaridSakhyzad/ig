@@ -11,6 +11,7 @@ const Projectile = (props) => {
     angle,
     type: projectileType,
     maxDistance,
+    speed,
     units,
     potentialTargetsMap,
     fieldInfo,
@@ -153,7 +154,7 @@ const Projectile = (props) => {
 
       ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
       launchProjectile(currentDistance);
-    }, PROJECTILE_MOVE_DELAY);
+    }, speed);
   };
 
   const projectileIsOutOfField = (distance) => {
@@ -254,6 +255,7 @@ Projectile.propTypes = {
   left: PropTypes.number,
   type: PropTypes.string,
   maxDistance: PropTypes.number,
+  speed: PropTypes.number,
   angle: PropTypes.number,
   units: PropTypes.array,
   potentialTargetsMap: PropTypes.array,

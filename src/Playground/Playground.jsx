@@ -1,151 +1,160 @@
 import React, {useEffect, useState} from 'react';
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
-import { UNIT_MIN_VALUE, UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../Config/config';
+import {UNIT_MIN_VALUE, UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT, PROJECTILE_MOVE_DELAY} from '../Config/config';
 import { findCircleLineIntersections } from '../utils';
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
 
+  const defaults = {
+    type: 'default',
+    minValue: UNIT_MIN_VALUE,
+    maxValue: UNIT_MAX_VALUE,
+    angle: 0,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY, }
+    ],
+  }
+
   for (let i = 0; i < m * n; i++) {
     result.push({
+      ...defaults,
       id: Math.random().toString(16).substring(2),
-      type: 'default',
-      minValue: UNIT_MIN_VALUE,
-      maxValue: UNIT_MAX_VALUE,
       value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-      angle: 0,
-      turrets: [
-        { name: 'turret1', angle: 0, type: 'default' },
-        { name: 'turret2', angle: 90, type: 'default' },
-        { name: 'turret3', angle: 180, type: 'default' },
-        { name: 'turret4', angle: 270, type: 'default' }
-      ],
     });
   }
 
   result[MAP_WIDTH * 1 + 3] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'wall',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'default' },
-      { name: 'turret2', angle: 90, type: 'default' },
-      { name: 'turret3', angle: 180, type: 'default' },
-      { name: 'turret4', angle: 270, type: 'default' }
-    ],
   }
 
   result[MAP_WIDTH * 1 + 4] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'hidden',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'default' },
-      { name: 'turret2', angle: 90, type: 'default' },
-      { name: 'turret3', angle: 180, type: 'default' },
-      { name: 'turret4', angle: 270, type: 'default' }
-    ],
   }
 
   result[MAP_WIDTH * 2 + 2] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'bobomb',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
     turrets: [
-      { name: 'turret1', angle: 0, type: 'bobomb', maxDistance: 34 },
-      { name: 'turret2', angle: 45, type: 'bobomb', maxDistance: Math.abs(34 / Math.cos(45 * Math.PI / 180)) },
-      { name: 'turret3', angle: 90, type: 'bobomb', maxDistance: 34 },
-      { name: 'turret4', angle: 135, type: 'bobomb', maxDistance: Math.abs(34 / Math.cos(135 * Math.PI / 180)) },
-      { name: 'turret5', angle: 180, type: 'bobomb', maxDistance: 34 },
-      { name: 'turret6', angle: 225, type: 'bobomb', maxDistance: Math.abs(34 / Math.cos(225 * Math.PI / 180)) },
-      { name: 'turret7', angle: 270, type: 'bobomb', maxDistance: 34 },
-      { name: 'turret8', angle: 315, type: 'bobomb', maxDistance: Math.abs(34 / Math.cos(315 * Math.PI / 180)) }
+      {
+        name: 'turret1',
+        angle: 0,
+        type: 'bobomb',
+        maxDistance: 34,
+        speed: 15
+      },
+      {
+        name: 'turret2',
+        angle: 45,
+        type: 'bobomb',
+        maxDistance: Math.abs(34 / Math.cos(45 * Math.PI / 180)),
+        speed: Math.abs(15 * Math.cos(45 * Math.PI / 180))
+      },
+      {
+        name: 'turret3',
+        angle: 90,
+        type: 'bobomb',
+        maxDistance: 34,
+        speed: 15
+      },
+      {
+        name: 'turret4',
+        angle: 135,
+        type: 'bobomb',
+        maxDistance: Math.abs(34 / Math.cos(135 * Math.PI / 180)),
+        speed: Math.abs(15 * Math.cos(135 * Math.PI / 180))
+      },
+      {
+        name: 'turret5',
+        angle: 180,
+        type: 'bobomb',
+        maxDistance: 34,
+        speed: 15
+      },
+      {
+        name: 'turret6',
+        angle: 225,
+        type: 'bobomb',
+        maxDistance: Math.abs(34 / Math.cos(225 * Math.PI / 180)),
+        speed: Math.abs(15 * Math.cos(225 * Math.PI / 180)),
+      },
+      {
+        name: 'turret7',
+        angle: 270,
+        type: 'bobomb',
+        maxDistance: 34,
+        speed: 15
+      },
+      {
+        name: 'turret8',
+        angle: 315,
+        type: 'bobomb',
+        maxDistance: Math.abs(34 / Math.cos(315 * Math.PI / 180)),
+        speed: Math.abs(15 * Math.cos(315 * Math.PI / 180))
+      }
     ],
   }
 
-
   result[MAP_WIDTH * 3 + 3] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
-    type: 'default',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
     value: 1,
-    angle: 0,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'default' },
-      { name: 'turret2', angle: 90, type: 'default' },
-      { name: 'turret3', angle: 180, type: 'default' },
-      { name: 'turret4', angle: 270, type: 'default' }
-    ],
   }
 
   result[MAP_WIDTH * 3 + 5] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
+    value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
     turrets: [
-      { name: 'turret1', angle: 0, type: 'laser' },
-      { name: 'turret2', angle: 90, type: 'laser' },
-      { name: 'turret3', angle: 180, type: 'laser' },
-      { name: 'turret4', angle: 270, type: 'laser' }
+      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
     ],
   }
 
   result[MAP_WIDTH * 4 + 3] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
-    type: 'default',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
     value: 1,
-    angle: 0,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'default' },
-      { name: 'turret2', angle: 90, type: 'default' },
-      { name: 'turret3', angle: 180, type: 'default' },
-      { name: 'turret4', angle: 270, type: 'default' }
-    ],
   }
 
   result[MAP_WIDTH * 4 + 5] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
+    value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
     turrets: [
-      { name: 'turret1', angle: 0, type: 'laser' },
-      { name: 'turret2', angle: 90, type: 'laser' },
-      { name: 'turret3', angle: 180, type: 'laser' },
-      { name: 'turret4', angle: 270, type: 'laser' }
+      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
     ],
   }
 
   result[MAP_WIDTH * MAP_HEIGHT - MAP_WIDTH] = {
+    ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    angle: 0,
+    value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
     turrets: [
-      { name: 'turret1', angle: 0, type: 'laser' },
-      { name: 'turret2', angle: 90, type: 'laser' },
-      { name: 'turret3', angle: 180, type: 'laser' },
-      { name: 'turret4', angle: 270, type: 'laser' }
+      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
     ],
   }
 
@@ -178,7 +187,7 @@ const Playground = () => {
         const { name: turretName } = turret.dataset;
         const { top: gunpointTop, left: gunpointLeft } = gunpoint.getBoundingClientRect();
 
-        const { angle, type, maxDistance } = turrets.find(({ name }) => (name === turretName));
+        const { angle, type, maxDistance, speed } = turrets.find(({ name }) => (name === turretName));
 
         turretsData.push({
           turretName,
@@ -187,6 +196,7 @@ const Playground = () => {
           angle: unitAngle + angle,
           type,
           maxDistance,
+          speed,
         })
       });
 
@@ -206,7 +216,7 @@ const Playground = () => {
     const { turrets } = unitsMap[unitIndex];
 
     turrets.forEach(turret => {
-      const { gunpointTop: top, gunpointLeft: left, angle, type, maxDistance } = turret;
+      const { gunpointTop: top, gunpointLeft: left, angle, type, maxDistance, speed } = turret;
 
       const id = Math.random().toString(16).substring(2);
 
@@ -217,6 +227,7 @@ const Playground = () => {
         angle,
         type,
         maxDistance,
+        speed,
       });
     })
 
