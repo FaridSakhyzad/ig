@@ -11,6 +11,7 @@ const MOCK_UNITS = ((m, n) => {
     type: 'default',
     minValue: UNIT_MIN_VALUE,
     maxValue: UNIT_MAX_VALUE,
+    valueCountable: true,
     angle: 0,
     turrets: [
       { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
@@ -32,6 +33,7 @@ const MOCK_UNITS = ((m, n) => {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'wall',
+    valueCountable: false,
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
 
@@ -162,6 +164,7 @@ const MOCK_UNITS = ((m, n) => {
 })(MAP_WIDTH, MAP_HEIGHT)
 
 let unitHitBoxRadius;
+let projectileExplosionDuration;
 let actingProjectilesNumber = 0;
 
 const Playground = () => {
@@ -303,9 +306,16 @@ const Playground = () => {
     callbacks[units[unitIndex].type]();
   }
 
-  const detectUserLoss = () => {
-    console.log('\ndetectUserLoss. actingProjectilesNumber:', actingProjectilesNumber);
-    //console.log(units);
+  const detectGameOutcome = () => {
+    console.log('\ndetectGameOutcome. actingProjectilesNumber:', actingProjectilesNumber);
+
+    if (actingProjectilesNumber !== 0) {
+      return;
+    }
+
+    if (!units.some((unit) => unit.valueCountable && unit.value > 0)) {
+      setTimeout(() => { alert('You win') }, projectileExplosionDuration + 300);
+    }
   }
 
   const onOutOfFiled = () => { // eslint-disable-line
@@ -313,7 +323,7 @@ const Playground = () => {
 
     --actingProjectilesNumber;
     console.log('onOutOfFiled. decrease actingProjectilesNumber');
-    detectUserLoss();
+    detectGameOutcome();
   }
 
   const onImpact = (projectileType, impactedUnitIndex) => {
@@ -364,7 +374,7 @@ const Playground = () => {
 
     callbacks[units[impactedUnitIndex].type]();
 
-    detectUserLoss();
+    detectGameOutcome();
   }
 
   const makePotentialTargetsMap = (projectileProps) => {
@@ -403,6 +413,7 @@ const Playground = () => {
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
 
     unitHitBoxRadius = parseInt(getComputedStyle(document.body).getPropertyValue('--unit-hitBox--radius'));
+    projectileExplosionDuration = parseFloat(getComputedStyle(document.body).getPropertyValue('--projectile-explosion--duration')) * 1000;
   }, []);
 
   return (

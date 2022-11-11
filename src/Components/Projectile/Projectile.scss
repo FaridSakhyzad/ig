@@ -6,6 +6,7 @@
   --projectile-image--height: 4px;
 
   --projectile-explosion--radius: 5px;
+  --projectile-explosion--duration: 0.3s;
 }
 
 .projectile {
@@ -84,7 +85,7 @@
   margin: auto;
   border-radius: 50%;
   background: #4733ff;
-  animation: explosion 0.3s ease;
+  animation: explosion var(--projectile-explosion--duration) ease;
   opacity: 0;
   scale: 0;
 }

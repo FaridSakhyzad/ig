@@ -38,6 +38,8 @@ const Projectile = (props) => {
       impactedUnitId = null;
       setProjectileState('impact');
 
+      onOutOfFiled(id);
+
       return;
     }
 
