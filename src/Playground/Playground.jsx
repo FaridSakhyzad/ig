@@ -237,8 +237,6 @@ const Playground = () => {
 
     actingProjectilesNumber += turrets.length;
 
-    console.log('dischargeAllTurrets. actingProjectilesNumber ', actingProjectilesNumber);
-
     setProjectiles(projectiles);
   }
 
@@ -307,8 +305,6 @@ const Playground = () => {
   }
 
   const detectGameOutcome = () => {
-    console.log('\ndetectGameOutcome. actingProjectilesNumber:', actingProjectilesNumber);
-
     if (actingProjectilesNumber !== 0) {
       return;
     }
@@ -319,16 +315,12 @@ const Playground = () => {
   }
 
   const onOutOfFiled = () => { // eslint-disable-line
-    //console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
-
     --actingProjectilesNumber;
-    console.log('onOutOfFiled. decrease actingProjectilesNumber');
+
     detectGameOutcome();
   }
 
   const onImpact = (projectileType, impactedUnitIndex) => {
-    console.log('onImpact. decrease actingProjectilesNumber');
-
     const callbacks = {
       default: () => {
         if (projectileType === 'default') {
