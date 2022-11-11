@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { PROJECTILE_MOVE_DELAY, MAX_DISTANCE } from '../../Config/config';
+import { MAX_DISTANCE } from '../../Config/config';
 import { findRectangleCircleIntersection, rotate } from '../../utils';
 
 const Projectile = (props) => {
@@ -28,46 +28,6 @@ const Projectile = (props) => {
   const unitRadius = parseInt(computedStyle.getPropertyValue('--unit-hitBox--radius'), 10);
   const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
   const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
-
-  const moveProjectile = () => { // eslint-disable-line
-    function animate({duration}) {
-
-      let start = performance.now();
-
-      requestAnimationFrame(function animate(time) {
-        let timeFraction = (time - start) / duration;
-        if (timeFraction > 1) timeFraction = 1;
-
-        const currentDistance = timeFraction * MAX_DISTANCE;
-
-        const outOfField = projectileIsOutOfField(currentDistance, left, top, projectileWidth, projectileHeight, angle, fieldInfo.fieldWidth, fieldInfo.fieldHeight);
-
-        if (outOfField) {
-          onOutOfFiled(id);
-
-          setProjectileState('impact');
-          return;
-        }
-
-        const impactedUnit = projectileDidImpact(currentDistance);
-
-        if (impactedUnit && impactedUnit.value > 0) {
-          onImpact(id, impactedUnit.id, impactedUnit.index);
-
-          setProjectileState('impact');
-          return;
-        }
-
-        ref.current.style.transform = `rotate(${angle}deg) translateY(${`${-1 * currentDistance}px`})`
-
-        if (timeFraction < 1) {
-          requestAnimationFrame(animate);
-        }
-      });
-    }
-
-    animate({ duration: PROJECTILE_MOVE_DELAY * MAX_DISTANCE });
-  };
 
   let impactedUnitId = null;
 
@@ -108,14 +68,14 @@ const Projectile = (props) => {
               impactedUnitId = null;
               setProjectileState('impact');
 
-              onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index);
               return;
             }
           }
 
           if (projectileType === 'laser') {
             if (impactedUnit.value > 0) {
-              onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index);
             }
           }
         }
@@ -125,7 +85,7 @@ const Projectile = (props) => {
           impactedUnitId = null;
           setProjectileState('impact');
 
-          onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+          onImpact(projectileType, impactedUnit.index);
           return;
         }
 
@@ -135,7 +95,7 @@ const Projectile = (props) => {
             impactedUnitId = null;
             setProjectileState('impact');
 
-            onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+            onImpact(projectileType, impactedUnit.index);
             return;
           }
         }
@@ -146,7 +106,7 @@ const Projectile = (props) => {
             impactedUnitId = null;
             setProjectileState('impact');
 
-            onImpact(projectileType, impactedUnit.id, impactedUnit.index);
+            onImpact(projectileType, impactedUnit.index);
             return;
           }
         }

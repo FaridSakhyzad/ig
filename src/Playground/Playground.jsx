@@ -59,7 +59,7 @@ const MOCK_UNITS = ((m, n) => {
         name: 'turret2',
         angle: 45,
         type: 'bobomb',
-        maxDistance: Math.abs(34 / Math.cos(45 * Math.PI / 180)),
+        maxDistance: Math.abs(33 / Math.cos(45 * Math.PI / 180)),
         speed: Math.abs(15 * Math.cos(45 * Math.PI / 180))
       },
       {
@@ -73,7 +73,7 @@ const MOCK_UNITS = ((m, n) => {
         name: 'turret4',
         angle: 135,
         type: 'bobomb',
-        maxDistance: Math.abs(34 / Math.cos(135 * Math.PI / 180)),
+        maxDistance: Math.abs(33 / Math.cos(135 * Math.PI / 180)),
         speed: Math.abs(15 * Math.cos(135 * Math.PI / 180))
       },
       {
@@ -87,7 +87,7 @@ const MOCK_UNITS = ((m, n) => {
         name: 'turret6',
         angle: 225,
         type: 'bobomb',
-        maxDistance: Math.abs(34 / Math.cos(225 * Math.PI / 180)),
+        maxDistance: Math.abs(33 / Math.cos(225 * Math.PI / 180)),
         speed: Math.abs(15 * Math.cos(225 * Math.PI / 180)),
       },
       {
@@ -101,7 +101,7 @@ const MOCK_UNITS = ((m, n) => {
         name: 'turret8',
         angle: 315,
         type: 'bobomb',
-        maxDistance: Math.abs(34 / Math.cos(315 * Math.PI / 180)),
+        maxDistance: Math.abs(33 / Math.cos(315 * Math.PI / 180)),
         speed: Math.abs(15 * Math.cos(315 * Math.PI / 180))
       }
     ],
@@ -162,6 +162,7 @@ const MOCK_UNITS = ((m, n) => {
 })(MAP_WIDTH, MAP_HEIGHT)
 
 let unitHitBoxRadius;
+let actingProjectilesNumber = 0;
 
 const Playground = () => {
   const [ units, setUnits ] = useState(MOCK_UNITS);
@@ -231,6 +232,10 @@ const Playground = () => {
       });
     })
 
+    actingProjectilesNumber += turrets.length;
+
+    console.log('dischargeAllTurrets. actingProjectilesNumber ', actingProjectilesNumber);
+
     setProjectiles(projectiles);
   }
 
@@ -298,14 +303,27 @@ const Playground = () => {
     callbacks[units[unitIndex].type]();
   }
 
-  const onOutOfFiled = () => { // eslint-disable-line
-    //console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
+  const detectUserLoss = () => {
+    console.log('\ndetectUserLoss. actingProjectilesNumber:', actingProjectilesNumber);
+    //console.log(units);
   }
 
-  const onImpact = (projectileType, impactedUnitId, impactedUnitIndex) => {
+  const onOutOfFiled = () => { // eslint-disable-line
+    //console.log(`Out of field. Projectile Id: ${projectileId}. Projectiles`, projectiles);
+
+    --actingProjectilesNumber;
+    console.log('onOutOfFiled. decrease actingProjectilesNumber');
+    detectUserLoss();
+  }
+
+  const onImpact = (projectileType, impactedUnitIndex) => {
+    console.log('onImpact. decrease actingProjectilesNumber');
+
     const callbacks = {
       default: () => {
         if (projectileType === 'default') {
+          --actingProjectilesNumber;
+
           setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
           });
@@ -318,18 +336,26 @@ const Playground = () => {
         }
 
         if (projectileType === 'bobomb') {
+          --actingProjectilesNumber;
+
           setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
           });
         }
       },
-      wall: () => {},
+      wall: () => {
+        --actingProjectilesNumber;
+      },
       laser: () => {
+        --actingProjectilesNumber;
+
         setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
         });
       },
       bobomb: () => {
+        --actingProjectilesNumber;
+
         setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
         });
@@ -337,6 +363,8 @@ const Playground = () => {
     }
 
     callbacks[units[impactedUnitIndex].type]();
+
+    detectUserLoss();
   }
 
   const makePotentialTargetsMap = (projectileProps) => {
@@ -378,38 +406,36 @@ const Playground = () => {
   }, []);
 
   return (
-    <>
-      <div className="field" id="field">
-        <div className="projectileLayer">
-          {projectiles && projectiles.map((projectileProps) => (
-            <Projectile
-              key={projectileProps.id}
-              units={units}
-              potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
-              fieldInfo={fieldInfo}
-              onOutOfFiled={onOutOfFiled}
-              onImpact={onImpact}
-              {...projectileProps}
-            />
-          ))}
-        </div>
-        <div className="unitLayer">
-          {units.map(({ id, type, angle, value, maxValue, turrets }, index) => (
-            <Unit
-              key={id}
-              id={id}
-              type={type}
-              angle={angle}
-              value={value}
-              maxValue={maxValue}
-              turrets={turrets}
-              onClickHandler={onClick}
-              idx={index}
-            />
-          ))}
-        </div>
+    <div className="field" id="field">
+      <div className="projectileLayer">
+        {projectiles && projectiles.map((projectileProps) => (
+          <Projectile
+            key={projectileProps.id}
+            units={units}
+            potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
+            fieldInfo={fieldInfo}
+            onOutOfFiled={onOutOfFiled}
+            onImpact={onImpact}
+            {...projectileProps}
+          />
+        ))}
       </div>
-    </>
+      <div className="unitLayer">
+        {units.map(({ id, type, angle, value, maxValue, turrets }, index) => (
+          <Unit
+            key={id}
+            id={id}
+            type={type}
+            angle={angle}
+            value={value}
+            maxValue={maxValue}
+            turrets={turrets}
+            onClickHandler={onClick}
+            idx={index}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 
