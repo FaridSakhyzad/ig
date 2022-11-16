@@ -163,10 +163,6 @@ const MOCK_UNITS = ((m, n) => {
   return result;
 })(MAP_WIDTH, MAP_HEIGHT)
 
-let unitHitBoxRadius;
-let projectileExplosionDuration;
-let actingProjectilesNumber = 0;
-
 const Playground = () => {
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
@@ -174,6 +170,8 @@ const Playground = () => {
 
   const [ fieldInfo, setFieldInfo ] = useState({});
   const [ unitsMap, setUnitsMap ] = useState([]);
+
+  const [ moves, setMoves ] = useState(10);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
@@ -235,7 +233,7 @@ const Playground = () => {
       });
     })
 
-    actingProjectilesNumber += turrets.length;
+    Playground.actingProjectilesNumber += turrets.length;
 
     setProjectiles(projectiles);
   }
@@ -254,7 +252,17 @@ const Playground = () => {
     setUnits(newUnits);
   }
 
+  const detectUserMoveOutcome = (moves) => {
+    if (Playground.actingProjectilesNumber === 0 && moves <= 0) {
+      setTimeout(() => { alert('On Click You Loose') }, 300);
+    }
+  }
+
   const onClick = (e, unitId, unitIndex) => {
+    if (Playground.actingProjectilesNumber > 0) {
+      return;
+    }
+
     setProjectiles([]);
 
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
@@ -277,27 +285,41 @@ const Playground = () => {
       newValue = UNIT_MAX_VALUE;
     }
 
+    const newMoves = moves - 1;
+
+    if (!shiftKey && !altKey) {
+      setMoves(newMoves);
+    }
+
     const callbacks = {
       default: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
         });
+
+        detectUserMoveOutcome(newMoves);
       },
       wall: () => {},
       hidden: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
         });
+
+        detectUserMoveOutcome(newMoves);
       },
       laser: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
         });
+
+        detectUserMoveOutcome(newMoves);
       },
       bobomb: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
         });
+
+        detectUserMoveOutcome(newMoves);
       },
     }
 
@@ -305,17 +327,24 @@ const Playground = () => {
   }
 
   const detectGameOutcome = () => {
-    if (actingProjectilesNumber !== 0) {
+    if (Playground.actingProjectilesNumber !== 0) {
       return;
     }
 
-    if (!units.some((unit) => unit.valueCountable && unit.value > 0)) {
-      setTimeout(() => { alert('You win') }, projectileExplosionDuration + 300);
+    const unitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
+
+    if (moves < 1 && unitsLeft) {
+      setTimeout(() => { alert('You Loose') }, Playground.projectileExplosionDuration + 300)
+      return;
+    }
+
+    if (moves > 0 && !unitsLeft) {
+      setTimeout(() => { alert('You win') }, Playground.projectileExplosionDuration + 300);
     }
   }
 
-  const onOutOfFiled = () => { // eslint-disable-line
-    --actingProjectilesNumber;
+  const onOutOfFiled = () => {
+    --Playground.actingProjectilesNumber;
 
     detectGameOutcome();
   }
@@ -324,7 +353,7 @@ const Playground = () => {
     const callbacks = {
       default: () => {
         if (projectileType === 'default') {
-          --actingProjectilesNumber;
+          --Playground.actingProjectilesNumber;
 
           setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
@@ -338,7 +367,7 @@ const Playground = () => {
         }
 
         if (projectileType === 'bobomb') {
-          --actingProjectilesNumber;
+          --Playground.actingProjectilesNumber;
 
           setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
@@ -346,17 +375,17 @@ const Playground = () => {
         }
       },
       wall: () => {
-        --actingProjectilesNumber;
+        --Playground.actingProjectilesNumber;
       },
       laser: () => {
-        --actingProjectilesNumber;
+        --Playground.actingProjectilesNumber;
 
         setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
         });
       },
       bobomb: () => {
-        --actingProjectilesNumber;
+        --Playground.actingProjectilesNumber;
 
         setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
@@ -375,12 +404,12 @@ const Playground = () => {
     if (angle / 90 % 2 === 0) {
       return unitsMap.filter(unit => {
         const { left: circleX } = unit;
-        return Math.abs(circleX - projectileX) <= unitHitBoxRadius;
+        return Math.abs(circleX - projectileX) <= Playground.unitHitBoxRadius;
       });
     } else if (angle / 90 % 2 === 1) {
       return unitsMap.filter(unit => {
         const { top: circleY } = unit;
-        return Math.abs(circleY - projectileY) <= unitHitBoxRadius;
+        return Math.abs(circleY - projectileY) <= Playground.unitHitBoxRadius;
       });
     }
 
@@ -394,7 +423,7 @@ const Playground = () => {
         return false;
       }
 
-      const intersection = findCircleLineIntersections(unitHitBoxRadius, circleX, circleY, theK, theB);
+      const intersection = findCircleLineIntersections(Playground.unitHitBoxRadius, circleX, circleY, theK, theB);
 
       return intersection.length > 0;
     });
@@ -404,11 +433,14 @@ const Playground = () => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
 
-    unitHitBoxRadius = parseInt(getComputedStyle(document.body).getPropertyValue('--unit-hitBox--radius'));
-    projectileExplosionDuration = parseFloat(getComputedStyle(document.body).getPropertyValue('--projectile-explosion--duration')) * 1000;
+    Playground.unitHitBoxRadius = parseInt(getComputedStyle(document.body).getPropertyValue('--unit-hitBox--radius'));
+
+    Playground.projectileExplosionDuration = parseFloat(getComputedStyle(document.body).getPropertyValue('--projectile-explosion--duration')) * 1000;
   }, []);
 
   return (
+    <>
+    <h1>{moves}</h1>
     <div className="field" id="field">
       <div className="projectileLayer">
         {projectiles && projectiles.map((projectileProps) => (
@@ -439,7 +471,11 @@ const Playground = () => {
         ))}
       </div>
     </div>
+    </>
   )
 }
+
+Playground.projectileExplosionDuration = 0;
+Playground.actingProjectilesNumber = 0;
 
 export default Playground;
