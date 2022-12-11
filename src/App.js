@@ -1,4 +1,6 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 import './App.scss';
 import './Playground/Playground.scss';
@@ -9,9 +11,11 @@ import Playground from './Playground/Playground';
 
 function App() {
   return (
-    <div className="app">
-      <Playground />
-    </div>
+    <Provider store={store}>
+      <div className="app">
+        <Playground />
+      </div>
+    </Provider>
   );
 }
 

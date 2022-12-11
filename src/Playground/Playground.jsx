@@ -1,4 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleLogo } from '../redux/ui/actions';
+
 import Projectile from '../Components/Projectile/Projectile';
 import Unit from '../Components/Unit/Unit';
 import {UNIT_MIN_VALUE, UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT, PROJECTILE_MOVE_DELAY} from '../Config/config';
@@ -164,6 +167,10 @@ const MOCK_UNITS = ((m, n) => {
 })(MAP_WIDTH, MAP_HEIGHT)
 
 const Playground = () => {
+  const dispatch = useDispatch();
+  const { ui }  = useSelector(state => state);
+  const { showLogo } = ui;
+
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
   const [ projectiles, setProjectiles ] = useState([]);
@@ -438,9 +445,17 @@ const Playground = () => {
     Playground.projectileExplosionDuration = parseFloat(getComputedStyle(document.body).getPropertyValue('--projectile-explosion--duration')) * 1000;
   }, []);
 
+  const handleToggleLogo = () => {
+    dispatch(toggleLogo(!showLogo));
+  }
+
   return (
     <>
+    {showLogo && (
+      <hr />
+    )}
     <h1>{moves}</h1>
+    <button onClick={handleToggleLogo}>asdf</button>
     <div className="field" id="field">
       <div className="projectileLayer">
         {projectiles && projectiles.map((projectileProps) => (
