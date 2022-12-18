@@ -101,6 +101,7 @@ const Playground = () => {
       newUnits[unitIndex].value = minValue;
     } else {
       newUnits[unitIndex].value = newValue;
+      newUnits[unitIndex].exploding = false;
     }
 
     setUnits(newUnits);
@@ -158,6 +159,7 @@ const Playground = () => {
       hidden: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
+          explodeUnit(unitIndex);
         });
 
         detectUserMoveOutcome(newMoves);
@@ -165,6 +167,7 @@ const Playground = () => {
       laser: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
+          explodeUnit(unitIndex);
         });
 
         detectUserMoveOutcome(newMoves);
@@ -172,6 +175,7 @@ const Playground = () => {
       bobomb: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
+          explodeUnit(unitIndex);
         });
 
         detectUserMoveOutcome(newMoves);
@@ -212,12 +216,14 @@ const Playground = () => {
 
           setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
           });
         }
 
         if (projectileType === 'laser') {
           setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
           });
         }
 
@@ -226,6 +232,7 @@ const Playground = () => {
 
           setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
           });
         }
       },
@@ -237,6 +244,7 @@ const Playground = () => {
 
         setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
         });
       },
       bobomb: () => {
@@ -244,6 +252,7 @@ const Playground = () => {
 
         setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
         });
       },
     }
