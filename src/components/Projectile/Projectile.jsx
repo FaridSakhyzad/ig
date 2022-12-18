@@ -63,8 +63,8 @@ const Projectile = (props) => {
 
         impactedUnitId = id;
 
-        if (impactedUnitType === 'default') {
-          if (projectileType === 'default') {
+        if (projectileType === 'default') {
+          if (impactedUnitType === 'default') {
             if (impactedUnit.value > 0) {
               clearTimeout(timer);
               impactedUnitId = null;
@@ -74,11 +74,25 @@ const Projectile = (props) => {
               return;
             }
           }
+          if (impactedUnitType === 'portal') {
+            console.log('OLOLO');
+          }
+        }
 
-          if (projectileType === 'laser') {
+        if (projectileType === 'laser') {
+          if (impactedUnitType === 'default') {
             if (impactedUnit.value > 0) {
               onImpact(projectileType, impactedUnit.index);
             }
+          }
+
+          if (impactedUnitType === 'laser') {
+            clearTimeout(timer);
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.index);
+            return;
           }
         }
 
@@ -91,19 +105,8 @@ const Projectile = (props) => {
           return;
         }
 
-        if (impactedUnitType === 'laser') {
-          if (projectileType === 'laser') {
-            clearTimeout(timer);
-            impactedUnitId = null;
-            setProjectileState('impact');
-
-            onImpact(projectileType, impactedUnit.index);
-            return;
-          }
-        }
-
-        if (impactedUnitType === 'default') {
-          if (projectileType === 'bobomb') {
+        if (projectileType === 'bobomb') {
+          if (impactedUnitType === 'default') {
             clearTimeout(timer);
             impactedUnitId = null;
             setProjectileState('impact');

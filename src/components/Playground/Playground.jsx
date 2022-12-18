@@ -113,6 +113,16 @@ const Playground = () => {
     }
   }
 
+  const setNewMovesCount = (altKey, shiftKey) => {
+    const newMoves = moves - 1;
+
+    if (!shiftKey && !altKey) {
+      setMoves(newMoves);
+    }
+
+    return newMoves;
+  }
+
   const onClick = (e, unitId, unitIndex) => {
     if (Playground.actingProjectilesNumber > 0) {
       return;
@@ -140,12 +150,6 @@ const Playground = () => {
       newValue = UNIT_MAX_VALUE;
     }
 
-    const newMoves = moves - 1;
-
-    if (!shiftKey && !altKey) {
-      setMoves(newMoves);
-    }
-
     const callbacks = {
       default: () => {
         setUnitValue(unitIndex, newValue, () => {
@@ -153,6 +157,7 @@ const Playground = () => {
           explodeUnit(unitIndex);
         });
 
+        const newMoves = setNewMovesCount();
         detectUserMoveOutcome(newMoves);
       },
       wall: () => {},
@@ -163,6 +168,7 @@ const Playground = () => {
           explodeUnit(unitIndex);
         });
 
+        const newMoves = setNewMovesCount();
         detectUserMoveOutcome(newMoves);
       },
       laser: () => {
@@ -171,6 +177,7 @@ const Playground = () => {
           explodeUnit(unitIndex);
         });
 
+        const newMoves = setNewMovesCount();
         detectUserMoveOutcome(newMoves);
       },
       bobomb: () => {
@@ -179,6 +186,7 @@ const Playground = () => {
           explodeUnit(unitIndex);
         });
 
+        const newMoves = setNewMovesCount();
         detectUserMoveOutcome(newMoves);
       },
     }
