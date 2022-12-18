@@ -19,7 +19,7 @@ const Playground = () => {
   const [ fieldInfo, setFieldInfo ] = useState({});
   const [ unitsMap, setUnitsMap ] = useState([]);
 
-  const [ moves, setMoves ] = useState(10);
+  const [ moves, setMoves ] = useState(1000);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
@@ -328,7 +328,7 @@ const Playground = () => {
           <Projectile
             key={projectileProps.id}
             units={units}
-            potentialTargetsMap={makePotentialTargetsMap(projectileProps)}
+            potentialTargetsMap={unitsMap}
             fieldInfo={fieldInfo}
             onOutOfFiled={onOutOfFiled}
             onImpact={onImpact}

@@ -1,4 +1,4 @@
-export const MAX_DISTANCE = 900;
+export const SAFE_MAX_DISTANCE = 900;
 export const UNIT_MIN_VALUE = 0;
 export const UNIT_MAX_VALUE = 4;
 export const UNIT_EXPLOSION_DURATION = 300;

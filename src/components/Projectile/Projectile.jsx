@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { MAX_DISTANCE } from '../../Config/config';
-import { findRectangleCircleIntersection, rotate } from '../../utils';
+import { SAFE_MAX_DISTANCE } from '../../Config/config';
+import {calculateNewCoords, findRectangleCircleIntersection, rotate} from '../../utils';
 
 const Projectile = (props) => {
   const {
@@ -31,8 +31,8 @@ const Projectile = (props) => {
 
   let impactedUnitId = null;
 
-  const launchProjectile = (currentDistance = 0) => {
-    const maxDist = maxDistance || MAX_DISTANCE;
+  const launchProjectile = (currentDistance = 0, currentX = 0, currentY = 0, currentAngle = angle) => {
+    const maxDist = maxDistance || SAFE_MAX_DISTANCE;
 
     if (currentDistance >= maxDist) {
       impactedUnitId = null;
@@ -45,8 +45,12 @@ const Projectile = (props) => {
 
     const timer = setTimeout(() => {
       currentDistance += 1;
+      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle);
+      let newX = coordinateX;
+      let newY = coordinateY;
+      let newAngle = currentAngle;
 
-      const outOfField = projectileIsOutOfField(currentDistance);
+      const outOfField = projectileIsOutOfField(left + newX, top + newY);
 
       if (outOfField) {
         clearTimeout(timer);
@@ -56,7 +60,7 @@ const Projectile = (props) => {
         return;
       }
 
-      const impactedUnit = projectileDidImpact(currentDistance);
+      const impactedUnit = projectileDidImpact(left + newX, top + newY);
 
       if (impactedUnit && impactedUnitId !== impactedUnit.id) {
         const { id, type: impactedUnitType } = impactedUnit;
@@ -75,7 +79,9 @@ const Projectile = (props) => {
             }
           }
           if (impactedUnitType === 'portal') {
-            console.log('OLOLO');
+            newAngle += 45;
+            // newX = -100;
+            // newY = -100;
           }
         }
 
@@ -117,22 +123,21 @@ const Projectile = (props) => {
         }
       }
 
-      ref.current.style.setProperty('--distance', `${-1 * currentDistance}px`);
-      launchProjectile(currentDistance);
+      ref.current.style.setProperty('--offset-x', `${newX}px`);
+      ref.current.style.setProperty('--offset-y', `${newY}px`);
+
+      launchProjectile(currentDistance, newX, newY, newAngle);
     }, speed);
   };
 
-  const projectileIsOutOfField = (distance) => {
-    const projectilePivotX = left;
-    const projectilePivotY = top;
-
+  const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {
     const { fieldWidth, fieldHeight } = fieldInfo;
 
     const topLeftX = projectilePivotX - (projectileWidth / 2);
-    const topLeftY = projectilePivotY - (projectileHeight / 2) - distance;
+    const topLeftY = projectilePivotY - (projectileHeight / 2);
 
     const topRightX = projectilePivotX + (projectileWidth / 2);
-    const topRightY = projectilePivotY + (projectileHeight / 2) - distance;
+    const topRightY = projectilePivotY + (projectileHeight / 2);
 
     const { nx: topLeftNewX, ny: topLeftNewY } = rotate(projectilePivotX, projectilePivotY, topLeftX, topLeftY, angle * -1);
     const { nx: topRightNewX, ny: topRightNewY } = rotate(projectilePivotX, projectilePivotY, topRightX, topRightY, angle * -1);
@@ -143,12 +148,9 @@ const Projectile = (props) => {
     return topLeftIsOut || topRightIsOut;
   }
 
-  const projectileDidImpact = (distance) => {
-    const projectilePivotX = left;
-    const projectilePivotY = top;
-
+  const projectileDidImpact = (projectilePivotX, projectilePivotY) => {
     const { nx: projectileX, ny: projectileY } =
-      rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY - distance, angle * -1);
+      rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
 
     let impactedUnit = null;
 
@@ -197,9 +199,7 @@ const Projectile = (props) => {
       style={{
         top,
         left,
-        transform: `rotate(${angle}deg) translateY(var(--distance))`
-        // '--angle': `${angle}deg`,
-        // animationPlayState: projectileState === 'inFlight' ? 'running' : 'paused'
+        transform: `translate(var(--offset-x), var(--offset-y)) rotate(${angle}deg)`
       }}
     >
       <div className="projectile-hitBox" />
