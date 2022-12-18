@@ -83,11 +83,18 @@
   }
 }
 
+.portal {
+  .unit-image {
+    background: orange;
+    opacity: 1;
+  }
+}
+
 .unit-image__exploding {
   width: 100%!important;
   height: 100%!important;
   transform: scale(1);
-  animation: explode 0.3s ease;
+  animation: explode var(--unit-image--explosion-duration) ease;
   animation-fill-mode: forwards;
 }
 

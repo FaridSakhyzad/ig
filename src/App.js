@@ -3,11 +3,11 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 import './App.scss';
-import './Playground/Playground.scss';
+import './components/Playground/Playground.scss';
 import './components/Unit/Unit.scss';
 import './components/Projectile/Projectile.scss';
 
-import Playground from './Playground/Playground';
+import Playground from './components/Playground/Playground';
 
 function App() {
   const [ currentScreen, setCurrentScreen ] = useState('playground');

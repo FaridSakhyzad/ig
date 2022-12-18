@@ -1,4 +1,4 @@
-import {MAP_HEIGHT, MAP_WIDTH, PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from '../Config/config';
+import {MAP_HEIGHT, MAP_WIDTH, PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from '../../Config/config';
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];
@@ -154,6 +154,14 @@ const MOCK_UNITS = ((m, n) => {
       { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
       { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
     ],
+  }
+
+  result[(MAP_WIDTH - 2) * MAP_HEIGHT - MAP_WIDTH + 2] = {
+    ...defaults,
+    id: Math.random().toString(16).substring(2),
+    type: 'portal',
+    value: UNIT_MAX_VALUE,
+    turrets: [],
   }
 
   return result;

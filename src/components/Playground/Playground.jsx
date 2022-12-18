@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleLogo } from '../redux/ui/actions';
-import Projectile from '../components/Projectile/Projectile';
-import Unit from '../components/Unit/Unit';
-import { findCircleLineIntersections } from '../utils';
-import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../Config/config';
+import { toggleLogo } from '../../redux/ui/actions';
+import Projectile from '../Projectile/Projectile';
+import Unit from '../Unit/Unit';
+import { findCircleLineIntersections } from '../../utils';
+import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../Config/config';
 import MOCK_UNITS from './mockUnits';
 
 const Playground = () => {
@@ -101,7 +101,6 @@ const Playground = () => {
       newUnits[unitIndex].value = minValue;
     } else {
       newUnits[unitIndex].value = newValue;
-      newUnits[unitIndex].exploding = false;
     }
 
     setUnits(newUnits);
@@ -156,6 +155,7 @@ const Playground = () => {
         detectUserMoveOutcome(newMoves);
       },
       wall: () => {},
+      portal: () => {},
       hidden: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, unitsMap);
