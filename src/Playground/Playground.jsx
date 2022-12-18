@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleLogo } from '../redux/ui/actions';
 
-import Projectile from '../Components/Projectile/Projectile';
-import Unit from '../Components/Unit/Unit';
+import Projectile from '../components/Projectile/Projectile';
+import Unit from '../components/Unit/Unit';
 import {UNIT_MIN_VALUE, UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT, PROJECTILE_MOVE_DELAY} from '../Config/config';
 import { findCircleLineIntersections } from '../utils';
 
