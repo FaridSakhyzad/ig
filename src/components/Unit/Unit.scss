@@ -83,6 +83,24 @@
   }
 }
 
+.unit-image__exploding {
+  width: 100%!important;
+  height: 100%!important;
+  transform: scale(1);
+  animation: explode 0.3s ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
 .turret {
   width: 4px;
   height: 4px;

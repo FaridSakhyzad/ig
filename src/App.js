@@ -10,7 +10,7 @@ import './components/Projectile/Projectile.scss';
 import Playground from './Playground/Playground';
 
 function App() {
-  const [ currentScreen, setCurrentScreen ] = useState('menu');
+  const [ currentScreen, setCurrentScreen ] = useState('playground');
 
   const handleStartClick = () => {
     setCurrentScreen('playground');
