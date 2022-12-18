@@ -101,6 +101,7 @@ const Playground = () => {
       newUnits[unitIndex].value = minValue;
     } else {
       newUnits[unitIndex].value = newValue;
+      newUnits[unitIndex].exploding = false;
     }
 
     setUnits(newUnits);
