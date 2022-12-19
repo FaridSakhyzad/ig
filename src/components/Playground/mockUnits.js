@@ -156,12 +156,29 @@ const MOCK_UNITS = ((m, n) => {
     ],
   }
 
+  const portal1id = Math.random().toString(16).substring(2);
+  const portal2id = Math.random().toString(16).substring(2);
+
   result[(MAP_WIDTH - 2) * MAP_HEIGHT - MAP_WIDTH + 2] = {
     ...defaults,
-    id: Math.random().toString(16).substring(2),
+    id: portal1id,
     type: 'portal',
     value: UNIT_MAX_VALUE,
     turrets: [],
+    meta: {
+      siblingId: portal2id,
+    }
+  }
+
+  result[(MAP_WIDTH - 4) * MAP_HEIGHT - MAP_WIDTH + 7] = {
+    ...defaults,
+    id: portal2id,
+    type: 'portal',
+    value: UNIT_MAX_VALUE,
+    turrets: [],
+    meta: {
+      siblingId: portal1id,
+    }
   }
 
   return result;

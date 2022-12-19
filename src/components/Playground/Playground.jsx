@@ -30,7 +30,7 @@ const Playground = () => {
 
       const turretsData = [];
 
-      const { turrets, angle: unitAngle, value, type } = units[index];
+      const { turrets, angle: unitAngle, value, type, meta } = units[index];
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
@@ -58,6 +58,7 @@ const Playground = () => {
         top: top - fieldTop,
         left: left - fieldLeft,
         turrets: turretsData,
+        meta,
       };
     })
   }

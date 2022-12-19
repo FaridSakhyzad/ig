@@ -79,9 +79,12 @@ const Projectile = (props) => {
             }
           }
           if (impactedUnitType === 'portal') {
-            newAngle += 45;
-            // newX = -100;
-            // newY = -100;
+            const { top: entranceTop, left: entranceLeft, meta: { siblingId } } = impactedUnit;
+            const { top: exitTop, left: exitLeft } = potentialTargetsMap.find(({ id }) => id === siblingId);
+            const offsetTop = exitTop - entranceTop;
+            const offsetLeft = exitLeft - entranceLeft;
+            newX = newX + offsetLeft;
+            newY = newY + offsetTop;
           }
         }
 
