@@ -79,12 +79,19 @@ const Projectile = (props) => {
             }
           }
           if (impactedUnitType === 'portal') {
-            const { top: entranceTop, left: entranceLeft, meta: { siblingId } } = impactedUnit;
-            const { top: exitTop, left: exitLeft } = potentialTargetsMap.find(({ id }) => id === siblingId);
+            const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
+            const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
             const offsetTop = exitTop - entranceTop;
             const offsetLeft = exitLeft - entranceLeft;
-            newX = newX + offsetLeft;
-            newY = newY + offsetTop;
+            const offsetAngle = exitAngle - entranceAngle;
+
+            const comingInAngle = 360 - Math.abs(entranceAngle) - newAngle;
+
+            if (comingInAngle > 0 && comingInAngle < 180) {
+              newX = newX + offsetLeft + 1;
+              newY = newY + offsetTop + 1;
+              newAngle = newAngle + offsetAngle;
+            }
           }
         }
 
@@ -128,6 +135,7 @@ const Projectile = (props) => {
 
       ref.current.style.setProperty('--offset-x', `${newX}px`);
       ref.current.style.setProperty('--offset-y', `${newY}px`);
+      ref.current.style.setProperty('--angle', `${newAngle}deg`);
 
       launchProjectile(currentDistance, newX, newY, newAngle);
     }, speed);
@@ -202,7 +210,7 @@ const Projectile = (props) => {
       style={{
         top,
         left,
-        transform: `translate(var(--offset-x), var(--offset-y)) rotate(${angle}deg)`
+        transform: `translate(var(--offset-x), var(--offset-y)) rotate(var(--angle))`
       }}
     >
       <div className="projectile-hitBox" />

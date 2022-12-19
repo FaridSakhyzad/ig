@@ -58,6 +58,7 @@ const Playground = () => {
         top: top - fieldTop,
         left: left - fieldLeft,
         turrets: turretsData,
+        angle: unitAngle,
         meta,
       };
     })

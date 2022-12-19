@@ -165,6 +165,7 @@ const MOCK_UNITS = ((m, n) => {
     type: 'portal',
     value: UNIT_MAX_VALUE,
     turrets: [],
+    angle: -45,
     meta: {
       siblingId: portal2id,
     }
@@ -176,6 +177,7 @@ const MOCK_UNITS = ((m, n) => {
     type: 'portal',
     value: UNIT_MAX_VALUE,
     turrets: [],
+    angle: 45,
     meta: {
       siblingId: portal1id,
     }
