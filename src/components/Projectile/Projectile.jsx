@@ -48,7 +48,7 @@ const Projectile = (props) => {
       const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle);
       let newX = coordinateX;
       let newY = coordinateY;
-      let newAngle = currentAngle;
+      let projectileAngle = currentAngle;
 
       const outOfField = projectileIsOutOfField(left + newX, top + newY);
 
@@ -85,12 +85,13 @@ const Projectile = (props) => {
             const offsetLeft = exitLeft - entranceLeft;
             const offsetAngle = exitAngle - entranceAngle;
 
-            const comingInAngle = 360 - Math.abs(entranceAngle) - newAngle;
+            const projectileAngleNormalized = projectileAngle - 180;
+            const projectileAngleRelativeToEntrance = projectileAngleNormalized - entranceAngle;
 
-            if (comingInAngle > 0 && comingInAngle < 180) {
-              newX = newX + offsetLeft + 1;
-              newY = newY + offsetTop + 1;
-              newAngle = newAngle + offsetAngle;
+            if (Math.abs(projectileAngleRelativeToEntrance) < 90) {
+              newX = newX + offsetLeft;
+              newY = newY + offsetTop;
+              projectileAngle = projectileAngleRelativeToEntrance + exitAngle;
             }
           }
         }
@@ -135,9 +136,9 @@ const Projectile = (props) => {
 
       ref.current.style.setProperty('--offset-x', `${newX}px`);
       ref.current.style.setProperty('--offset-y', `${newY}px`);
-      ref.current.style.setProperty('--angle', `${newAngle}deg`);
+      ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
 
-      launchProjectile(currentDistance, newX, newY, newAngle);
+      launchProjectile(currentDistance, newX, newY, projectileAngle);
     }, speed);
   };
 
