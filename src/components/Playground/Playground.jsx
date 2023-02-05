@@ -22,11 +22,11 @@ const Playground = () => {
   const [ moves, setMoves ] = useState(1000);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
-    return [ ...document.querySelectorAll('.unit-pivot') ].map(unit => {
+    return [ ...document.querySelectorAll('.unit') ].map(unit => {
       const { dataset } = unit;
       const { index } = dataset;
 
-      const { top, left } = unit.getBoundingClientRect();
+      const { top, left } = unit.querySelector('.unit-pivot').getBoundingClientRect();
 
       const turretsData = [];
 

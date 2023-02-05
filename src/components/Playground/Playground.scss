@@ -1,21 +1,27 @@
 :root {
   --map-width: 3;
   --map-height: 3;
+  --field-padding: 0;
 }
 
 .field {
+  width: 100%;
+  aspect-ratio: 1;
   margin: auto;
-  padding: 10px;
+  padding: var(--field-padding);
   outline: 1px solid rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
 .unitLayer {
+  height: 100%;
+  --grid-cell-width: calc(100% / var(--map-width));
+  --grid-cell-height: calc(100% / var(--map-height));
   display: grid;
-  grid-template-columns: repeat(var(--map-width), var(--unit-width));
-  grid-template-rows: repeat(var(--map-height), var(--unit-width));
-  grid-row-gap: 2px;
-  grid-column-gap: 2px;
+  grid-template-columns: repeat(var(--map-width), var(--grid-cell-width));
+  grid-template-rows: repeat(var(--map-height), var(--grid-cell-height));
+  align-items: center;
+  justify-items: center;
 }
 
 .projectileLayer {

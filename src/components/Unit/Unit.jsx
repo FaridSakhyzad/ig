@@ -5,17 +5,21 @@ import { UNIT_EXPLOSION_DURATION } from '../../Config/config';
 
 const Unit = ({ id, type, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
-    <div className={`unit-pivot ${type}`} id={id} data-index={idx} style={{ transform: `rotate(${angle}deg)` }}>
-      <div className="unit" onClick={(e) => onClickHandler(e, id, idx)}>
-        <div className="unit-hitBox" />
+    <div
+      className={`unit ${type}`}
+      id={id}
+      data-index={idx}
+      onClick={(e) => onClickHandler(e, id, idx)}
+      style={{ transform: `rotate(${angle}deg)` }}
+    >
+      <div className="unit-pivot">
         <div
           className={classnames('unit-image', { 'unit-image__exploding': exploding })}
           style={{
-            '--unit-image--radius': `${value * (100 / maxValue) / 2}%`,
+            '--unit-image--width': `${value * (100 / maxValue) / 2}%`,
             '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms`
         }}
         />
-
         {turrets && turrets.map(({ angle, name}, turretIndex) => (
           <div className={`turret ${name}`} data-name={name} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>
             <div className="weapon">
@@ -23,6 +27,8 @@ const Unit = ({ id, type, turrets, value, angle, maxValue, idx, onClickHandler, 
             </div>
           </div>
         ))}
+
+        <div className="unit-hitBox" />
       </div>
     </div>
   )
