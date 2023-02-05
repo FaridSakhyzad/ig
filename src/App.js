@@ -22,14 +22,6 @@ function App() {
 
   return (
     <Provider store={store}>
-      <div className="creeper">
-        <i className="creeper-eye left" />
-        <i className="creeper-eye right" />
-
-        <i className="mouth1" />
-        <i className="mouth2" />
-        <i className="mouth3" />
-      </div>
       <div className="app">
         {currentScreen === 'playground' && (
           <div className="screen">

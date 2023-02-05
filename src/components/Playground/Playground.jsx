@@ -323,7 +323,7 @@ const Playground = () => {
       <hr />
     )}
     <h1>{moves}</h1>
-    <button onClick={handleToggleLogo}>asdf</button>
+    <button onClick={handleToggleLogo}>Show logo</button>
     <div className="field" id="field">
       <div className="projectileLayer">
         {projectiles && projectiles.map((projectileProps) => (

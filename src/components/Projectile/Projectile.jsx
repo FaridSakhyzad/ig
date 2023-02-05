@@ -85,13 +85,12 @@ const Projectile = (props) => {
             const offsetLeft = exitLeft - entranceLeft;
             const offsetAngle = exitAngle - entranceAngle;
 
-            const projectileAngleNormalized = projectileAngle - 180;
-            const projectileAngleRelativeToEntrance = projectileAngleNormalized - entranceAngle;
+            const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
 
-            if (Math.abs(projectileAngleRelativeToEntrance) < 90) {
+            if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
+              projectileAngle = projectileAngle + (offsetAngle - 180);
               newX = newX + offsetLeft;
               newY = newY + offsetTop;
-              projectileAngle = projectileAngleRelativeToEntrance + exitAngle;
             }
           }
         }
