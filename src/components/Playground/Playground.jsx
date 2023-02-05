@@ -324,37 +324,37 @@ const Playground = () => {
     )}
     <h1>{moves}</h1>
     <button onClick={handleToggleLogo}>Show logo</button>
-    <div className="field" id="field">
-      <div className="projectileLayer">
-        {projectiles && projectiles.map((projectileProps) => (
-          <Projectile
-            key={projectileProps.id}
-            units={units}
-            potentialTargetsMap={unitsMap}
-            fieldInfo={fieldInfo}
-            onOutOfFiled={onOutOfFiled}
-            onImpact={onImpact}
-            {...projectileProps}
-          />
-        ))}
+      <div className="field" id="field">
+        <div className="projectileLayer">
+          {projectiles && projectiles.map((projectileProps) => (
+            <Projectile
+              key={projectileProps.id}
+              units={units}
+              potentialTargetsMap={unitsMap}
+              fieldInfo={fieldInfo}
+              onOutOfFiled={onOutOfFiled}
+              onImpact={onImpact}
+              {...projectileProps}
+            />
+          ))}
+        </div>
+        <div className="unitLayer">
+          {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
+            <Unit
+              key={id}
+              id={id}
+              type={type}
+              angle={angle}
+              value={value}
+              maxValue={maxValue}
+              turrets={turrets}
+              onClickHandler={onClick}
+              exploding={exploding}
+              idx={index}
+            />
+          ))}
+        </div>
       </div>
-      <div className="unitLayer">
-        {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
-          <Unit
-            key={id}
-            id={id}
-            type={type}
-            angle={angle}
-            value={value}
-            maxValue={maxValue}
-            turrets={turrets}
-            onClickHandler={onClick}
-            exploding={exploding}
-            idx={index}
-          />
-        ))}
-      </div>
-    </div>
     </>
   )
 }

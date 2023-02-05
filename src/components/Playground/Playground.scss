@@ -1,7 +1,7 @@
 :root {
   --map-width: 3;
   --map-height: 3;
-  --field-padding: 0;
+  --field-padding: 10px;
 }
 
 .field {
@@ -15,11 +15,9 @@
 
 .unitLayer {
   height: 100%;
-  --grid-cell-width: calc(100% / var(--map-width));
-  --grid-cell-height: calc(100% / var(--map-height));
   display: grid;
-  grid-template-columns: repeat(var(--map-width), var(--grid-cell-width));
-  grid-template-rows: repeat(var(--map-height), var(--grid-cell-height));
+  grid-template-columns: repeat(var(--map-width), 1fr);
+  grid-template-rows: repeat(var(--map-height), 1fr);
   align-items: center;
   justify-items: center;
 }
