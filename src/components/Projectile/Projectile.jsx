@@ -25,9 +25,14 @@ const Projectile = (props) => {
 
   const computedStyle = getComputedStyle(document.documentElement);
 
-  const unitRadius = parseInt(computedStyle.getPropertyValue('--unit-hitBox--radius'), 10);
-  const projectileWidth = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--width'), 10);
-  const projectileHeight = parseInt(computedStyle.getPropertyValue('--projectile-hitBox--height'), 10);
+  const unitRadiusPropValue = computedStyle.getPropertyValue('--unit-hitBox--radius').replace(/calc|px/ig, '');
+
+  const projectileWidthPropValue = computedStyle.getPropertyValue('--projectile-hitBox--width').replace(/calc|px/ig, '');
+  const projectileHeightPropValue = computedStyle.getPropertyValue('--projectile-hitBox--height').replace(/calc|px/ig, '');
+
+  const unitRadius = parseInt(eval(unitRadiusPropValue), 10);
+  const projectileWidth = parseInt(eval(projectileWidthPropValue), 10);
+  const projectileHeight = parseInt(eval(projectileHeightPropValue), 10);
 
   let impactedUnitId = null;
 

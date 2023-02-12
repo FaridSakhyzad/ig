@@ -1,6 +1,8 @@
 :root {
-  --unit-width: 32px;
-  --unit-hitBox--radius: 1px;
+  --base-screen-width: 375px;
+  --base-width-unit: calc(1 / 375);
+
+  --unit-hitBox--radius: calc(var(--screen-width) * var(--base-width-unit) * 1px);
 }
 
 .unit {
@@ -37,6 +39,8 @@
 }
 
 .unit-hitBox {
+  --width: calc(var(--unit-hitBox--radius) * 2);
+  --height: calc(var(--unit-hitBox--radius) * 2);
   position: absolute;
   left: 0;
   top: 0;
@@ -44,8 +48,8 @@
   bottom: 0;
   margin: auto;
   background: rgba(0, 0, 0, 1);
-  width: calc(var(--unit-hitBox--radius) * 2);
-  height: calc(var(--unit-hitBox--radius) * 2);
+  width: var(--width);
+  height: var(--height);
   border-radius: 50%;
 }
 

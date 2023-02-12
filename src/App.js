@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 
@@ -20,23 +20,38 @@ function App() {
     setCurrentScreen('settings');
   }
 
+  const setScreenSizeCssProperty = () => {
+    const { width } = document.getElementById('screen').getBoundingClientRect();
+    document.documentElement.style.setProperty('--screen-width', `${width}`);
+  }
+
+  useEffect(() => {
+    setScreenSizeCssProperty();
+
+    window.addEventListener('resize', setScreenSizeCssProperty)
+
+    return () => {
+      window.removeEventListener('resize', setScreenSizeCssProperty);
+    }
+  });
+
   return (
     <Provider store={store}>
       <div className="app">
         {currentScreen === 'playground' && (
-          <div className="screen">
+          <div className="screen" id="screen">
             <Playground />
           </div>
         )}
         {currentScreen === 'menu' && (
-          <div className="screen">
+          <div className="screen" id="screen">
             <h2>Menu</h2>
             <button onClick={handleStartClick}>Start</button>
             <button onClick={handleSettingsClick}>Settings</button>
           </div>
         )}
         {currentScreen === 'settings' && (
-          <div className="screen">
+          <div className="screen" id="screen">
             <h2>Settings</h2>
           </div>
         )}

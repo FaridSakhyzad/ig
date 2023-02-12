@@ -319,11 +319,7 @@ const Playground = () => {
 
   return (
     <>
-    {showLogo && (
-      <hr />
-    )}
-    <h1>{moves}</h1>
-    <button onClick={handleToggleLogo}>Show logo</button>
+      <h1>moves: {moves}</h1>
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (

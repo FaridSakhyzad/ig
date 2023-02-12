@@ -1,9 +1,12 @@
 :root {
-  --projectile-hitBox--width: 1px;
-  --projectile-hitBox--height: 1px;
+  --base-screen-width: 375px;
+  --base-width-unit: calc(1 / 375);
 
-  --projectile-image--width: 4px;
-  --projectile-image--height: 4px;
+  --projectile-hitBox--width: calc(var(--screen-width) * var(--base-width-unit) * 1px);
+  --projectile-hitBox--height: calc(var(--screen-width) * var(--base-width-unit) * 1px);
+
+  --projectile-image--width: calc(var(--screen-width) * var(--base-width-unit) * 4px);
+  --projectile-image--height: calc(var(--screen-width) * var(--base-width-unit) * 4px);
 
   --projectile-explosion--radius: 5px;
   --projectile-explosion--duration: 0.3s;
@@ -23,18 +26,24 @@
 }
 
 .projectile-hitBox {
-  flex: 0 0 var(--projectile-hitBox--width);
-  width: var(--projectile-hitBox--width);
-  height: var(--projectile-hitBox--height);
-  min-height: var(--projectile-hitBox--height);
+  --width: var(--projectile-hitBox--width);
+  --heigh: var(--projectile-hitBox--height);
+
+  flex: 0 0 var(--width);
+  width: var(--width);
+  height: var(--heigh);
+  min-height: var(--heigh);
   background: rgba(71, 51, 255, 0);
 }
 
 .projectile-image {
-  flex: 0 0 var(--projectile-image--width);
-  width: var(--projectile-image--width);
-  height: var(--projectile-image--height);
-  min-height: var(--projectile-image--height);
+  --width: var(--projectile-image--width);
+  --height: var(--projectile-image--height);
+
+  flex: 0 0 var(--width);
+  width: var(--width);
+  height: var(--height);
+  min-height: var(--height);
   background: #4733ff;
   opacity: 1;
   position: absolute;
@@ -42,7 +51,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  margin: auto calc(var(--projectile-image--width) / 2 * -1);
+  margin: auto calc(var(--width) / 2 * -1);
   border-radius: 3px 3px 0 0;
 }
 
