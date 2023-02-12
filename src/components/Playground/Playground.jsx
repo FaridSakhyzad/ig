@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleLogo } from '../../redux/ui/actions';
 import Projectile from '../Projectile/Projectile';
 import Unit from '../Unit/Unit';
-import { findCircleLineIntersections } from '../../utils';
 import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../Config/config';
 import MOCK_UNITS from './mockUnits';
 
@@ -67,6 +66,8 @@ const Playground = () => {
   const dischargeAllTurrets = (unitIndex, unitsMap) => {
     const { turrets } = unitsMap[unitIndex];
 
+    const moveStep = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-width-unit'));
+
     turrets.forEach(turret => {
       const { gunpointTop: top, gunpointLeft: left, angle, type, maxDistance, speed } = turret;
 
@@ -80,6 +81,7 @@ const Playground = () => {
         type,
         maxDistance,
         speed,
+        moveStep
       });
     })
 
@@ -273,44 +275,13 @@ const Playground = () => {
     detectGameOutcome();
   }
 
-  const makePotentialTargetsMap = (projectileProps) => {
-    const { parentId, angle, left: projectileX, top: projectileY } = projectileProps;
-
-    if (angle / 90 % 2 === 0) {
-      return unitsMap.filter(unit => {
-        const { left: circleX } = unit;
-        return Math.abs(circleX - projectileX) <= Playground.unitHitBoxRadius;
-      });
-    } else if (angle / 90 % 2 === 1) {
-      return unitsMap.filter(unit => {
-        const { top: circleY } = unit;
-        return Math.abs(circleY - projectileY) <= Playground.unitHitBoxRadius;
-      });
-    }
-
-    const theK = Math.tan((Math.PI / 180) * (90 + angle));
-    const theB = projectileY - theK * projectileX;
-
-    return unitsMap.filter(unit => {
-      const { id, left: circleX, top: circleY } = unit;
-
-      if (id === parentId) {
-        return false;
-      }
-
-      const intersection = findCircleLineIntersections(Playground.unitHitBoxRadius, circleX, circleY, theK, theB);
-
-      return intersection.length > 0;
-    });
-  }
-
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
 
-    Playground.unitHitBoxRadius = parseInt(getComputedStyle(document.body).getPropertyValue('--unit-hitBox--radius'));
+    const computedStyle = getComputedStyle(document.documentElement);
 
-    Playground.projectileExplosionDuration = parseFloat(getComputedStyle(document.body).getPropertyValue('--projectile-explosion--duration')) * 1000;
+    Playground.projectileExplosionDuration = parseFloat(computedStyle.getPropertyValue('--projectile-explosion--duration')) * 1000;
   }, []);
 
   const handleToggleLogo = () => {
@@ -330,6 +301,7 @@ const Playground = () => {
               fieldInfo={fieldInfo}
               onOutOfFiled={onOutOfFiled}
               onImpact={onImpact}
+              moveStep={Playground.projectileMoveStep}
               {...projectileProps}
             />
           ))}
@@ -355,6 +327,7 @@ const Playground = () => {
   )
 }
 
+Playground.projectileMoveStep = 1;
 Playground.projectileExplosionDuration = 0;
 Playground.actingProjectilesNumber = 0;
 

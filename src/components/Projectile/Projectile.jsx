@@ -17,6 +17,7 @@ const Projectile = (props) => {
     fieldInfo,
     onOutOfFiled,
     onImpact,
+    moveStep,
   } = props;
 
   const [ projectileState, setProjectileState ] = useState('inFlight');
@@ -50,7 +51,7 @@ const Projectile = (props) => {
 
     const timer = setTimeout(() => {
       currentDistance += 1;
-      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle);
+      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, moveStep);
       let newX = coordinateX;
       let newY = coordinateY;
       let projectileAngle = currentAngle;
@@ -243,6 +244,7 @@ Projectile.propTypes = {
   fieldInfo: PropTypes.object,
   onOutOfFiled: PropTypes.func,
   onImpact: PropTypes.func,
+  moveStep: PropTypes.number,
 };
 
 export default Projectile;

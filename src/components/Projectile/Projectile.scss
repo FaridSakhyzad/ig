@@ -1,14 +1,11 @@
 :root {
-  --base-screen-width: 375px;
-  --base-width-unit: calc(1 / 375);
+  --projectile-hitBox--width: calc(var(--base-width-unit) * 1px);
+  --projectile-hitBox--height: calc(var(--base-width-unit) * 1px);
 
-  --projectile-hitBox--width: calc(var(--screen-width) * var(--base-width-unit) * 1px);
-  --projectile-hitBox--height: calc(var(--screen-width) * var(--base-width-unit) * 1px);
+  --projectile-image--width: calc(var(--base-width-unit) * 4px);
+  --projectile-image--height: calc(var(--base-width-unit) * 4px);
 
-  --projectile-image--width: calc(var(--screen-width) * var(--base-width-unit) * 4px);
-  --projectile-image--height: calc(var(--screen-width) * var(--base-width-unit) * 4px);
-
-  --projectile-explosion--radius: 5px;
+  --projectile-explosion--radius: calc(var(--base-width-unit) * 5px);
   --projectile-explosion--duration: 0.3s;
 }
 

@@ -5,4 +5,4 @@ export const UNIT_EXPLOSION_DURATION = 300;
 export const MAP_WIDTH = 9;
 export const MAP_HEIGHT = 9;
 export const PROJECTILE_MOVE_DELAY = 15; //ms per pixel
-export const PROJECTILE_MOVE_STEP = 1;
+export const BASE_VIEWPORT_WIDTH = 375;

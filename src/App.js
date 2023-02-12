@@ -8,6 +8,7 @@ import './components/Unit/Unit.scss';
 import './components/Projectile/Projectile.scss';
 
 import Playground from './components/Playground/Playground';
+import { BASE_VIEWPORT_WIDTH } from './Config/config';
 
 function App() {
   const [ currentScreen, setCurrentScreen ] = useState('playground');
@@ -23,6 +24,7 @@ function App() {
   const setScreenSizeCssProperty = () => {
     const { width } = document.getElementById('screen').getBoundingClientRect();
     document.documentElement.style.setProperty('--screen-width', `${width}`);
+    document.documentElement.style.setProperty('--base-width-unit', `${1 / BASE_VIEWPORT_WIDTH * width}`);
   }
 
   useEffect(() => {
