@@ -1,14 +1,13 @@
 :root {
   --map-width: 3;
   --map-height: 3;
-  --field-padding: 10px;
 }
 
 .field {
   width: 100%;
   aspect-ratio: 1;
   margin: auto;
-  padding: var(--field-padding);
+  padding: 2.667%;
   outline: 1px solid rgba(0, 0, 0, 0.2);
   position: relative;
 }
