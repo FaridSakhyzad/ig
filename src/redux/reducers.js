@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux';
-
 import userReducer from './user/reducer';
-import uiReducer from './ui/reducer';
+import playgroundReducer from './playground/reducer';
 
 const createReducer = () => combineReducers({
   user: userReducer,
-  ui: uiReducer,
+  playground: playgroundReducer,
 })
 
 export default createReducer;

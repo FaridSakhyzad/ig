@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { SAFE_MAX_DISTANCE } from '../../Config/config';
-import {calculateNewCoords, findRectangleCircleIntersection, rotate} from '../../utils';
+import { SAFE_MAX_DISTANCE } from '../../config/config';
+import './Projectile.scss';
+import { calculateNewCoords, findRectangleCircleIntersection, rotate } from '../../utils';
 
 const Projectile = (props) => {
   const {

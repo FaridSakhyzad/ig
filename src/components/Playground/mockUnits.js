@@ -1,4 +1,4 @@
-import {MAP_HEIGHT, MAP_WIDTH, PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from '../../Config/config';
+import {MAP_HEIGHT, MAP_WIDTH, PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from '../../config/config';
 
 const MOCK_UNITS = ((m, n) => {
   const result = [];

@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toggleLogo } from '../../redux/ui/actions';
-import Projectile from '../Projectile/Projectile';
-import Unit from '../Unit/Unit';
-import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../Config/config';
+import { useSelector } from 'react-redux';
+import Projectile from '../Projectile';
+import Unit from '../Unit';
+import './Playground.scss';
+
+import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../config/config';
 import MOCK_UNITS from './mockUnits';
 
 const Playground = () => {
-  const dispatch = useDispatch();
-  const { ui }  = useSelector(state => state);
-  const { showLogo } = ui;
+  const { playground }  = useSelector(state => state);
 
   const [ units, setUnits ] = useState(MOCK_UNITS);
 
@@ -131,6 +130,8 @@ const Playground = () => {
     if (Playground.actingProjectilesNumber > 0) {
       return;
     }
+
+    console.log('mode', playground.mode);
 
     setProjectiles([]);
 
@@ -284,13 +285,10 @@ const Playground = () => {
     Playground.projectileExplosionDuration = parseFloat(computedStyle.getPropertyValue('--projectile-explosion--duration')) * 1000;
   }, []);
 
-  const handleToggleLogo = () => {
-    dispatch(toggleLogo(!showLogo));
-  }
-
   return (
     <>
       <h1>moves: {moves}</h1>
+      <h2>playground mode {playground.mode}</h2>
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (

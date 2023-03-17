@@ -3,12 +3,10 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 import './App.scss';
-import './components/Playground/Playground.scss';
-import './components/Unit/Unit.scss';
-import './components/Projectile/Projectile.scss';
+import Playground from './components/Playground';
+import UserMenu from './components/UserMenu';
 
-import Playground from './components/Playground/Playground';
-import { BASE_VIEWPORT_WIDTH } from './Config/config';
+import { BASE_VIEWPORT_WIDTH } from './config/config';
 
 function App() {
   const [ currentScreen, setCurrentScreen ] = useState('playground');
@@ -43,6 +41,7 @@ function App() {
         {currentScreen === 'playground' && (
           <div className="screen" id="screen">
             <Playground />
+            <UserMenu />
           </div>
         )}
         {currentScreen === 'menu' && (

@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { UNIT_EXPLOSION_DURATION } from '../../Config/config';
+import './Unit.scss';
+import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
 const Unit = ({ id, type, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
