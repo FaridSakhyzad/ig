@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector} from 'react-redux';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import './Playground.scss';
-
 import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../config/config';
-import MOCK_UNITS from './mockUnits';
+import { GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
+
+import MOCK_UNITS from '../../maps/mockUnits';
+import UserMenu from '../UserMenu';
 
 const Playground = () => {
-  const { playground }  = useSelector(state => state);
-
   const [ units, setUnits ] = useState(MOCK_UNITS);
+  const [ selectedUnitId, setSelectedUnitId ] = useState(null);
+
+  const { playground }  = useSelector(state => state);
 
   const [ projectiles, setProjectiles ] = useState([]);
 
@@ -126,13 +129,7 @@ const Playground = () => {
     return newMoves;
   }
 
-  const onClick = (e, unitId, unitIndex) => {
-    if (Playground.actingProjectilesNumber > 0) {
-      return;
-    }
-
-    console.log('mode', playground.mode);
-
+  const makePlayerMove = (e, unitId, unitIndex) => {
     setProjectiles([]);
 
     const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
@@ -197,6 +194,22 @@ const Playground = () => {
     }
 
     callbacks[units[unitIndex].type]();
+  }
+
+  const onClick = (e, unitId, unitIndex) => {
+    if (Playground.actingProjectilesNumber > 0) {
+      return;
+    }
+
+    const { mode } = playground
+
+    if (mode === GAMEPLAY_MODE) {
+      makePlayerMove(e, unitId, unitIndex);
+    }
+
+    if (mode === SELECT_MODE) {
+      setSelectedUnitId({ unitId, unitIndex });
+    }
   }
 
   const detectGameOutcome = () => {
@@ -276,6 +289,16 @@ const Playground = () => {
     detectGameOutcome();
   }
 
+  const rotateSelectedUnit = (direction) => {
+    const { unitIndex } = selectedUnitId;
+    const newUnits = [ ...units ];
+
+    const directionMultiplier = direction === 'ccv' ? -1 : 1;
+
+    newUnits[unitIndex].angle += (45 * directionMultiplier);
+    setUnits(newUnits);
+  }
+
   useEffect(() => {
     document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
     document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
@@ -308,6 +331,7 @@ const Playground = () => {
           {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
             <Unit
               key={id}
+              isSelected={selectedUnitId && id === selectedUnitId.unitId}
               id={id}
               type={type}
               angle={angle}
@@ -321,6 +345,8 @@ const Playground = () => {
           ))}
         </div>
       </div>
+
+      <UserMenu onRotate={rotateSelectedUnit} />
     </>
   )
 }

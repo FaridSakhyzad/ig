@@ -4,10 +4,10 @@ import classnames from 'classnames';
 import './Unit.scss';
 import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
-const Unit = ({ id, type, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
+const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
     <div
-      className={`unit ${type}`}
+      className={`unit ${type} ${isSelected ? 'unit__selected' : ''}`}
       id={id}
       data-index={idx}
       onClick={(e) => onClickHandler(e, id, idx)}
@@ -37,6 +37,7 @@ const Unit = ({ id, type, turrets, value, angle, maxValue, idx, onClickHandler, 
 
 Unit.propTypes = {
   id: PropTypes.string,
+  isSelected: PropTypes.bool,
   type: PropTypes.string,
   value: PropTypes.number,
   angle: PropTypes.number,

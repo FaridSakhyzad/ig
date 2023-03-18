@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
-import store from './redux/store';
 
 import './App.scss';
 import Playground from './components/Playground';
-import UserMenu from './components/UserMenu';
 
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 
@@ -36,28 +33,25 @@ function App() {
   });
 
   return (
-    <Provider store={store}>
-      <div className="app">
-        {currentScreen === 'playground' && (
-          <div className="screen" id="screen">
-            <Playground />
-            <UserMenu />
-          </div>
-        )}
-        {currentScreen === 'menu' && (
-          <div className="screen" id="screen">
-            <h2>Menu</h2>
-            <button onClick={handleStartClick}>Start</button>
-            <button onClick={handleSettingsClick}>Settings</button>
-          </div>
-        )}
-        {currentScreen === 'settings' && (
-          <div className="screen" id="screen">
-            <h2>Settings</h2>
-          </div>
-        )}
-      </div>
-    </Provider>
+    <div className="app">
+      {currentScreen === 'playground' && (
+        <div className="screen" id="screen">
+          <Playground />
+        </div>
+      )}
+      {currentScreen === 'menu' && (
+        <div className="screen" id="screen">
+          <h2>Menu</h2>
+          <button onClick={handleStartClick}>Start</button>
+          <button onClick={handleSettingsClick}>Settings</button>
+        </div>
+      )}
+      {currentScreen === 'settings' && (
+        <div className="screen" id="screen">
+          <h2>Settings</h2>
+        </div>
+      )}
+    </div>
   );
 }
 
