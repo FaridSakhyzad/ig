@@ -12,7 +12,7 @@ const Playground = () => {
   const [ gameMode, setGameMode ] = useState(GAMEPLAY_MODE);
 
   const [ units, setUnits ] = useState(MOCK_UNITS);
-  const [ selectedUnitId, setSelectedUnitId ] = useState(null);
+  const [ selectedUnit, setSelectedUnit ] = useState(null);
   const [ projectiles, setProjectiles ] = useState([]);
 
   const [ fieldInfo, setFieldInfo ] = useState({});
@@ -204,7 +204,7 @@ const Playground = () => {
     }
 
     if (gameMode === SELECT_MODE) {
-      setSelectedUnitId({ unitId, unitIndex });
+      setSelectedUnit({ id: unitId, index: unitIndex });
     }
 
     if (gameMode === MULTISELECT_MODE) {
@@ -293,13 +293,18 @@ const Playground = () => {
     setGameMode(mode);
   }
 
+  const onConfirm = () => {
+    setGameMode(GAMEPLAY_MODE);
+    setSelectedUnit(null);
+  }
+
   const rotateSelectedUnit = (direction) => {
-    const { unitIndex } = selectedUnitId;
+    const { index } = selectedUnit;
     const newUnits = [ ...units ];
 
     const directionMultiplier = direction === 'ccv' ? -1 : 1;
 
-    newUnits[unitIndex].angle += (45 * directionMultiplier);
+    newUnits[index].angle += (45 * directionMultiplier);
     setUnits(newUnits);
   }
 
@@ -335,7 +340,7 @@ const Playground = () => {
           {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
             <Unit
               key={id}
-              isSelected={selectedUnitId && id === selectedUnitId.unitId}
+              isSelected={selectedUnit && id === selectedUnit.id}
               id={id}
               type={type}
               angle={angle}
@@ -354,6 +359,7 @@ const Playground = () => {
         gameMode={gameMode}
         onModeChange={onModeChange}
         onRotate={rotateSelectedUnit}
+        onConfirm={onConfirm}
       />
     </>
   )
