@@ -1,20 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import { useSelector} from 'react-redux';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import './Playground.scss';
 import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../config/config';
-import { GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
+import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
 
 import MOCK_UNITS from '../../maps/mockUnits';
 import UserMenu from '../UserMenu';
 
 const Playground = () => {
+  const [ gameMode, setGameMode ] = useState(GAMEPLAY_MODE);
+
   const [ units, setUnits ] = useState(MOCK_UNITS);
   const [ selectedUnitId, setSelectedUnitId ] = useState(null);
-
-  const { playground }  = useSelector(state => state);
-
   const [ projectiles, setProjectiles ] = useState([]);
 
   const [ fieldInfo, setFieldInfo ] = useState({});
@@ -201,14 +199,16 @@ const Playground = () => {
       return;
     }
 
-    const { mode } = playground
-
-    if (mode === GAMEPLAY_MODE) {
+    if (gameMode === GAMEPLAY_MODE) {
       makePlayerMove(e, unitId, unitIndex);
     }
 
-    if (mode === SELECT_MODE) {
+    if (gameMode === SELECT_MODE) {
       setSelectedUnitId({ unitId, unitIndex });
+    }
+
+    if (gameMode === MULTISELECT_MODE) {
+      console.log('MULTISELECT');
     }
   }
 
@@ -289,6 +289,10 @@ const Playground = () => {
     detectGameOutcome();
   }
 
+  const onModeChange = (mode) => {
+    setGameMode(mode);
+  }
+
   const rotateSelectedUnit = (direction) => {
     const { unitIndex } = selectedUnitId;
     const newUnits = [ ...units ];
@@ -311,7 +315,7 @@ const Playground = () => {
   return (
     <>
       <h1>moves: {moves}</h1>
-      <h2>playground mode {playground.mode}</h2>
+      <h2>gameplay mode {gameMode}</h2>
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (
@@ -346,7 +350,11 @@ const Playground = () => {
         </div>
       </div>
 
-      <UserMenu onRotate={rotateSelectedUnit} />
+      <UserMenu
+        gameMode={gameMode}
+        onModeChange={onModeChange}
+        onRotate={rotateSelectedUnit}
+      />
     </>
   )
 }
