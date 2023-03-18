@@ -117,6 +117,22 @@ const Projectile = (props) => {
             onImpact(projectileType, impactedUnit.index);
             return;
           }
+
+          if (impactedUnitType === 'portal') {
+            const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
+            const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
+            const offsetTop = exitTop - entranceTop;
+            const offsetLeft = exitLeft - entranceLeft;
+            const offsetAngle = exitAngle - entranceAngle;
+
+            const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
+
+            if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
+              projectileAngle = projectileAngle + (offsetAngle - 180);
+              newX = newX + offsetLeft;
+              newY = newY + offsetTop;
+            }
+          }
         }
 
         if (impactedUnitType === 'wall') {
