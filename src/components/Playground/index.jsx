@@ -8,11 +8,14 @@ import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/co
 import MOCK_UNITS from '../../maps/mockUnits';
 import UserMenu from '../UserMenu';
 
+const MAX_MULTISELECT = 2;
+
 const Playground = () => {
-  const [ gameMode, setGameMode ] = useState(GAMEPLAY_MODE);
+  const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
 
   const [ units, setUnits ] = useState(MOCK_UNITS);
-  const [ selectedUnit, setSelectedUnit ] = useState(null);
+  const [ selectedUnits, setSelectedUnits ] = useState([]);
+
   const [ projectiles, setProjectiles ] = useState([]);
 
   const [ fieldInfo, setFieldInfo ] = useState({});
@@ -199,16 +202,32 @@ const Playground = () => {
       return;
     }
 
-    if (gameMode === GAMEPLAY_MODE) {
+    if (userInputMode === GAMEPLAY_MODE) {
       makePlayerMove(e, unitId, unitIndex);
     }
 
-    if (gameMode === SELECT_MODE) {
-      setSelectedUnit({ id: unitId, index: unitIndex });
+    if (userInputMode === SELECT_MODE) {
+      setSelectedUnits([{ unitId, unitIndex }]);
     }
 
-    if (gameMode === MULTISELECT_MODE) {
-      console.log('MULTISELECT');
+    if (userInputMode === MULTISELECT_MODE) {
+      const selectedIndex = selectedUnits.findIndex(unit => unit.unitId === unitId)
+
+      if (selectedIndex >= 0) {
+        selectedUnits.splice(selectedIndex, 1);
+      } else {
+        if (selectedUnits.length >= MAX_MULTISELECT) {
+          selectedUnits.splice(selectedUnits.length - 1, 1);
+        }
+
+        selectedUnits.push({ unitId, unitIndex })
+      }
+
+      setSelectedUnits([ ...selectedUnits ]);
+
+      const { fieldTop, fieldLeft } = fieldInfo;
+      const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
+      setUnitsMap(unitsMap);
     }
   }
 
@@ -290,21 +309,39 @@ const Playground = () => {
   }
 
   const onModeChange = (mode) => {
-    setGameMode(mode);
+    setUserInputMode(mode);
   }
 
-  const onConfirm = () => {
-    setGameMode(GAMEPLAY_MODE);
-    setSelectedUnit(null);
+  const onConfirm = (action) => {
+    if (!action) {
+      return;
+    }
+
+    if (action === 'swap') {
+      const newUnits = [ ...units ];
+
+      const { unitIndex: unit0Index } = selectedUnits[0];
+      const { unitIndex: unit1Index } = selectedUnits[1];
+
+      const unit0 = structuredClone(newUnits[unit0Index]);
+
+      newUnits[unit0Index] = newUnits[unit1Index];
+      newUnits[unit1Index] = unit0;
+
+      setUnits(newUnits);
+    }
+
+    setUserInputMode(GAMEPLAY_MODE);
+    setSelectedUnits([]);
   }
 
   const rotateSelectedUnit = (direction) => {
-    const { index } = selectedUnit;
+    const { unitIndex } = selectedUnits[0];
     const newUnits = [ ...units ];
 
     const directionMultiplier = direction === 'ccv' ? -1 : 1;
 
-    newUnits[index].angle += (45 * directionMultiplier);
+    newUnits[unitIndex].angle += (45 * directionMultiplier);
     setUnits(newUnits);
   }
 
@@ -320,7 +357,7 @@ const Playground = () => {
   return (
     <>
       <h1>moves: {moves}</h1>
-      <h2>gameplay mode {gameMode}</h2>
+      <h2>gameplay mode {userInputMode}</h2>
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (
@@ -340,7 +377,7 @@ const Playground = () => {
           {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
             <Unit
               key={id}
-              isSelected={selectedUnit && id === selectedUnit.id}
+              isSelected={selectedUnits.some(unit => unit.unitId === id)}
               id={id}
               type={type}
               angle={angle}
@@ -356,7 +393,7 @@ const Playground = () => {
       </div>
 
       <UserMenu
-        gameMode={gameMode}
+        userInputMode={userInputMode}
         onModeChange={onModeChange}
         onRotate={rotateSelectedUnit}
         onConfirm={onConfirm}
