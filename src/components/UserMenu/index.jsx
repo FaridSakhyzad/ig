@@ -10,11 +10,16 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm }) => {
     setOnConfirmAction(action);
   }
 
+  const handleCancelClick = () => {
+    onModeChange(GAMEPLAY_MODE);
+    console.log('revert all the stuff');
+  }
+
   return (
     <div className="userMenu">
       <div className="userMenu-row">
         <button onClick={() => handleModeChange(MULTISELECT_MODE, 'swap')} className="button userMenu-button">Swap</button>
-        <button onClick={() => handleModeChange(SELECT_MODE)} className="button userMenu-button">Rotate</button>
+        <button onClick={() => handleModeChange(SELECT_MODE, 'rotate')} className="button userMenu-button">Rotate</button>
       </div>
       {userInputMode === SELECT_MODE && (
         <div className="userMenu-row">
@@ -22,11 +27,12 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm }) => {
           <button onClick={() => onRotate('cv')} className="button userMenu-button">-&gt;</button>
         </div>
       )}
-      <div className="userMenu-row">
-        {userInputMode !== GAMEPLAY_MODE && (
+      {userInputMode !== GAMEPLAY_MODE && (
+        <div className="userMenu-row">
+          <button onClick={handleCancelClick} className="button userMenu-button">Cancel</button>
           <button onClick={() => onConfirm(onConfirmAction)} className="button userMenu-button">Ok</button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
