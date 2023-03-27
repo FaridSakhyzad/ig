@@ -56,57 +56,57 @@ const MAP_9x9_0 = ((m, n) => {
         name: 'turret1',
         angle: 0,
         type: 'bobomb',
-        maxDistance: 34,
+        maxDistance: 39,
         speed: 15
       },
       {
         name: 'turret2',
         angle: 45,
         type: 'bobomb',
-        maxDistance: Math.abs(33 / Math.cos(45 * Math.PI / 180)),
-        speed: Math.abs(15 * Math.cos(45 * Math.PI / 180))
+        maxDistance: 39 * 1.4142135623730951,
+        speed: 15 / 1.4142135623730951
       },
       {
         name: 'turret3',
         angle: 90,
         type: 'bobomb',
-        maxDistance: 34,
+        maxDistance: 39,
         speed: 15
       },
       {
         name: 'turret4',
         angle: 135,
         type: 'bobomb',
-        maxDistance: Math.abs(33 / Math.cos(135 * Math.PI / 180)),
-        speed: Math.abs(15 * Math.cos(135 * Math.PI / 180))
+        maxDistance: 39 * 1.4142135623730951,
+        speed: 15 / 1.4142135623730951
       },
       {
         name: 'turret5',
         angle: 180,
         type: 'bobomb',
-        maxDistance: 34,
+        maxDistance: 39,
         speed: 15
       },
       {
         name: 'turret6',
         angle: 225,
         type: 'bobomb',
-        maxDistance: Math.abs(33 / Math.cos(225 * Math.PI / 180)),
-        speed: Math.abs(15 * Math.cos(225 * Math.PI / 180)),
+        maxDistance: 39 * 1.4142135623730951,
+        speed: 15 / 1.4142135623730951
       },
       {
         name: 'turret7',
         angle: 270,
         type: 'bobomb',
-        maxDistance: 34,
+        maxDistance: 39,
         speed: 15
       },
       {
         name: 'turret8',
         angle: 315,
         type: 'bobomb',
-        maxDistance: Math.abs(33 / Math.cos(315 * Math.PI / 180)),
-        speed: Math.abs(15 * Math.cos(315 * Math.PI / 180))
+        maxDistance: 39 * 1.4142135623730951,
+        speed: 15 / 1.4142135623730951
       }
     ],
   }

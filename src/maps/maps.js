@@ -17,11 +17,15 @@ const defaults = {
 
 const mapSet = [
   {
+    gridWidth: 9,
+    gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
     units: MAP_9x9_0
   },
   {
+    gridWidth: 9,
+    gridHeight: 9,
     mapWidth: 3,
     mapHeight: 3,
     units: ((m, n) => {
@@ -42,6 +46,8 @@ const mapSet = [
     })(3, 3),
   },
   {
+    gridWidth: 9,
+    gridHeight: 9,
     mapWidth: 5,
     mapHeight: 5,
     units: ((width, height) => {

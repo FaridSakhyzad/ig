@@ -1,5 +1,5 @@
 :root {
-  --unit-hitBox--radius: calc(var(--base-width-unit) * 1px);
+  --unit-hitBox--radius: calc(var(--base-width-unit) * 2px);
 }
 
 .unit {
@@ -55,6 +55,7 @@
   width: var(--width);
   height: var(--height);
   border-radius: 50%;
+  opacity: 0.5;
 }
 
 .wall {
