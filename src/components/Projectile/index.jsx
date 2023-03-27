@@ -161,7 +161,7 @@ const Projectile = (props) => {
       ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
 
       launchProjectile(currentDistance, newX, newY, projectileAngle);
-    }, speed);
+    }, speed / moveStep);
   };
 
   const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {

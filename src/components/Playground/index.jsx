@@ -1,27 +1,32 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
+import { number } from 'prop-types';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
-import './Playground.scss';
-import { UNIT_MAX_VALUE, MAP_WIDTH, MAP_HEIGHT } from '../../config/config';
-import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
-
-import MOCK_UNITS from '../../maps/mockUnits';
 import UserMenu from '../UserMenu';
+import mapSet from '../../maps/maps';
+import './Playground.scss';
+import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
 
 const MAX_MULTISELECT = 2;
 
-const Playground = () => {
+const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
+  console.log('projectileMoveStep', projectileMoveStep);
+
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
 
-  const [ units, setUnits ] = useState(MOCK_UNITS);
+  const [ currentLevel, setCurrentLevel ] = useState(0);
+
+  const [ map, setMap ] = useState(mapSet[currentLevel]);
+  const [ fieldInfo, setFieldInfo ] = useState({});
+
+  const [ units, setUnits ] = useState(map.units);
   const [ selectedUnits, setSelectedUnits ] = useState([]);
+  const [ unitsMap, setUnitsMap ] = useState([]);
 
   const [ projectiles, setProjectiles ] = useState([]);
 
-  const [ fieldInfo, setFieldInfo ] = useState({});
-  const [ unitsMap, setUnitsMap ] = useState([]);
-
   const [ moves, setMoves ] = useState(1000);
+  const [ winScreenVisible, setWinScreenVisible ] = useState(false);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit') ].map(unit => {
@@ -150,7 +155,7 @@ const Playground = () => {
     }
 
     if (shiftKey) {
-      newValue = UNIT_MAX_VALUE;
+      newValue = units[unitIndex].maxValue;
     }
 
     const callbacks = {
@@ -236,15 +241,17 @@ const Playground = () => {
       return;
     }
 
-    const unitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
+    const someUnitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
 
-    if (moves < 1 && unitsLeft) {
-      setTimeout(() => { alert('You Loose') }, Playground.projectileExplosionDuration + 300)
+    if (moves < 1 && someUnitsLeft) {
+      setTimeout(() => { alert('You Loose') }, projectileExplosionDuration + 300)
       return;
     }
 
-    if (moves > 0 && !unitsLeft) {
-      setTimeout(() => { alert('You win') }, Playground.projectileExplosionDuration + 300);
+    if (moves >= 0 && !someUnitsLeft) {
+      setTimeout(() => {
+        setWinScreenVisible(true)
+      }, projectileExplosionDuration + 300);
     }
   }
 
@@ -255,6 +262,8 @@ const Playground = () => {
   }
 
   const onImpact = (projectileType, impactedUnitIndex) => {
+    const { maxValue } = units[impactedUnitIndex];
+
     const callbacks = {
       default: () => {
         if (projectileType === 'default') {
@@ -267,7 +276,7 @@ const Playground = () => {
         }
 
         if (projectileType === 'laser') {
-          setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
+          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
           });
@@ -276,7 +285,7 @@ const Playground = () => {
         if (projectileType === 'bobomb') {
           --Playground.actingProjectilesNumber;
 
-          setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
+          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
           });
@@ -296,7 +305,7 @@ const Playground = () => {
       bobomb: () => {
         --Playground.actingProjectilesNumber;
 
-        setUnitValue(impactedUnitIndex, UNIT_MAX_VALUE + 1, () => {
+        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
         });
@@ -345,19 +354,27 @@ const Playground = () => {
     setUnits(newUnits);
   }
 
-  useEffect(() => {
-    document.documentElement.style.setProperty('--map-width', MAP_WIDTH);
-    document.documentElement.style.setProperty('--map-height', MAP_HEIGHT);
+  const startNextLevel = () => {
+    const nextLevel = currentLevel + 1;
 
-    const computedStyle = getComputedStyle(document.documentElement);
+    setCurrentLevel(nextLevel);
+    setMap(mapSet[nextLevel]);
+    setUnits(mapSet[nextLevel].units);
 
-    Playground.projectileExplosionDuration = parseFloat(computedStyle.getPropertyValue('--projectile-explosion--duration')) * 1000;
-  }, []);
+    setWinScreenVisible(false);
+  }
 
   return (
     <>
+      {winScreenVisible && (
+        <div className="winMessage" onClick={startNextLevel}>
+          <h1>You win</h1>
+        </div>
+      )}
+
       <h1>moves: {moves}</h1>
-      <h2>gameplay mode {userInputMode}</h2>
+      <h2>gameplay mode: {userInputMode}</h2>
+      <h3>currentLevel: {currentLevel}</h3>
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (
@@ -368,12 +385,15 @@ const Playground = () => {
               fieldInfo={fieldInfo}
               onOutOfFiled={onOutOfFiled}
               onImpact={onImpact}
-              moveStep={Playground.projectileMoveStep}
+              moveStep={projectileMoveStep}
               {...projectileProps}
             />
           ))}
         </div>
-        <div className="unitLayer">
+        <div className="unitLayer" style={{
+          '--map-width': map.mapWidth,
+          '--map-height': map.mapHeight,
+        }}>
           {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
             <Unit
               key={id}
@@ -402,8 +422,11 @@ const Playground = () => {
   )
 }
 
-Playground.projectileMoveStep = 1;
-Playground.projectileExplosionDuration = 0;
+Playground.propTypes = {
+  projectileExplosionDuration: number,
+  projectileMoveStep: number,
+}
+
 Playground.actingProjectilesNumber = 0;
 
 export default Playground;

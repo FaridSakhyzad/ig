@@ -1,8 +1,3 @@
-:root {
-  --map-width: 3;
-  --map-height: 3;
-}
-
 .field {
   width: 100%;
   aspect-ratio: 1;
@@ -37,4 +32,17 @@
   width: 100%;
   height: 100%;
   z-index: 1000;
+}
+
+.winMessage {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 }

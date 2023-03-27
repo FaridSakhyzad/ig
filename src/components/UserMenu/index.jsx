@@ -12,7 +12,6 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm }) => {
 
   const handleCancelClick = () => {
     onModeChange(GAMEPLAY_MODE);
-    console.log('revert all the stuff');
   }
 
   return (

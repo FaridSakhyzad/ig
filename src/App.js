@@ -16,15 +16,22 @@ function App() {
     setCurrentScreen('settings');
   }
 
+  const [ projectileMoveStep, setProjectileMoveStep ] = useState(1);
+
   const setScreenSizeCssProperty = () => {
     const { width } = document.getElementById('screen').getBoundingClientRect();
-    document.documentElement.style.setProperty('--screen-width', `${width}`);
-    document.documentElement.style.setProperty('--base-width-unit', `${1 / BASE_VIEWPORT_WIDTH * width}`);
+
+    const baseWidthUnit = 1 / BASE_VIEWPORT_WIDTH * width;
+    document.documentElement.style.setProperty('--base-width-unit', `${baseWidthUnit}`);
+
+    setProjectileMoveStep(baseWidthUnit);
   }
 
   useEffect(() => {
     setScreenSizeCssProperty();
+  }, []);
 
+  useEffect(() => {
     window.addEventListener('resize', setScreenSizeCssProperty)
 
     return () => {
@@ -32,11 +39,22 @@ function App() {
     }
   });
 
+  const [ projectileExplosionDuration, setProjectileExplosionDuration ] = useState();
+
+  useEffect(() => {
+    const computedStyle = getComputedStyle(document.documentElement);
+
+    setProjectileExplosionDuration(parseFloat(computedStyle.getPropertyValue('--projectile-explosion--duration')) * 1000);
+  }, []);
+
   return (
     <div className="app">
       {currentScreen === 'playground' && (
         <div className="screen" id="screen">
-          <Playground />
+          <Playground
+            projectileExplosionDuration={projectileExplosionDuration}
+            projectileMoveStep={projectileMoveStep}
+          />
         </div>
       )}
       {currentScreen === 'menu' && (
