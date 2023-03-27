@@ -10,8 +10,6 @@ import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/co
 const MAX_MULTISELECT = 2;
 
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
-  console.log('projectileMoveStep', projectileMoveStep);
-
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
 
   const [ currentLevel, setCurrentLevel ] = useState(0);
