@@ -7,7 +7,7 @@ import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
     <div
-      className={`unit ${type} ${isSelected ? 'unit__selected' : ''}`}
+      className={`unit ${type} ${isSelected ? 'unit--selected' : ''}`}
       id={id}
       data-index={idx}
       onClick={(e) => onClickHandler(e, id, idx)}
@@ -15,7 +15,7 @@ const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onCl
     >
       <div className="unit-pivot">
         <div
-          className={classnames('unit-image', { 'unit-image__exploding': exploding })}
+          className={classnames('unit-image', { 'unit-image--exploding': exploding })}
           style={{
             '--unit-image--width': `${value * (100 / maxValue) / 2}%`,
             '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms`

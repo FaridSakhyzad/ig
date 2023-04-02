@@ -4,7 +4,7 @@ const UNIT_MAX_VALUE = 4;
 const UNIT_MIN_VALUE = 0
 
 const MAP_WIDTH = 9;
-const MAP_HEIGHT = 9
+const MAP_HEIGHT = 9;
 
 const MAP_9x9_0 = ((m, n) => {
   const result = [];

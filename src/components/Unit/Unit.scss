@@ -4,7 +4,6 @@
 
 .unit {
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,7 +13,7 @@
   transition: transform 0.2s ease;
 }
 
-.unit__selected {
+.unit--selected {
   outline-color: black;
 }
 
@@ -121,7 +120,7 @@
   }
 }
 
-.unit-image__exploding {
+.unit-image--exploding {
   width: 100%!important;
   height: 100%!important;
   transform: scale(1);

@@ -362,6 +362,39 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setWinScreenVisible(false);
   }
 
+  const getGridStyle = () => {
+    const { gridWidth, gridHeight, mapWidth, mapHeight } = map;
+
+    return {
+      '--grid-width': mapWidth <= gridWidth ? gridWidth : mapWidth,
+      '--grid-height': mapHeight <= gridHeight ? gridHeight : mapHeight,
+    };
+  }
+
+  const getMapStyle = () => {
+    const { gridWidth, gridHeight, mapWidth, mapHeight } = map;
+
+    const mapStyle = {
+      '--map-width': mapWidth,
+      '--map-height': mapHeight,
+    }
+
+    const rowStartOffset = gridHeight > mapHeight ? (gridHeight - mapHeight) / 2 : 0;
+    const colStartOffset = gridWidth > mapWidth ? (gridWidth - mapWidth) / 2 : 0;
+
+    const fitMapIntoGrid = {
+      gridRowStart: rowStartOffset + 1,
+      gridColumnStart: colStartOffset + 1,
+      gridRowEnd: gridHeight > mapHeight ? gridHeight - rowStartOffset + 1 : mapHeight + 1,
+      gridColumnEnd: gridWidth > mapWidth ? gridWidth - colStartOffset + 1 : mapWidth + 1,
+    }
+
+    return {
+      ...fitMapIntoGrid,
+      ...mapStyle,
+    }
+  }
+
   return (
     <>
       {winScreenVisible && (
@@ -388,25 +421,24 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
             />
           ))}
         </div>
-        <div className="unitLayer" style={{
-          '--map-width': map.mapWidth,
-          '--map-height': map.mapHeight,
-        }}>
-          {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
-            <Unit
-              key={id}
-              isSelected={selectedUnits.some(unit => unit.unitId === id)}
-              id={id}
-              type={type}
-              angle={angle}
-              value={value}
-              maxValue={maxValue}
-              turrets={turrets}
-              onClickHandler={onClick}
-              exploding={exploding}
-              idx={index}
-            />
-          ))}
+        <div className="unitLayerGrid" style={getGridStyle()}>
+          <div className="mapLayer" style={getMapStyle()}>
+            {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
+              <Unit
+                key={id}
+                isSelected={selectedUnits.some(unit => unit.unitId === id)}
+                id={id}
+                type={type}
+                angle={angle}
+                value={value}
+                maxValue={maxValue}
+                turrets={turrets}
+                onClickHandler={onClick}
+                exploding={exploding}
+                idx={index}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
