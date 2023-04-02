@@ -363,7 +363,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const getGridStyle = () => {
-    const { gridWidth, gridHeight, mapWidth, mapHeight } = map;
+    const { gridWidth: gridWidthInitial, gridHeight: gridHeightInitial, mapWidth: mapWidthInitial, mapHeight: mapHeightInitial } = map;
+
+    const gridWidth = gridWidthInitial >= gridHeightInitial ? gridWidthInitial : gridHeightInitial;
+    const gridHeight = gridHeightInitial >= gridWidthInitial ? gridHeightInitial : gridWidthInitial;
+
+    const mapWidth = mapWidthInitial >= mapHeightInitial ? mapWidthInitial : mapHeightInitial;
+    const mapHeight = mapHeightInitial >= mapWidthInitial ? mapHeightInitial : mapWidthInitial;
 
     return {
       '--grid-width': mapWidth <= gridWidth ? gridWidth : mapWidth,
@@ -372,7 +378,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const getMapStyle = () => {
-    const { gridWidth, gridHeight, mapWidth, mapHeight } = map;
+    const { gridWidth: gridWidthInitial, gridHeight: gridHeightInitial, mapWidth, mapHeight } = map;
+
+    let gridWidth = gridWidthInitial >= gridHeightInitial ? gridWidthInitial : gridHeightInitial;
+    let gridHeight = gridHeightInitial >= gridWidthInitial ? gridHeightInitial : gridWidthInitial;
+
+    gridWidth = gridWidth > mapHeight ? gridWidth : mapHeight;
+    gridHeight = gridHeight > mapWidth ? gridHeight : mapWidth;
 
     const mapStyle = {
       '--map-width': mapWidth,

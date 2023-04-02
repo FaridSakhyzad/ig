@@ -21,7 +21,7 @@ const mapSet = [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
-    units: MAP_9x9_0
+    units: MAP_9x9_0(9, 9)
   },
   {
     gridWidth: 9,

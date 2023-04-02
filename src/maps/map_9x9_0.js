@@ -3,10 +3,7 @@ import { PROJECTILE_MOVE_DELAY } from '../config/config';
 const UNIT_MAX_VALUE = 4;
 const UNIT_MIN_VALUE = 0
 
-const MAP_WIDTH = 9;
-const MAP_HEIGHT = 9;
-
-const MAP_9x9_0 = ((m, n) => {
+const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
 
   const defaults = {
@@ -23,7 +20,7 @@ const MAP_9x9_0 = ((m, n) => {
     ],
   }
 
-  for (let i = 0; i < m * n; i++) {
+  for (let i = 0; i < mapWidth * mapHeight; i++) {
     result.push({
       ...defaults,
       id: Math.random().toString(16).substring(2),
@@ -31,7 +28,7 @@ const MAP_9x9_0 = ((m, n) => {
     });
   }
 
-  result[MAP_WIDTH * 1 + 3] = {
+  result[mapWidth * 1 + 3] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'wall',
@@ -39,14 +36,14 @@ const MAP_9x9_0 = ((m, n) => {
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
 
-  result[MAP_WIDTH * 1 + 4] = {
+  result[mapWidth * 1 + 4] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'hidden',
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
 
-  result[MAP_WIDTH * 2 + 2] = {
+  result[mapWidth * 2 + 2] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'bobomb',
@@ -111,13 +108,13 @@ const MAP_9x9_0 = ((m, n) => {
     ],
   }
 
-  result[MAP_WIDTH * 3 + 3] = {
+  result[mapWidth * 3 + 3] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[MAP_WIDTH * 3 + 5] = {
+  result[mapWidth * 3 + 5] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
@@ -130,13 +127,13 @@ const MAP_9x9_0 = ((m, n) => {
     ],
   }
 
-  result[MAP_WIDTH * 4 + 3] = {
+  result[mapWidth * 4 + 3] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[MAP_WIDTH * 4 + 5] = {
+  result[mapWidth * 4 + 5] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
@@ -149,7 +146,7 @@ const MAP_9x9_0 = ((m, n) => {
     ],
   }
 
-  result[MAP_WIDTH * MAP_HEIGHT - MAP_WIDTH] = {
+  result[mapWidth * mapHeight - mapWidth] = {
     ...defaults,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
@@ -165,7 +162,7 @@ const MAP_9x9_0 = ((m, n) => {
   const portal1id = Math.random().toString(16).substring(2);
   const portal2id = Math.random().toString(16).substring(2);
 
-  result[MAP_WIDTH * (MAP_HEIGHT - 4) + 1] = {
+  result[mapWidth * (mapHeight - 4) + 1] = {
     ...defaults,
     valueCountable: false,
     id: portal1id,
@@ -178,7 +175,7 @@ const MAP_9x9_0 = ((m, n) => {
     }
   }
 
-  result[MAP_WIDTH * (MAP_HEIGHT - 2) + 2] = {
+  result[mapWidth * (mapHeight - 2) + 2] = {
     ...defaults,
     valueCountable: false,
     id: portal2id,
@@ -192,7 +189,7 @@ const MAP_9x9_0 = ((m, n) => {
   }
 
   return result;
-})(MAP_WIDTH, MAP_HEIGHT)
+};
 
 
 export default MAP_9x9_0;
