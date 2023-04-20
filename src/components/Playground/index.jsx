@@ -5,12 +5,14 @@ import Unit from '../Unit';
 import UserMenu from '../UserMenu';
 import mapSet from '../../maps/maps';
 import './Playground.scss';
-import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE } from '../../constants/constants';
+import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
+import { generateBobomb, generateDefault, generateLaser } from '../../maps/map_9x9_0';
 
 const MAX_MULTISELECT = 2;
 
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
+  const [ unitPlacementType, setUnitPlacementType ] = useState('');
 
   const [ currentLevel, setCurrentLevel ] = useState(0);
 
@@ -205,6 +207,22 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       return;
     }
 
+    if (userInputMode === PlACING_MODE) {
+      const generators = {
+        'default': generateDefault,
+        'bobomb': generateBobomb,
+        'laser': generateLaser,
+      }
+
+      const newUnit = generators[unitPlacementType]();
+
+      const newUnits = [ ...units ];
+
+      newUnits[unitIndex] = newUnit;
+
+      setUnits(newUnits);
+    }
+
     if (userInputMode === GAMEPLAY_MODE) {
       makePlayerMove(e, unitId, unitIndex);
     }
@@ -352,6 +370,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
   }
 
+  const placementTypeChange = (unitType) => {
+    setUnitPlacementType(unitType);
+  }
+
   const startNextLevel = () => {
     const nextLevel = currentLevel + 1;
 
@@ -458,6 +480,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         userInputMode={userInputMode}
         onModeChange={onModeChange}
         onRotate={rotateSelectedUnit}
+        onPlacementTypeChange={placementTypeChange}
         onConfirm={onConfirm}
       />
     </>

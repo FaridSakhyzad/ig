@@ -18,3 +18,13 @@
   margin: 0 16px;
   min-width: 100px;
 }
+
+.userMenu-unitsBox {
+  display: flex;
+
+  .unit {
+    width: calc(var(--base-width-unit) * 35px);
+    height: calc(var(--base-width-unit) * 35px);
+    margin: 0 calc(var(--base-width-unit) * 5px);
+  }
+}

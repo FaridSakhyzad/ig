@@ -1,50 +1,33 @@
 import { PROJECTILE_MOVE_DELAY } from '../config/config';
 
 const UNIT_MAX_VALUE = 4;
-const UNIT_MIN_VALUE = 0
+const UNIT_MIN_VALUE = 0;
 
-const MAP_9x9_0 = (mapWidth, mapHeight) => {
-  const result = [];
+export const defaults = {
+  type: 'default',
+  minValue: UNIT_MIN_VALUE,
+  maxValue: UNIT_MAX_VALUE,
+  valueCountable: true,
+  angle: 0,
+  turrets: [
+    { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    { name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    { name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY, }
+  ],
+};
 
-  const defaults = {
-    type: 'default',
-    minValue: UNIT_MIN_VALUE,
-    maxValue: UNIT_MAX_VALUE,
-    valueCountable: true,
-    angle: 0,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY, }
-    ],
-  }
-
-  for (let i = 0; i < mapWidth * mapHeight; i++) {
-    result.push({
-      ...defaults,
-      id: Math.random().toString(16).substring(2),
-      value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-    });
-  }
-
-  result[mapWidth * 1 + 3] = {
+export const generateDefault = () => {
+  return {
     ...defaults,
+    value: UNIT_MAX_VALUE,
     id: Math.random().toString(16).substring(2),
-    type: 'wall',
-    valueCountable: false,
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-  }
+  };
+}
 
-  result[mapWidth * 1 + 4] = {
-    ...defaults,
-    id: Math.random().toString(16).substring(2),
-    type: 'hidden',
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-  }
-
-  result[mapWidth * 2 + 2] = {
-    ...defaults,
+export const generateBobomb = () => {
+  return {
+    ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     type: 'bobomb',
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
@@ -107,47 +90,69 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
       }
     ],
   }
+}
+
+export const generateLaser = () => {
+  return {
+      ...generateDefault(),
+      id: Math.random().toString(16).substring(2),
+      type: 'laser',
+      value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
+      turrets: [
+      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
+    ],
+  }
+}
+
+const MAP_9x9_0 = (mapWidth, mapHeight) => {
+  const result = [];
+
+  for (let i = 0; i < mapWidth * mapHeight; i++) {
+    result.push({
+      ...generateDefault(),
+      id: Math.random().toString(16).substring(2),
+      value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+    });
+  }
+
+  result[mapWidth * 1 + 3] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'wall',
+    valueCountable: false,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+  }
+
+  result[mapWidth * 1 + 4] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'hidden',
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+  }
+
+  result[mapWidth * 2 + 2] = generateBobomb();
 
   result[mapWidth * 3 + 3] = {
-    ...defaults,
+    ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[mapWidth * 3 + 5] = {
-    ...defaults,
-    id: Math.random().toString(16).substring(2),
-    type: 'laser',
-    value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
-    ],
-  }
+  result[mapWidth * 3 + 5] = generateLaser();
 
   result[mapWidth * 4 + 3] = {
-    ...defaults,
+    ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[mapWidth * 4 + 5] = {
-    ...defaults,
-    id: Math.random().toString(16).substring(2),
-    type: 'laser',
-    value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
-    ],
-  }
+  result[mapWidth * 4 + 5] = generateLaser();
 
   result[mapWidth * mapHeight - mapWidth] = {
-    ...defaults,
+    ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     type: 'laser',
     value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
@@ -163,7 +168,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const portal2id = Math.random().toString(16).substring(2);
 
   result[mapWidth * (mapHeight - 4) + 1] = {
-    ...defaults,
+    ...generateDefault(),
     valueCountable: false,
     id: portal1id,
     type: 'portal',
@@ -176,7 +181,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * (mapHeight - 2) + 2] = {
-    ...defaults,
+    ...generateDefault(),
     valueCountable: false,
     id: portal2id,
     type: 'portal',

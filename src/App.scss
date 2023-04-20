@@ -1,6 +1,11 @@
+body, html, #root {
+  width: 100%;
+  height: 100%;
+}
+
 .app {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   display: flex;
   align-content: center;
   align-items: center;
@@ -11,8 +16,8 @@
 
 .screen {
   position: absolute;
-  width: 99vw;
-  height: 99vh;
+  width: 99%;
+  height: 99%;
   max-width: 768px;
   max-height: 1280px;
   background-color: #ffffff;
