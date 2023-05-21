@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
-
-import './App.scss';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
+import './App.scss';
 
-import { BASE_VIEWPORT_WIDTH } from './config/config';
+import { BASE_VIEWPORT_WIDTH, SCREEN_MODES } from './config/config';
 
 function App() {
-  const [ currentScreen, setCurrentScreen ] = useState('playground');
+  const dispatch = useDispatch();
+
+  const { currentScreen } = useSelector(state => state.ui);
 
   const handleStartClick = () => {
-    setCurrentScreen('playground');
+    dispatch(setCurrentScreen(SCREEN_MODES.playground));
   }
 
   const handleSettingsClick = () => {
-    setCurrentScreen('settings');
+    dispatch(setCurrentScreen(SCREEN_MODES.settings));
   }
 
   const [ projectileMoveStep, setProjectileMoveStep ] = useState(1);
@@ -60,8 +63,8 @@ function App() {
       {currentScreen === 'menu' && (
         <div className="screen" id="screen">
           <h2>Menu</h2>
-          <button onClick={handleStartClick}>Start</button>
-          <button onClick={handleSettingsClick}>Settings</button>
+          <button onClick={handleStartClick} className="button">Start</button>
+          <button onClick={handleSettingsClick} className="button">Settings</button>
         </div>
       )}
       {currentScreen === 'settings' && (

@@ -15,7 +15,7 @@ const defaults = {
   ],
 }
 
-const mapSet = [
+const mapSet = () => [
   {
     gridWidth: 9,
     gridHeight: 9,

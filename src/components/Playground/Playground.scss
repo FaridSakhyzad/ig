@@ -60,3 +60,35 @@
   align-items: center;
   justify-content: center;
 }
+
+.loseMessage {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.moves {
+  font-size: 14px;
+  line-height: 18px;
+  margin: 15px 0 10px 0;
+}
+
+.mode {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 10px 0;
+}
+
+.currentLevel {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 15px 0;
+}

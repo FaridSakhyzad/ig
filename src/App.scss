@@ -17,7 +17,7 @@ body, html, #root {
 .screen {
   position: absolute;
   width: 99%;
-  height: 99%;
+  min-height: 99%;
   max-width: 768px;
   max-height: 1280px;
   background-color: #ffffff;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { number } from 'prop-types';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -7,16 +8,22 @@ import mapSet from '../../maps/maps';
 import './Playground.scss';
 import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
 import { generateBobomb, generateDefault, generateLaser } from '../../maps/map_9x9_0';
+import { setCurrentScreen } from '../../redux/ui/actions';
+import { SCREEN_MODES, START_MOVES } from '../../config/config';
 
 const MAX_MULTISELECT = 2;
 
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
+  const dispatch = useDispatch();
+
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
   const [ unitPlacementType, setUnitPlacementType ] = useState('');
 
   const [ currentLevel, setCurrentLevel ] = useState(0);
 
-  const [ map, setMap ] = useState(mapSet[currentLevel]);
+  const [ levelCounter, setLevelCounter ] = useState(1);
+
+  const [ map, setMap ] = useState(mapSet()[currentLevel]);
   const [ fieldInfo, setFieldInfo ] = useState({});
 
   const [ units, setUnits ] = useState(map.units);
@@ -25,8 +32,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const [ projectiles, setProjectiles ] = useState([]);
 
-  const [ moves, setMoves ] = useState(1000);
+  const [ moves, setMoves ] = useState(START_MOVES);
   const [ winScreenVisible, setWinScreenVisible ] = useState(false);
+  const [ loseScreenVisible, setLoseScreenVisible ] = useState(false);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => {
     return [ ...document.querySelectorAll('.unit') ].map(unit => {
@@ -100,7 +108,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const explodeUnit = (unitIndex) => {
     const newUnits = [ ...units ];
+
     newUnits[unitIndex].exploding = true;
+    newUnits[unitIndex].value = newUnits[unitIndex].minValue;
+
     setUnits(newUnits);
   };
 
@@ -121,7 +132,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const detectUserMoveOutcome = (moves) => {
     if (Playground.actingProjectilesNumber === 0 && moves <= 0) {
-      setTimeout(() => { alert('On Click You Loose') }, 300);
+      setLoseScreenVisible(true);
     }
   }
 
@@ -202,7 +213,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     callbacks[units[unitIndex].type]();
   }
 
-  const onClick = (e, unitId, unitIndex) => {
+  const handleUnitClick = (e, unitId, unitIndex) => {
     if (Playground.actingProjectilesNumber > 0) {
       return;
     }
@@ -260,13 +271,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const someUnitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
 
     if (moves < 1 && someUnitsLeft) {
-      setTimeout(() => { alert('You Loose') }, projectileExplosionDuration + 300)
+      setLoseScreenVisible(true);
       return;
     }
 
     if (moves >= 0 && !someUnitsLeft) {
       setTimeout(() => {
-        setWinScreenVisible(true)
+        setWinScreenVisible(true);
       }, projectileExplosionDuration + 300);
     }
   }
@@ -374,12 +385,34 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnitPlacementType(unitType);
   }
 
+  const handleRestartClick = () => {
+    setMoves(START_MOVES);
+    startLevel(0);
+  }
+
+  const handleMenuClick = () => {
+    dispatch(setCurrentScreen(SCREEN_MODES.menu));
+  }
+
+  const startLevel = (number) => {
+    setLevelCounter(1);
+
+    setCurrentLevel(number);
+    setMap(mapSet()[number]);
+    setUnits(mapSet()[number].units);
+
+    setWinScreenVisible(false);
+    setLoseScreenVisible(false);
+  }
+
   const startNextLevel = () => {
-    const nextLevel = currentLevel + 1;
+    setLevelCounter(levelCounter + 1);
+
+    const nextLevel = currentLevel >= (mapSet.length - 1) ? 0 : currentLevel + 1;
 
     setCurrentLevel(nextLevel);
-    setMap(mapSet[nextLevel]);
-    setUnits(mapSet[nextLevel].units);
+    setMap(mapSet()[nextLevel]);
+    setUnits(mapSet()[nextLevel].units);
 
     setWinScreenVisible(false);
   }
@@ -437,9 +470,18 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         </div>
       )}
 
-      <h1>moves: {moves}</h1>
-      <h2>gameplay mode: {userInputMode}</h2>
-      <h3>currentLevel: {currentLevel}</h3>
+      {loseScreenVisible && (
+          <div className="loseMessage">
+            <h1>You Loose</h1>
+            <button className="button" onClick={handleRestartClick}>Restart</button>
+            <button className="button" onClick={handleMenuClick}>Menu</button>
+          </div>
+      )}
+
+      <h1 className="moves">moves: {moves}</h1>
+      <h2 className="mode">gameplay mode: {userInputMode}</h2>
+      <h3 className="currentLevel">currentLevel: {levelCounter}</h3>
+
       <div className="field" id="field">
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (
@@ -467,7 +509,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
                 value={value}
                 maxValue={maxValue}
                 turrets={turrets}
-                onClickHandler={onClick}
+                onClickHandler={handleUnitClick}
                 exploding={exploding}
                 idx={index}
               />

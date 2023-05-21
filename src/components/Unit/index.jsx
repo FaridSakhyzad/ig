@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import './Unit.scss';
@@ -14,12 +14,15 @@ const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onCl
       style={{ transform: `rotate(${angle}deg)` }}
     >
       <div className="unit-pivot">
+        {exploding && (
+            <div
+                className='unit-image unit-image--exploding'
+                style={{ '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms` }}
+            />
+        )}
         <div
-          className={classnames('unit-image', { 'unit-image--exploding': exploding })}
-          style={{
-            '--unit-image--width': `${value * (100 / maxValue) / 2}%`,
-            '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms`
-        }}
+          className="unit-image"
+          style={{ '--unit-image--width': `${value * (100 / maxValue) / 2}%` }}
         />
         {turrets && turrets.map(({ angle, name}, turretIndex) => (
           <div className={`turret ${name}`} data-name={name} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>

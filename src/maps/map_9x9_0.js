@@ -8,6 +8,7 @@ export const defaults = {
   minValue: UNIT_MIN_VALUE,
   maxValue: UNIT_MAX_VALUE,
   valueCountable: true,
+  exploding: false,
   angle: 0,
   turrets: [
     { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
