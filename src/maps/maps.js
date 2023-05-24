@@ -21,6 +21,28 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
+    units: ((m, n) => {
+      const UNIT_MIN_VALUE = 0
+      const UNIT_MAX_VALUE = 4;
+
+      const result = [];
+
+      for (let i = 0; i < m * n; i++) {
+        result.push({
+          ...defaults,
+          id: Math.random().toString(16).substring(2),
+          value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
+        });
+      }
+
+      return result;
+    })(9, 9),
+  },
+  {
+    gridWidth: 9,
+    gridHeight: 9,
+    mapWidth: 9,
+    mapHeight: 9,
     units: MAP_9x9_0(9, 9)
   },
   {
