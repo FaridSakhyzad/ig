@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import './Unit.scss';
 import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
-const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
+const Unit = ({ id, type, isSelected, isDisabled, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
     <div
-      className={`unit ${type} ${isSelected ? 'unit--selected' : ''}`}
+      className={classnames('unit', type, { 'unit--selected': isSelected, 'unit--disabled': isDisabled })}
       id={id}
       data-index={idx}
       onClick={(e) => onClickHandler(e, id, idx)}
@@ -41,6 +41,7 @@ const Unit = ({ id, type, isSelected, turrets, value, angle, maxValue, idx, onCl
 Unit.propTypes = {
   id: PropTypes.string,
   isSelected: PropTypes.bool,
+  isDisabled: PropTypes.bool,
   type: PropTypes.string,
   value: PropTypes.number,
   angle: PropTypes.number,
@@ -50,5 +51,10 @@ Unit.propTypes = {
   exploding: PropTypes.bool,
   idx: PropTypes.number
 };
+
+Unit.defaultProps = {
+  isSelected: false,
+  isDisabled: false,
+}
 
 export default Unit;

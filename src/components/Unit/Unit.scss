@@ -17,6 +17,10 @@
   outline-color: black;
 }
 
+.unit--disabled {
+  opacity: 0.5;
+}
+
 .unit-pivot {
   display: flex;
   align-items: center;

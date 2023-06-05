@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { number } from 'prop-types';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -10,13 +10,18 @@ import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../.
 import { generateBobomb, generateDefault, generateLaser } from '../../maps/map_9x9_0';
 import { setCurrentScreen } from '../../redux/ui/actions';
 import { SCREEN_MODES, START_MOVES } from '../../config/config';
+import { setSwaps, setRotates, setAmmo } from '../../redux/user/actions';
 
 const MAX_MULTISELECT = 2;
 
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const dispatch = useDispatch();
 
+  const { bobombs, defaults, lasers, swaps, rotates } = useSelector(({ user }) => user);
+
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
+  const [ afterInputAction, setAfterInputAction ] = useState(null);
+
   const [ unitPlacementType, setUnitPlacementType ] = useState('');
 
   const [ currentLevel, setCurrentLevel ] = useState(0);
@@ -218,11 +223,21 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       return;
     }
 
+    if (userInputMode === GAMEPLAY_MODE) {
+      makePlayerMove(e, unitId, unitIndex);
+    }
+
     if (userInputMode === PlACING_MODE) {
       const generators = {
         'default': generateDefault,
         'bobomb': generateBobomb,
         'laser': generateLaser,
+      }
+
+      const callbacks = {
+        'default': () => dispatch(setAmmo({ defaults: defaults - 1 })),
+        'bobomb': () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
+        'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
       }
 
       const newUnit = generators[unitPlacementType]();
@@ -232,10 +247,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       newUnits[unitIndex] = newUnit;
 
       setUnits(newUnits);
-    }
 
-    if (userInputMode === GAMEPLAY_MODE) {
-      makePlayerMove(e, unitId, unitIndex);
+      callbacks[unitPlacementType]();
+
+      setUserInputMode(GAMEPLAY_MODE);
     }
 
     if (userInputMode === SELECT_MODE) {
@@ -243,6 +258,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === MULTISELECT_MODE) {
+      /*
       const selectedIndex = selectedUnits.findIndex(unit => unit.unitId === unitId)
 
       if (selectedIndex >= 0) {
@@ -254,8 +270,14 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
         selectedUnits.push({ unitId, unitIndex })
       }
+      */
 
+      selectedUnits.push({ unitId, unitIndex });
       setSelectedUnits([ ...selectedUnits ]);
+
+      if (selectedUnits.length >= MAX_MULTISELECT && afterInputAction === 'swap') {
+        performSwap();
+      }
 
       const { fieldTop, fieldLeft } = fieldInfo;
       const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
@@ -344,32 +366,49 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     detectGameOutcome();
   }
 
-  const onModeChange = (mode) => {
+  const onModeChange = (mode, meta) => {
+    setAfterInputAction(meta.callback);
     setUserInputMode(mode);
   }
 
   const onConfirm = (action) => {
-    if (!action) {
+    if (!action || !action.type) {
       return;
     }
 
-    if (action === 'swap') {
-      const newUnits = [ ...units ];
+    console.log('onConfirm', action);
 
-      const { unitIndex: unit0Index } = selectedUnits[0];
-      const { unitIndex: unit1Index } = selectedUnits[1];
+    if (action.type === 'swap' && selectedUnits.length === 2) {
+      performSwap();
+    }
 
-      const unit0 = structuredClone(newUnits[unit0Index]);
-
-      newUnits[unit0Index] = newUnits[unit1Index];
-      newUnits[unit1Index] = unit0;
-
-      setUnits(newUnits);
+    if (action.type === 'rotate') {
+      dispatch(setRotates(rotates - 1));
     }
 
     setUserInputMode(GAMEPLAY_MODE);
     setSelectedUnits([]);
   }
+
+  const performSwap = () => {
+    const newUnits = [ ...units ];
+
+    const { unitIndex: unit0Index } = selectedUnits[0];
+    const { unitIndex: unit1Index } = selectedUnits[1];
+
+    const unit0 = structuredClone(newUnits[unit0Index]);
+
+    newUnits[unit0Index] = newUnits[unit1Index];
+    newUnits[unit1Index] = unit0;
+
+    setUnits(newUnits);
+
+    dispatch(setSwaps(swaps - 1));
+  }
+
+  const onCancel = () => {
+    setSelectedUnits([]);
+  };
 
   const rotateSelectedUnit = (direction) => {
     const { unitIndex } = selectedUnits[0];
@@ -413,6 +452,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setCurrentLevel(nextLevel);
     setMap(mapSet()[nextLevel]);
     setUnits(mapSet()[nextLevel].units);
+
+    setMoves(START_MOVES);
 
     setWinScreenVisible(false);
   }
@@ -523,6 +564,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         onModeChange={onModeChange}
         onRotate={rotateSelectedUnit}
         onPlacementTypeChange={placementTypeChange}
+        onCancel={onCancel}
         onConfirm={onConfirm}
       />
     </>
