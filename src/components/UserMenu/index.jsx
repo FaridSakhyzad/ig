@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { GAMEPLAY_MODE, MULTISELECT_MODE, PlACING_MODE, SELECT_MODE } from '../../constants/constants';
+import { GAMEPLAY_MODE, MULTISELECT_MODE, PlACING_MODE, SELECT_MODE } from 'constants/constants';
 import Unit from '../Unit';
 import './UserMenu.scss';
 import { useSelector } from "react-redux";
-import {rotate} from "../../utils";
 
 const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, onPlacementTypeChange }) => {
   const { bobombs, defaults, lasers, swaps, rotates } = useSelector(state => state.user);
@@ -44,8 +43,16 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
   return (
     <div className="userMenu">
       <div className="userMenu-row">
-        <button disabled={swaps < 1} onClick={() => handleModeChange(MULTISELECT_MODE, 'swap')} className="button userMenu-button">Swap</button>
-        <button disabled={rotates < 1} onClick={() => handleModeChange(SELECT_MODE, 'rotate')} className="button userMenu-button">Rotate</button>
+        <button
+          disabled={swaps < 1}
+          onClick={() => handleModeChange(MULTISELECT_MODE, 'swap')}
+          className="button userMenu-button"
+        >Swap {swaps}</button>
+        <button
+          disabled={rotates < 1}
+          onClick={() => handleModeChange(SELECT_MODE, 'rotate')}
+          className="button userMenu-button"
+        >Rotate {rotates}</button>
       </div>
 
       {userInputMode === SELECT_MODE && (

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import { number } from 'prop-types';
+
+import { setCurrentScreen } from 'redux/ui/actions';
+import { setSwaps, setRotates, setAmmo } from 'redux/user/actions';
+
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import UserMenu from '../UserMenu';
-import mapSet from '../../maps/maps';
-import './Playground.scss';
+import mapSet from 'maps/maps';
+
 import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
 import { generateBobomb, generateDefault, generateLaser } from '../../maps/map_9x9_0';
-import { setCurrentScreen } from '../../redux/ui/actions';
 import { SCREEN_MODES, START_MOVES } from '../../config/config';
-import { setSwaps, setRotates, setAmmo } from '../../redux/user/actions';
+
+import './Playground.scss';
 
 const MAX_MULTISELECT = 2;
 
@@ -258,25 +262,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === MULTISELECT_MODE) {
-      /*
-      const selectedIndex = selectedUnits.findIndex(unit => unit.unitId === unitId)
-
-      if (selectedIndex >= 0) {
-        selectedUnits.splice(selectedIndex, 1);
-      } else {
-        if (selectedUnits.length >= MAX_MULTISELECT) {
-          selectedUnits.splice(selectedUnits.length - 1, 1);
-        }
-
-        selectedUnits.push({ unitId, unitIndex })
-      }
-      */
-
       selectedUnits.push({ unitId, unitIndex });
       setSelectedUnits([ ...selectedUnits ]);
 
       if (selectedUnits.length >= MAX_MULTISELECT && afterInputAction === 'swap') {
         performSwap();
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedUnits([]);
       }
 
       const { fieldTop, fieldLeft } = fieldInfo;
@@ -375,8 +367,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     if (!action || !action.type) {
       return;
     }
-
-    console.log('onConfirm', action);
 
     if (action.type === 'swap' && selectedUnits.length === 2) {
       performSwap();
