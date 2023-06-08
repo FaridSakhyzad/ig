@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import { number } from 'prop-types';
+import {number, string} from 'prop-types';
 
 import { setCurrentScreen } from 'redux/ui/actions';
 import { setSwaps, setRotates, setAmmo } from 'redux/user/actions';
@@ -402,12 +402,12 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setSelectedUnits([]);
   };
 
-  const performRotate = (unitIndex) => {
+  const performRotate = (unitIndex, angle = 45) => {
     const newUnits = [ ...units ];
 
     const directionMultiplier = afterInputAction === 'rotate_ccv' ? -1 : 1;
 
-    newUnits[unitIndex].angle += (45 * directionMultiplier);
+    newUnits[unitIndex].angle += (angle * directionMultiplier);
     setUnits(newUnits);
 
     setUserInputMode(GAMEPLAY_MODE);
@@ -565,12 +565,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       </div>
 
       <UserMenu
-        userInputMode={userInputMode}
+        afterInputAction={afterInputAction}
         onModeChange={onModeChange}
-        onRotate={performRotate}
         onPlacementTypeChange={placementTypeChange}
-        onCancel={onCancel}
-        onConfirm={onConfirm}
       />
     </>
   )

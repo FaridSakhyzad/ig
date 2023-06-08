@@ -17,6 +17,10 @@
 .userMenu-button {
   margin: 0 6px;
   min-width: 100px;
+
+  &.selected {
+    border-width: 3px;
+  }
 }
 
 .userMenu-unitsBox {

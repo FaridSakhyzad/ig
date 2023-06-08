@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, {string} from 'prop-types';
+import classnames from 'classnames';
 import { GAMEPLAY_MODE, MULTISELECT_MODE, PlACING_MODE, SELECT_MODE } from 'constants/constants';
 import Unit from '../Unit';
 import './UserMenu.scss';
 import { useSelector } from "react-redux";
 
-const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, onPlacementTypeChange }) => {
+const UserMenu = ({ onModeChange, onPlacementTypeChange, afterInputAction }) => {
   const { bobombs, defaults, lasers, swaps, rotates } = useSelector(state => state.user);
-
-  const [ onConfirmAction, setOnConfirmAction ] = useState(null);
 
   const [ placementUnitType, setPlacementUnitType ] = useState(null)
   const handleModeChange = (mode, action) => {
     onModeChange(mode, { callback: action });
-    setOnConfirmAction(action);
-  }
-
-  const handleCancelClick = () => {
-    onCancel();
-    onModeChange(GAMEPLAY_MODE);
   }
 
   const handlePlacementModeChange = (unitType) => {
@@ -37,7 +30,6 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
     handleModeChange(PlACING_MODE, 'placing');
     onPlacementTypeChange(unitType);
     setPlacementUnitType(unitType);
-    setOnConfirmAction('place');
   }
 
   return (
@@ -46,18 +38,18 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
         <button
           disabled={swaps < 1}
           onClick={() => handleModeChange(MULTISELECT_MODE, 'swap')}
-          className="button userMenu-button"
+          className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
         >Swap {swaps}</button>
         <button
           disabled={rotates < 1}
           onClick={() => handleModeChange(SELECT_MODE, 'rotate_ccv')}
-          className="button userMenu-button"
+          className={classnames('button userMenu-button', { selected: afterInputAction === 'rotate_ccv' })}
         >&lt;-</button>
         <button disabled={rotates < 1}>{rotates}</button>
         <button
           disabled={rotates < 1}
           onClick={() => handleModeChange(SELECT_MODE, 'rotate_cv')}
-          className="button userMenu-button"
+          className={classnames('button userMenu-button', { selected: afterInputAction === 'rotate_cv' })}
         >-&gt;</button>
       </div>
 
@@ -120,12 +112,9 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
 }
 
 UserMenu.propTypes = {
-  userInputMode: PropTypes.string,
   onModeChange: PropTypes.func,
-  onRotate: PropTypes.func,
-  onCancel: PropTypes.func,
-  onConfirm: PropTypes.func,
   onPlacementTypeChange: PropTypes.func,
+  afterInputAction: string,
 }
 
 export default UserMenu;
