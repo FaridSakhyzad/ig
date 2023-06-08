@@ -451,6 +451,15 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
     setMoves(START_MOVES);
 
+    dispatch(setAmmo({
+      moves: 10,
+      defaults: 1,
+      bobombs: 1,
+      lasers: 1,
+      swaps: 1,
+      rotates: 1,
+    }))
+
     setWinScreenVisible(false);
   }
 
