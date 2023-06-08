@@ -50,23 +50,16 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
         >Swap {swaps}</button>
         <button
           disabled={rotates < 1}
-          onClick={() => handleModeChange(SELECT_MODE, 'rotate')}
+          onClick={() => handleModeChange(SELECT_MODE, 'rotate_ccv')}
           className="button userMenu-button"
-        >Rotate {rotates}</button>
+        >&lt;-</button>
+        <button disabled={rotates < 1}>{rotates}</button>
+        <button
+          disabled={rotates < 1}
+          onClick={() => handleModeChange(SELECT_MODE, 'rotate_cv')}
+          className="button userMenu-button"
+        >-&gt;</button>
       </div>
-
-      {userInputMode === SELECT_MODE && (
-        <>
-          <div className="userMenu-row">
-            <button onClick={() => onRotate('ccv')} className="button userMenu-button">&lt;-</button>
-            <button onClick={() => onRotate('cv')} className="button userMenu-button">-&gt;</button>
-          </div>
-          <div className="userMenu-row">
-            <button onClick={handleCancelClick} className="button userMenu-button">Cancel</button>
-            <button onClick={() => onConfirm({ type: onConfirmAction })} className="button userMenu-button">Ok</button>
-          </div>
-        </>
-      )}
 
       <div className="userMenu-row">
         <div className="userMenu-unitsBox">

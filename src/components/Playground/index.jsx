@@ -258,7 +258,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === SELECT_MODE) {
-      setSelectedUnits([{ unitId, unitIndex }]);
+      if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
+        performRotate(unitIndex);
+      }
     }
 
     if (userInputMode === MULTISELECT_MODE) {
@@ -400,14 +402,18 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setSelectedUnits([]);
   };
 
-  const rotateSelectedUnit = (direction) => {
-    const { unitIndex } = selectedUnits[0];
+  const performRotate = (unitIndex) => {
     const newUnits = [ ...units ];
 
-    const directionMultiplier = direction === 'ccv' ? -1 : 1;
+    const directionMultiplier = afterInputAction === 'rotate_ccv' ? -1 : 1;
 
     newUnits[unitIndex].angle += (45 * directionMultiplier);
     setUnits(newUnits);
+
+    setUserInputMode(GAMEPLAY_MODE);
+    setSelectedUnits([]);
+
+    dispatch(setRotates(rotates - 1));
   }
 
   const placementTypeChange = (unitType) => {
@@ -552,7 +558,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       <UserMenu
         userInputMode={userInputMode}
         onModeChange={onModeChange}
-        onRotate={rotateSelectedUnit}
+        onRotate={performRotate}
         onPlacementTypeChange={placementTypeChange}
         onCancel={onCancel}
         onConfirm={onConfirm}
