@@ -21,10 +21,35 @@
 
 .userMenu-unitsBox {
   display: flex;
+}
+
+.userMenu-unit {
+  width: calc(var(--base-width-unit) * 35px);
+  height: calc(var(--base-width-unit) * 35px);
+  margin: 0 calc(var(--base-width-unit) * 5px);
+  position: relative;
 
   .unit {
-    width: calc(var(--base-width-unit) * 35px);
-    height: calc(var(--base-width-unit) * 35px);
-    margin: 0 calc(var(--base-width-unit) * 5px);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
   }
+
+  .unit-hitBox {
+    display: none;
+  }
+}
+
+.userMenu-unitCount {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -70,53 +70,56 @@ const UserMenu = ({ userInputMode, onModeChange, onRotate, onConfirm, onCancel, 
 
       <div className="userMenu-row">
         <div className="userMenu-unitsBox">
-          <Unit
-              key="default"
-              isSelected={placementUnitType === 'default'}
-              isDisabled={defaults < 1}
-              id="1"
-              type="default"
-              angle={0}
-              value={1}
-              maxValue={1}
-              turrets={[]}
-              onClickHandler={() => handlePlacementModeChange('default')}
-              exploding={false}
-              idx={0}
-          />
-          <h2>defaults: {defaults}</h2>
+          <div className="userMenu-unit" onClick={() => handlePlacementModeChange('default')}>
+            <Unit
+                key="default"
+                isSelected={placementUnitType === 'default'}
+                isDisabled={defaults < 1}
+                id="1"
+                type="default"
+                angle={0}
+                value={1}
+                maxValue={1}
+                turrets={[]}
+                exploding={false}
+                idx={0}
+            />
+            <div className="userMenu-unitCount">{defaults}</div>
+          </div>
 
-          <Unit
-              key="bobomb"
-              isSelected={placementUnitType === 'bobomb'}
-              isDisabled={bobombs < 1}
-              id="2"
-              type="bobomb"
-              angle={0}
-              value={1}
-              maxValue={1}
-              turrets={[]}
-              onClickHandler={() => handlePlacementModeChange('bobomb')}
-              exploding={false}
-              idx={0}
-          />
-          <h2>bobombs: {bobombs}</h2>
+          <div className="userMenu-unit" onClick={() => handlePlacementModeChange('bobomb')}>
+            <Unit
+                key="bobomb"
+                isSelected={placementUnitType === 'bobomb'}
+                isDisabled={bobombs < 1}
+                id="2"
+                type="bobomb"
+                angle={0}
+                value={1}
+                maxValue={1}
+                turrets={[]}
+                exploding={false}
+                idx={0}
+            />
+            <div className="userMenu-unitCount">{bobombs}</div>
+          </div>
 
-          <Unit
-              key="laser"
-              isSelected={placementUnitType === 'laser'}
-              isDisabled={lasers < 1}
-              id="3"
-              type="laser"
-              angle={0}
-              value={1}
-              maxValue={1}
-              turrets={[]}
-              onClickHandler={() => handlePlacementModeChange('laser')}
-              exploding={false}
-              idx={0}
-          />
-          <h2>lasers: {lasers}</h2>
+          <div className="userMenu-unit" onClick={() => handlePlacementModeChange('laser')}>
+            <Unit
+                key="laser"
+                isSelected={placementUnitType === 'laser'}
+                isDisabled={lasers < 1}
+                id="3"
+                type="laser"
+                angle={0}
+                value={1}
+                maxValue={1}
+                turrets={[]}
+                exploding={false}
+                idx={0}
+            />
+            <div className="userMenu-unitCount">{lasers}</div>
+          </div>
         </div>
       </div>
     </div>

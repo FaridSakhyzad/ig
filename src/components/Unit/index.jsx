@@ -55,6 +55,7 @@ Unit.propTypes = {
 Unit.defaultProps = {
   isSelected: false,
   isDisabled: false,
+  onClickHandler: () => {},
 }
 
 export default Unit;
