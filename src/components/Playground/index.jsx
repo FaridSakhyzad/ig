@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {number, string} from 'prop-types';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import { setSwaps, setRotates, setAmmo } from 'redux/user/actions';
+import {setSwaps, setRotates, setAmmo, resetAmmo} from 'redux/user/actions';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -422,6 +422,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const handleRestartClick = () => {
     setMoves(START_MOVES);
+    dispatch(resetAmmo());
     startLevel(0);
   }
 
