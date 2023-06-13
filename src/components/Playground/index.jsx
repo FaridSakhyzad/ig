@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {number, string} from 'prop-types';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import {setSwaps, setRotates, setAmmo, resetAmmo} from 'redux/user/actions';
+import { setMoves, setSwaps, setRotates, setAmmo, resetAmmo} from 'redux/user/actions';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -21,7 +21,7 @@ const MAX_MULTISELECT = 2;
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const dispatch = useDispatch();
 
-  const { bobombs, defaults, lasers, swaps, rotates } = useSelector(({ user }) => user);
+  const { moves, bobombs, defaults, lasers, swaps, rotates } = useSelector(({ user }) => user);
 
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
   const [ afterInputAction, setAfterInputAction ] = useState(null);
@@ -41,7 +41,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const [ projectiles, setProjectiles ] = useState([]);
 
-  const [ moves, setMoves ] = useState(START_MOVES);
   const [ winScreenVisible, setWinScreenVisible ] = useState(false);
   const [ loseScreenVisible, setLoseScreenVisible ] = useState(false);
 
@@ -149,7 +148,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const newMoves = moves - 1;
 
     if (!shiftKey && !altKey) {
-      setMoves(newMoves);
+      dispatch(setMoves(newMoves));
     }
 
     return newMoves;
@@ -421,7 +420,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const handleRestartClick = () => {
-    setMoves(START_MOVES);
     dispatch(resetAmmo());
     startLevel(0);
   }
@@ -434,8 +432,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setLevelCounter(1);
 
     setCurrentLevel(number);
-    setMap(mapSet()[number]);
-    setUnits(mapSet()[number].units);
+
+    const level = mapSet()[number];
+
+    setMap(level);
+
+    dispatch(setAmmo(level.ammo));
+    setUnits(level.units);
 
     setWinScreenVisible(false);
     setLoseScreenVisible(false);
@@ -444,22 +447,20 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const startNextLevel = () => {
     setLevelCounter(levelCounter + 1);
 
-    const nextLevel = currentLevel >= (mapSet.length - 1) ? 0 : currentLevel + 1;
+    const maps = mapSet();
 
-    setCurrentLevel(nextLevel);
-    setMap(mapSet()[nextLevel]);
-    setUnits(mapSet()[nextLevel].units);
+    const nextLevelIndex = currentLevel >= (maps.length - 1) ? 0 : currentLevel + 1;
 
-    setMoves(START_MOVES);
+    setCurrentLevel(nextLevelIndex);
 
-    dispatch(setAmmo({
-      moves: 10,
-      defaults: 1,
-      bobombs: 1,
-      lasers: 1,
-      swaps: 1,
-      rotates: 1,
-    }))
+    const nextLevel = maps[nextLevelIndex];
+
+    setMap(nextLevel);
+    setUnits(nextLevel.units);
+
+    dispatch(setAmmo(nextLevel.ammo));
+
+    setUnits(nextLevel.units);
 
     setWinScreenVisible(false);
   }

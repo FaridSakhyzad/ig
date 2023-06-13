@@ -1,3 +1,5 @@
+export const SET_MOVES = 'SET_MOVES';
+
 export const SET_SWAPS = 'SET_SWAPS';
 
 export const SET_ROTATES = 'SET_ROTATES';

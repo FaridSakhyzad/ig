@@ -1,18 +1,20 @@
-import { SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO } from './constants'
+import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO } from './constants'
+import mapSet from "../../maps/maps";
+
+const { ammo } = mapSet()[0];
 
 const initialState = {
-  moves: 10,
-
-  defaults: 1,
-  bobombs: 1,
-  lasers: 1,
-
-  swaps: 1,
-  rotates: 1,
+  ...ammo,
 }
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_MOVES: {
+      return {
+        ...state,
+        moves: action.payload,
+      }
+    }
     case SET_SWAPS: {
       return {
         ...state,

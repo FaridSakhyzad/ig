@@ -21,6 +21,14 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
+    ammo: {
+      moves: 10,
+      defaults: 1,
+      bobombs: 1,
+      lasers: 1,
+      swaps: 1,
+      rotates: 1,
+    },
     units: ((m, n) => {
       const UNIT_MIN_VALUE = 0
       const UNIT_MAX_VALUE = 4;
@@ -43,6 +51,14 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
+    ammo: {
+      moves: 10,
+      defaults: 2,
+      bobombs: 2,
+      lasers: 2,
+      swaps: 2,
+      rotates: 2,
+    },
     units: MAP_9x9_0(9, 9)
   },
   {
@@ -50,6 +66,14 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 3,
     mapHeight: 3,
+    ammo: {
+      moves: 10,
+      defaults: 3,
+      bobombs: 3,
+      lasers: 3,
+      swaps: 3,
+      rotates: 3,
+    },
     units: ((m, n) => {
       const UNIT_MIN_VALUE = 0
       const UNIT_MAX_VALUE = 4;
@@ -72,6 +96,14 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 5,
     mapHeight: 5,
+    ammo: {
+      moves: 10,
+      defaults: 4,
+      bobombs: 4,
+      lasers: 4,
+      swaps: 4,
+      rotates: 4,
+    },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
       const UNIT_MAX_VALUE = 4;
