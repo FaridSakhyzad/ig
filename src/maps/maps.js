@@ -22,12 +22,12 @@ const mapSet = () => [
     mapWidth: 9,
     mapHeight: 9,
     ammo: {
-      moves: 10,
-      defaults: 1,
-      bobombs: 1,
-      lasers: 1,
-      swaps: 1,
-      rotates: 1,
+      moves: 100,
+      defaults: 100,
+      bobombs: 100,
+      lasers: 100,
+      swaps: 100,
+      rotates: 100,
     },
     units: ((m, n) => {
       const UNIT_MIN_VALUE = 0

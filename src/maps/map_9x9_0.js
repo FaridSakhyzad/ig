@@ -108,6 +108,38 @@ export const generateLaser = () => {
   }
 }
 
+export const generatePortals = () => {
+  const portal1id = Math.random().toString(16).substring(2);
+  const portal2id = Math.random().toString(16).substring(2);
+
+  return [
+    {
+      ...generateDefault(),
+      valueCountable: false,
+      id: portal1id,
+      type: 'portal',
+      value: UNIT_MAX_VALUE,
+      turrets: [],
+      angle: 45,
+      meta: {
+        siblingId: portal2id,
+      }
+    },
+    {
+      ...generateDefault(),
+      valueCountable: false,
+      id: portal2id,
+      type: 'portal',
+      value: UNIT_MAX_VALUE,
+      turrets: [],
+      angle: -45,
+      meta: {
+        siblingId: portal1id,
+      }
+    }
+  ];
+}
+
 const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
 

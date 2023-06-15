@@ -11,7 +11,7 @@ import UserMenu from '../UserMenu';
 import mapSet from 'maps/maps';
 
 import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
-import { generateBobomb, generateDefault, generateLaser } from '../../maps/map_9x9_0';
+import {generateBobomb, generateDefault, generateLaser, generatePortals} from '../../maps/map_9x9_0';
 import { SCREEN_MODES, START_MOVES } from '../../config/config';
 
 import './Playground.scss';
@@ -21,7 +21,7 @@ const MAX_MULTISELECT = 2;
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const dispatch = useDispatch();
 
-  const { moves, bobombs, defaults, lasers, swaps, rotates } = useSelector(({ user }) => user);
+  const { moves, bobombs, defaults, lasers, portals, swaps, rotates } = useSelector(({ user }) => user);
 
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
   const [ afterInputAction, setAfterInputAction ] = useState(null);
@@ -266,10 +266,18 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       selectedUnits.push({ unitId, unitIndex });
       setSelectedUnits([ ...selectedUnits ]);
 
-      if (selectedUnits.length >= MAX_MULTISELECT && afterInputAction === 'swap') {
-        performSwap();
-        setUserInputMode(GAMEPLAY_MODE);
-        setSelectedUnits([]);
+      if (selectedUnits.length >= MAX_MULTISELECT) {
+        if (afterInputAction === 'swap') {
+          performSwap();
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
+        if (afterInputAction === 'portal') {
+          placePortals();
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
       }
 
       const { fieldTop, fieldLeft } = fieldInfo;
@@ -359,8 +367,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     detectGameOutcome();
   }
 
-  const onModeChange = (mode, meta) => {
-    setAfterInputAction(meta.callback);
+  const onModeChange = (mode, data) => {
+    setAfterInputAction(data.callback);
     setUserInputMode(mode);
   }
 
@@ -395,6 +403,22 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
 
     dispatch(setSwaps(swaps - 1));
+  }
+
+  const placePortals = () => {
+    const newUnits = [ ...units ];
+
+    const { unitIndex: unit0Index } = selectedUnits[0];
+    const { unitIndex: unit1Index } = selectedUnits[1];
+
+    const [ portal1, portal2 ] = generatePortals();
+
+    newUnits[unit0Index] = portal1;
+    newUnits[unit1Index] = portal2;
+
+    setUnits(newUnits);
+
+    dispatch(setAmmo({ portals: portals - 1 }));
   }
 
   const onCancel = () => {

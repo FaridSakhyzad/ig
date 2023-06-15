@@ -10,8 +10,8 @@ const UserMenu = ({ onModeChange, onPlacementTypeChange, afterInputAction }) => 
   const { bobombs, defaults, lasers, swaps, rotates } = useSelector(state => state.user);
 
   const [ placementUnitType, setPlacementUnitType ] = useState(null)
-  const handleModeChange = (mode, action) => {
-    onModeChange(mode, { callback: action });
+  const handleModeChange = (mode, data) => {
+    onModeChange(mode, data);
   }
 
   const handlePlacementModeChange = (unitType) => {
@@ -27,7 +27,7 @@ const UserMenu = ({ onModeChange, onPlacementTypeChange, afterInputAction }) => 
       return;
     }
 
-    handleModeChange(PlACING_MODE, 'placing');
+    handleModeChange(PlACING_MODE, { callback: 'placing' });
     onPlacementTypeChange(unitType);
     setPlacementUnitType(unitType);
   }
@@ -37,18 +37,18 @@ const UserMenu = ({ onModeChange, onPlacementTypeChange, afterInputAction }) => 
       <div className="userMenu-row">
         <button
           disabled={swaps < 1}
-          onClick={() => handleModeChange(MULTISELECT_MODE, 'swap')}
+          onClick={() => handleModeChange(MULTISELECT_MODE, { callback: 'swap' })}
           className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
         >Swap {swaps}</button>
         <button
           disabled={rotates < 1}
-          onClick={() => handleModeChange(SELECT_MODE, 'rotate_ccv')}
+          onClick={() => handleModeChange(SELECT_MODE, { callback: 'rotate_ccv' })}
           className={classnames('button userMenu-button', { selected: afterInputAction === 'rotate_ccv' })}
         >&lt;-</button>
         <button disabled={rotates < 1}>{rotates}</button>
         <button
           disabled={rotates < 1}
-          onClick={() => handleModeChange(SELECT_MODE, 'rotate_cv')}
+          onClick={() => handleModeChange(SELECT_MODE, { callback: 'rotate_cv' })}
           className={classnames('button userMenu-button', { selected: afterInputAction === 'rotate_cv' })}
         >-&gt;</button>
       </div>
@@ -102,6 +102,22 @@ const UserMenu = ({ onModeChange, onPlacementTypeChange, afterInputAction }) => 
                 turrets={[]}
                 exploding={false}
                 idx={0}
+            />
+            <div className="userMenu-unitCount">{lasers}</div>
+          </div>
+          <div className="userMenu-unit" onClick={() => handleModeChange(MULTISELECT_MODE, { callback: 'portal' })}>
+            <Unit
+              key="portal"
+              isSelected={placementUnitType === 'portal'}
+              isDisabled={lasers < 1}
+              id="3"
+              type="portal"
+              angle={0}
+              value={1}
+              maxValue={1}
+              turrets={[]}
+              exploding={false}
+              idx={0}
             />
             <div className="userMenu-unitCount">{lasers}</div>
           </div>
