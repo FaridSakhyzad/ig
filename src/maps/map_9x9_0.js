@@ -120,7 +120,6 @@ export const generatePortals = () => {
       type: 'portal',
       value: UNIT_MAX_VALUE,
       turrets: [],
-      angle: 45,
       meta: {
         siblingId: portal2id,
       }
@@ -132,7 +131,7 @@ export const generatePortals = () => {
       type: 'portal',
       value: UNIT_MAX_VALUE,
       turrets: [],
-      angle: -45,
+      angle: 180,
       meta: {
         siblingId: portal1id,
       }
