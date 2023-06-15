@@ -26,8 +26,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
   const [ afterInputAction, setAfterInputAction ] = useState(null);
 
-  const [ unitPlacementType, setUnitPlacementType ] = useState('');
-
   const [ currentLevel, setCurrentLevel ] = useState(0);
 
   const [ levelCounter, setLevelCounter ] = useState(1);
@@ -243,7 +241,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
       }
 
-      const newUnit = generators[unitPlacementType]();
+      const newUnit = generators[afterInputAction]();
 
       const newUnits = [ ...units ];
 
@@ -251,14 +249,16 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
       setUnits(newUnits);
 
-      callbacks[unitPlacementType]();
+      callbacks[afterInputAction]();
 
       setUserInputMode(GAMEPLAY_MODE);
+      setAfterInputAction(null);
     }
 
     if (userInputMode === SELECT_MODE) {
       if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
         performRotate(unitIndex);
+        setAfterInputAction(null);
       }
     }
 
@@ -269,15 +269,19 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       if (selectedUnits.length >= MAX_MULTISELECT) {
         if (afterInputAction === 'swap') {
           performSwap();
+
           setUserInputMode(GAMEPLAY_MODE);
           setSelectedUnits([]);
         }
 
         if (afterInputAction === 'portal') {
           placePortals();
+
           setUserInputMode(GAMEPLAY_MODE);
           setSelectedUnits([]);
         }
+
+        setAfterInputAction(null);
       }
 
       const { fieldTop, fieldLeft } = fieldInfo;
@@ -372,23 +376,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUserInputMode(mode);
   }
 
-  const onConfirm = (action) => {
-    if (!action || !action.type) {
-      return;
-    }
-
-    if (action.type === 'swap' && selectedUnits.length === 2) {
-      performSwap();
-    }
-
-    if (action.type === 'rotate') {
-      dispatch(setRotates(rotates - 1));
-    }
-
-    setUserInputMode(GAMEPLAY_MODE);
-    setSelectedUnits([]);
-  }
-
   const performSwap = () => {
     const newUnits = [ ...units ];
 
@@ -421,10 +408,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     dispatch(setAmmo({ portals: portals - 1 }));
   }
 
-  const onCancel = () => {
-    setSelectedUnits([]);
-  };
-
   const performRotate = (unitIndex, angle = 45) => {
     const newUnits = [ ...units ];
 
@@ -437,10 +420,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setSelectedUnits([]);
 
     dispatch(setRotates(rotates - 1));
-  }
-
-  const placementTypeChange = (unitType) => {
-    setUnitPlacementType(unitType);
   }
 
   const handleRestartClick = () => {
@@ -593,7 +572,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       <UserMenu
         afterInputAction={afterInputAction}
         onModeChange={onModeChange}
-        onPlacementTypeChange={placementTypeChange}
       />
     </>
   )
