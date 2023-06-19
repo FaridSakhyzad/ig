@@ -213,27 +213,36 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const portal1id = Math.random().toString(16).substring(2);
   const portal2id = Math.random().toString(16).substring(2);
 
-  result[mapWidth * (mapHeight - 4) + 1] = {
+  result[44] = {
+    ...generateDefault(),
+    value: UNIT_MAX_VALUE,
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    ],
+  }
+
+  result[8] = {
     ...generateDefault(),
     valueCountable: false,
     id: portal1id,
     type: 'portal',
     value: UNIT_MAX_VALUE,
     turrets: [],
-    angle: 45,
+    angle: 180,
     meta: {
       siblingId: portal2id,
     }
   }
 
-  result[mapWidth * (mapHeight - 2) + 2] = {
+  result[mapWidth * (mapHeight - 1) + 8] = {
     ...generateDefault(),
     valueCountable: false,
     id: portal2id,
     type: 'portal',
     value: UNIT_MAX_VALUE,
     turrets: [],
-    angle: -45,
+    angle: 0,
     meta: {
       siblingId: portal1id,
     }

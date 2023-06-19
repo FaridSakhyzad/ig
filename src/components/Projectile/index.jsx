@@ -95,7 +95,8 @@ const Projectile = (props) => {
             const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
 
             if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
-              projectileAngle = projectileAngle + (offsetAngle - 180);
+              const newAngle = projectileAngle + (offsetAngle - 180);
+              projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
               newX = newX + offsetLeft;
               newY = newY + offsetTop;
             }
@@ -128,7 +129,8 @@ const Projectile = (props) => {
             const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
 
             if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
-              projectileAngle = projectileAngle + (offsetAngle - 180);
+              const newAngle = projectileAngle + (offsetAngle - 180);
+              projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
               newX = newX + offsetLeft;
               newY = newY + offsetTop;
             }
