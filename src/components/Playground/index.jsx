@@ -224,6 +224,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       return;
     }
 
+    if (!units[unitIndex].selectable) {
+      return;
+    }
+
     if (userInputMode === GAMEPLAY_MODE) {
       makePlayerMove(e, unitId, unitIndex);
     }

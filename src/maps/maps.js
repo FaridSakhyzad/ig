@@ -22,6 +22,21 @@ const mapSet = () => [
     mapWidth: 9,
     mapHeight: 9,
     ammo: {
+      moves: 10,
+      defaults: 2,
+      bobombs: 2,
+      lasers: 2,
+      swaps: 2,
+      rotates: 2,
+    },
+    units: MAP_9x9_0(9, 9)
+  },
+  {
+    gridWidth: 9,
+    gridHeight: 9,
+    mapWidth: 9,
+    mapHeight: 9,
+    ammo: {
       moves: 100,
       defaults: 100,
       bobombs: 100,
@@ -45,21 +60,6 @@ const mapSet = () => [
 
       return result;
     })(9, 9),
-  },
-  {
-    gridWidth: 9,
-    gridHeight: 9,
-    mapWidth: 9,
-    mapHeight: 9,
-    ammo: {
-      moves: 10,
-      defaults: 2,
-      bobombs: 2,
-      lasers: 2,
-      swaps: 2,
-      rotates: 2,
-    },
-    units: MAP_9x9_0(9, 9)
   },
   {
     gridWidth: 9,

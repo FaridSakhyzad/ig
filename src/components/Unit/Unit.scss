@@ -88,6 +88,14 @@
   }
 }
 
+.dummy {
+  outline: none;
+
+  .unit-pivot {
+    display: none;
+  }
+}
+
 .portal {
   .unit-image {
     height: 65%;

@@ -7,6 +7,7 @@ export const defaults = {
   type: 'default',
   minValue: UNIT_MIN_VALUE,
   maxValue: UNIT_MAX_VALUE,
+  selectable: true,
   valueCountable: true,
   exploding: false,
   angle: 0,
@@ -23,6 +24,17 @@ export const generateDefault = () => {
     ...defaults,
     value: UNIT_MAX_VALUE,
     id: Math.random().toString(16).substring(2),
+  };
+}
+
+export const generateDummy = () => {
+  return {
+    ...defaults,
+    selectable: false,
+    type: 'dummy',
+    value: 0,
+    id: Math.random().toString(16).substring(2),
+    turrets: [],
   };
 }
 
@@ -182,6 +194,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 4 + 5] = generateLaser();
+
+  result[mapWidth * 5 + 6] = generateDummy();
 
   result[mapWidth * mapHeight - mapWidth] = {
     ...generateDefault(),
