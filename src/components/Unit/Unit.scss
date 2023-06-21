@@ -61,10 +61,51 @@
   opacity: 0.5;
 }
 
-.wall {
+.turf {
+  outline: none;
+
   .unit-image {
-    background: rgb(192, 192, 192);
-    opacity: 1;
+    width: 100%;
+    height: 100%;
+    transition: none;
+  }
+
+  &.water {
+    .unit-image {
+      background-color: aqua;
+      opacity: 0.5;
+      border-radius: calc(var(--base-width-unit) * 5px);
+    }
+  }
+
+  &.grass {
+    .unit-image {
+      background-color: green;
+      opacity: 0.3;
+      border-radius: calc(var(--base-width-unit) * 5px);
+    }
+  }
+}
+
+.npc {
+  .unit-image {
+    background: rgba(51, 128, 255, 0.4);
+  }
+}
+
+.wall {
+  &.stone {
+    .unit-image {
+      background: rgb(192, 192, 192);
+      opacity: 1;
+    }
+  }
+
+  &.wood {
+    .unit-image {
+      background: rgba(165, 42, 42, 0.4);
+      opacity: 1;
+    }
   }
 }
 

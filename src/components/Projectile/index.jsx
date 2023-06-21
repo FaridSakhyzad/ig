@@ -85,6 +85,16 @@ const Projectile = (props) => {
               return;
             }
           }
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              clearTimeout(timer);
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.index);
+              return;
+            }
+          }
           if (impactedUnitType === 'portal') {
             const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
             const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
@@ -109,7 +119,11 @@ const Projectile = (props) => {
               onImpact(projectileType, impactedUnit.index);
             }
           }
-
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              onImpact(projectileType, impactedUnit.index);
+            }
+          }
           if (impactedUnitType === 'laser') {
             clearTimeout(timer);
             impactedUnitId = null;
@@ -154,6 +168,16 @@ const Projectile = (props) => {
 
             onImpact(projectileType, impactedUnit.index);
             return;
+          }
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              clearTimeout(timer);
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.index);
+              return;
+            }
           }
         }
       }

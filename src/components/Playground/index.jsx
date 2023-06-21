@@ -216,7 +216,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       },
     }
 
-    callbacks[units[unitIndex].type]();
+    callbacks[units[unitIndex].type] && callbacks[units[unitIndex].type]();
   }
 
   const handleUnitClick = (e, unitId, unitIndex) => {
@@ -368,9 +368,17 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(impactedUnitIndex);
         });
       },
+      npc: () => {
+        --Playground.actingProjectilesNumber;
+
+        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+          dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
+        });
+      }
     }
 
-    callbacks[units[impactedUnitIndex].type]();
+    callbacks[units[impactedUnitIndex].type] && callbacks[units[impactedUnitIndex].type]();
 
     detectGameOutcome();
   }
@@ -554,12 +562,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         </div>
         <div className="unitLayerGrid" style={getGridStyle()}>
           <div className="mapLayer" style={getMapStyle()}>
-            {units.map(({ id, type, angle, value, maxValue, turrets, exploding }, index) => (
+            {units.map(({ id, type, kind, angle, value, maxValue, turrets, exploding }, index) => (
               <Unit
                 key={id}
                 isSelected={selectedUnits.some(unit => unit.unitId === id)}
                 id={id}
                 type={type}
+                kind={kind}
                 angle={angle}
                 value={value}
                 maxValue={maxValue}

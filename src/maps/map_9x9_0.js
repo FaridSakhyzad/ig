@@ -162,10 +162,48 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     });
   }
 
+  result[0] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'turf',
+    kind: 'water',
+    selectable: false,
+    valueCountable: false,
+    value: 0,
+  }
+
+  result[1] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'turf',
+    kind: 'grass',
+    selectable: false,
+    valueCountable: false,
+    value: 0,
+  }
+
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     type: 'wall',
+    kind: 'stone',
+    valueCountable: false,
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+  }
+
+  result[mapWidth * 2] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'npc',
+    selectable: false,
+    value: UNIT_MAX_VALUE,
+  }
+
+  result[mapWidth * 2 + 3] = {
+    ...generateDefault(),
+    id: Math.random().toString(16).substring(2),
+    type: 'wall',
+    kind: 'wood',
     valueCountable: false,
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
