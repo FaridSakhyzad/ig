@@ -50,6 +50,33 @@ const Projectile = (props) => {
       return;
     }
 
+    const calculatePortalExitPointCoords = (impactedUnit, newX, newY, projectileAngle) => {
+      const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
+      const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
+      const offsetTop = exitTop - entranceTop;
+      const offsetLeft = exitLeft - entranceLeft;
+      const offsetAngle = exitAngle - entranceAngle;
+
+      const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
+
+      if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
+        const newAngle = projectileAngle + (offsetAngle - 180);
+        projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
+
+        return {
+          x: newX + offsetLeft,
+          y: newY + offsetTop,
+          angle: projectileAngle,
+        }
+      }
+
+      return {
+        x: newX,
+        y: newY,
+        angle: projectileAngle,
+      }
+    }
+
     const timer = setTimeout(() => {
       currentDistance += 1;
       const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, moveStep);
@@ -96,20 +123,10 @@ const Projectile = (props) => {
             }
           }
           if (impactedUnitType === 'portal') {
-            const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
-            const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
-            const offsetTop = exitTop - entranceTop;
-            const offsetLeft = exitLeft - entranceLeft;
-            const offsetAngle = exitAngle - entranceAngle;
-
-            const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
-
-            if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
-              const newAngle = projectileAngle + (offsetAngle - 180);
-              projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
-              newX = newX + offsetLeft;
-              newY = newY + offsetTop;
-            }
+            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, projectileAngle);
+            newX = x;
+            newY = y;
+            projectileAngle = angle;
           }
         }
 
@@ -134,20 +151,10 @@ const Projectile = (props) => {
           }
 
           if (impactedUnitType === 'portal') {
-            const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
-            const { top: exitTop, left: exitLeft, angle: exitAngle } = potentialTargetsMap.find(({ id }) => id === siblingId);
-            const offsetTop = exitTop - entranceTop;
-            const offsetLeft = exitLeft - entranceLeft;
-            const offsetAngle = exitAngle - entranceAngle;
-
-            const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
-
-            if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
-              const newAngle = projectileAngle + (offsetAngle - 180);
-              projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
-              newX = newX + offsetLeft;
-              newY = newY + offsetTop;
-            }
+            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, projectileAngle);
+            newX = x;
+            newY = y;
+            projectileAngle = angle;
           }
         }
 
