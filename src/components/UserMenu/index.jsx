@@ -18,6 +18,11 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
           className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
         >Swap {swaps}</button>
         <button
+          disabled={swaps < 1}
+          onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'jump' })}
+          className={classnames('button userMenu-button', { selected: afterInputAction === 'jump' })}
+        >Jumps 0</button>
+        <button
           disabled={rotates < 1}
           onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_ccv' })}
           className={classnames('button userMenu-button', { selected: afterInputAction === 'rotate_ccv' })}

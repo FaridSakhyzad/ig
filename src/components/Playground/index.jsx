@@ -219,7 +219,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     callbacks[units[unitIndex].type] && callbacks[units[unitIndex].type]();
   }
 
-  const handleUnitClick = (e, unitId, unitIndex, top, left) => {
+  const handleUnitClick = (e, unitId, unitIndex) => {
     if (Playground.actingProjectilesNumber > 0) {
       return;
     }
@@ -233,6 +233,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === PlACING_MODE) {
+      const { top, left } = units[unitIndex];
+
       removeUnit(unitIndex);
       placeUnit(top, left);
 
@@ -528,8 +530,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const grid = generateCoordinates(map.mapHeight, map.mapHeight);
 
-  console.log('units.length', units.length);
-
   return (
     <>
       {winScreenVisible && (
@@ -600,7 +600,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
               value={value}
               maxValue={maxValue}
               turrets={turrets}
-              onClickHandler={(e, id, idx) => handleUnitClick(e, id, idx, top, left)}
+              onClickHandler={handleUnitClick}
               exploding={exploding}
               idx={index}
             />
