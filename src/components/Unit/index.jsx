@@ -4,14 +4,20 @@ import classnames from 'classnames';
 import './Unit.scss';
 import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
-const Unit = ({ id, kind, type, isSelected, isDisabled, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
+const Unit = ({ id, top, left, width, height, kind, type, isSelected, isDisabled, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
   return (
     <div
       className={classnames('unit', type, kind, { 'unit--selected': isSelected, 'unit--disabled': isDisabled })}
       id={id}
       data-index={idx}
       onClick={(e) => onClickHandler(e, id, idx)}
-      style={{ transform: `rotate(${angle}deg)` }}
+      style={{
+        transform: `rotate(${angle}deg)`,
+        top: `${top}%`,
+        left: `${left}%`,
+        width: `${width}%`,
+        height: `${height}%`,
+      }}
     >
       <div className="unit-pivot">
         {exploding && (
@@ -40,6 +46,11 @@ const Unit = ({ id, kind, type, isSelected, isDisabled, turrets, value, angle, m
 
 Unit.propTypes = {
   id: PropTypes.string,
+  top: PropTypes.number,
+  left: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
+
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
   type: PropTypes.string,

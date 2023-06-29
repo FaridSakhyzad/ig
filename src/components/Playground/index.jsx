@@ -219,7 +219,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     callbacks[units[unitIndex].type] && callbacks[units[unitIndex].type]();
   }
 
-  const handleUnitClick = (e, unitId, unitIndex) => {
+  const handleUnitClick = (e, unitId, unitIndex, top, left) => {
     if (Playground.actingProjectilesNumber > 0) {
       return;
     }
@@ -233,27 +233,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === PlACING_MODE) {
-      const generators = {
-        'default': generateDefault,
-        'bobomb': generateBobomb,
-        'laser': generateLaser,
-      }
-
-      const callbacks = {
-        'default': () => dispatch(setAmmo({ defaults: defaults - 1 })),
-        'bobomb': () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
-        'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
-      }
-
-      const newUnit = generators[afterInputAction]();
-
-      const newUnits = [ ...units ];
-
-      newUnits[unitIndex] = newUnit;
-
-      setUnits(newUnits);
-
-      callbacks[afterInputAction]();
+      removeUnit(unitIndex);
+      placeUnit(top, left);
 
       setUserInputMode(GAMEPLAY_MODE);
       setAfterInputAction(null);
@@ -292,6 +273,45 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
       setUnitsMap(unitsMap);
     }
+  }
+
+  const handleMapCellClick = (id, top, left) => {
+    if (userInputMode === PlACING_MODE) {
+      placeUnit(top, left);
+      setUserInputMode(GAMEPLAY_MODE);
+      setAfterInputAction(null);
+    }
+  }
+
+  const removeUnit = (index) => {
+    setUnits(units.splice(index, 1));
+  }
+
+  const placeUnit = (top, left) => {
+    const generators = {
+      'default': generateDefault,
+      'bobomb': generateBobomb,
+      'laser': generateLaser,
+    }
+
+    const callbacks = {
+      'default': () => dispatch(setAmmo({ defaults: defaults - 1 })),
+      'bobomb': () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
+      'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
+    }
+
+    const newUnit = generators[afterInputAction]();
+
+    newUnit.top = top;
+    newUnit.left = left;
+
+    const newUnits = [ ...units ];
+
+    newUnits.push(newUnit);
+
+    setUnits(newUnits);
+
+    callbacks[afterInputAction]();
   }
 
   const detectGameOutcome = () => {
@@ -394,10 +414,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const { unitIndex: unit0Index } = selectedUnits[0];
     const { unitIndex: unit1Index } = selectedUnits[1];
 
-    const unit0 = structuredClone(newUnits[unit0Index]);
+    const { top: top0, left: left0 } = newUnits[unit0Index];
 
-    newUnits[unit0Index] = newUnits[unit1Index];
-    newUnits[unit1Index] = unit0;
+    newUnits[unit0Index].top = newUnits[unit1Index].top;
+    newUnits[unit0Index].left = newUnits[unit1Index].left;
+
+    newUnits[unit1Index].top = top0;
+    newUnits[unit1Index].left = left0;
 
     setUnits(newUnits);
 
@@ -410,7 +433,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const { unitIndex: unit0Index } = selectedUnits[0];
     const { unitIndex: unit1Index } = selectedUnits[1];
 
-    const [ portal1, portal2 ] = generatePortals();
+    const { top: top0, left: left0 } = newUnits[unit0Index];
+    const { top: top1, left: left1 } = newUnits[unit1Index];
+
+    const [ portal1, portal2 ] = generatePortals(top0, left0, top1, left1);
 
     newUnits[unit0Index] = portal1;
     newUnits[unit1Index] = portal2;
@@ -480,50 +506,29 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setWinScreenVisible(false);
   }
 
-  const getGridStyle = () => {
-    const { gridWidth: gridWidthInitial, gridHeight: gridHeightInitial, mapWidth: mapWidthInitial, mapHeight: mapHeightInitial } = map;
+  const generateCoordinates = (gridWidth, gridHeight) => {
+    const grid = [];
 
-    const gridWidth = gridWidthInitial >= gridHeightInitial ? gridWidthInitial : gridHeightInitial;
-    const gridHeight = gridHeightInitial >= gridWidthInitial ? gridHeightInitial : gridWidthInitial;
+    for (let i = 0; i < gridHeight; ++i) {
+      const row = [];
 
-    const mapWidth = mapWidthInitial >= mapHeightInitial ? mapWidthInitial : mapHeightInitial;
-    const mapHeight = mapHeightInitial >= mapWidthInitial ? mapHeightInitial : mapWidthInitial;
+      for (let j = 0; j < gridWidth; ++j) {
+        row[j] = {
+          id: Math.random().toString(16).substring(2),
+          left: j / gridWidth * 100,
+          top: i / gridHeight * 100,
+        };
+      }
 
-    return {
-      '--grid-width': mapWidth <= gridWidth ? gridWidth : mapWidth,
-      '--grid-height': mapHeight <= gridHeight ? gridHeight : mapHeight,
-    };
-  }
-
-  const getMapStyle = () => {
-    const { gridWidth: gridWidthInitial, gridHeight: gridHeightInitial, mapWidth, mapHeight } = map;
-
-    let gridWidth = gridWidthInitial >= gridHeightInitial ? gridWidthInitial : gridHeightInitial;
-    let gridHeight = gridHeightInitial >= gridWidthInitial ? gridHeightInitial : gridWidthInitial;
-
-    gridWidth = gridWidth > mapHeight ? gridWidth : mapHeight;
-    gridHeight = gridHeight > mapWidth ? gridHeight : mapWidth;
-
-    const mapStyle = {
-      '--map-width': mapWidth,
-      '--map-height': mapHeight,
+      grid.push(row);
     }
 
-    const rowStartOffset = gridHeight > mapHeight ? (gridHeight - mapHeight) / 2 : 0;
-    const colStartOffset = gridWidth > mapWidth ? (gridWidth - mapWidth) / 2 : 0;
+    return grid;
+  };
 
-    const fitMapIntoGrid = {
-      gridRowStart: rowStartOffset + 1,
-      gridColumnStart: colStartOffset + 1,
-      gridRowEnd: gridHeight > mapHeight ? gridHeight - rowStartOffset + 1 : mapHeight + 1,
-      gridColumnEnd: gridWidth > mapWidth ? gridWidth - colStartOffset + 1 : mapWidth + 1,
-    }
+  const grid = generateCoordinates(map.mapHeight, map.mapHeight);
 
-    return {
-      ...fitMapIntoGrid,
-      ...mapStyle,
-    }
-  }
+  console.log('units.length', units.length);
 
   return (
     <>
@@ -560,25 +565,46 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
             />
           ))}
         </div>
-        <div className="unitLayerGrid" style={getGridStyle()}>
-          <div className="mapLayer" style={getMapStyle()}>
-            {units.map(({ id, type, kind, angle, value, maxValue, turrets, exploding }, index) => (
-              <Unit
-                key={id}
-                isSelected={selectedUnits.some(unit => unit.unitId === id)}
-                id={id}
-                type={type}
-                kind={kind}
-                angle={angle}
-                value={value}
-                maxValue={maxValue}
-                turrets={turrets}
-                onClickHandler={handleUnitClick}
-                exploding={exploding}
-                idx={index}
-              />
-            ))}
-          </div>
+        <div className="mapLayer">
+          {grid.map((row, rowIndex) => (
+            <React.Fragment key={rowIndex}>
+              {row.map(({ id, top, left }, colIndex) => (
+                <div
+                  onClick={() => handleMapCellClick(id, rowIndex, colIndex)}
+                  className="mapLayer-cell"
+                  key={id}
+                  style={{
+                    top: `${top}%`,
+                    left: `${left}%`,
+                    width: `${100 / map.mapWidth}%`,
+                    height: `${100 / map.mapHeight}%`,
+                  }}
+                />
+              ))}
+            </React.Fragment>
+          ))}
+        </div>
+        <div className="unitLayer">
+          {units.map(({ id, type, kind, angle, value, maxValue, turrets, exploding, top, left }, index) => (
+            <Unit
+              top={grid[top][left].top}
+              left={grid[top][left].left}
+              width={100 / map.mapWidth}
+              height={100 / map.mapHeight}
+              key={id}
+              isSelected={selectedUnits.some(unit => unit.unitId === id)}
+              id={id}
+              type={type}
+              kind={kind}
+              angle={angle}
+              value={value}
+              maxValue={maxValue}
+              turrets={turrets}
+              onClickHandler={(e, id, idx) => handleUnitClick(e, id, idx, top, left)}
+              exploding={exploding}
+              idx={index}
+            />
+          ))}
         </div>
       </div>
 

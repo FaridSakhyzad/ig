@@ -6,28 +6,23 @@
   position: relative;
 }
 
-.unitLayerGrid {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  padding: 2.667%;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  grid-template-columns: repeat(var(--grid-width), 1fr);
-  grid-template-rows: repeat(var(--grid-height), 1fr);
-}
-
 .mapLayer {
   height: 100%;
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(var(--map-width), 1fr);
-  grid-template-rows: repeat(var(--map-height), 1fr);
-  align-items: center;
-  justify-items: center;
+  position: absolute;
+}
+
+.mapLayer-cell {
+  position: absolute;
+  z-index: 5;
+  outline: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.unitLayer {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+
 }
 
 .projectileLayer {
@@ -36,7 +31,7 @@
   top: 0;
   width: 0;
   height: 0;
-  z-index: 5;
+  z-index: 15;
 }
 
 .overlay {
@@ -53,7 +48,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   background: rgba(255, 255, 255, 0.95);
   width: 100%;
   height: 100%;
@@ -66,7 +61,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   background: rgba(0, 0, 0, 0.3);
   color: #fff;
   width: 100%;
@@ -78,7 +73,7 @@
 .moves {
   font-size: 14px;
   line-height: 18px;
-  margin: 15px 0 10px 0;
+  margin: 0 0 10px 0;
 }
 
 .mode {
@@ -90,5 +85,5 @@
 .currentLevel {
   font-size: 13px;
   line-height: 1.4;
-  margin: 0 0 15px 0;
+  margin: 0;
 }

@@ -27,17 +27,6 @@ export const generateDefault = () => {
   };
 }
 
-export const generateDummy = () => {
-  return {
-    ...defaults,
-    selectable: false,
-    type: 'dummy',
-    value: 0,
-    id: Math.random().toString(16).substring(2),
-    turrets: [],
-  };
-}
-
 export const generateBobomb = () => {
   return {
     ...generateDefault(),
@@ -120,13 +109,15 @@ export const generateLaser = () => {
   }
 }
 
-export const generatePortals = () => {
+export const generatePortals = (top1, left1, top2, left2) => {
   const portal1id = Math.random().toString(16).substring(2);
   const portal2id = Math.random().toString(16).substring(2);
 
   return [
     {
       ...generateDefault(),
+      top: top1,
+      left: left1,
       valueCountable: false,
       id: portal1id,
       type: 'portal',
@@ -138,6 +129,8 @@ export const generatePortals = () => {
     },
     {
       ...generateDefault(),
+      top: top2,
+      left: left2,
       valueCountable: false,
       id: portal2id,
       type: 'portal',
@@ -154,16 +147,23 @@ export const generatePortals = () => {
 const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
 
-  for (let i = 0; i < mapWidth * mapHeight; i++) {
-    result.push({
-      ...generateDefault(),
-      id: Math.random().toString(16).substring(2),
-      value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-    });
+
+  for (let i = 0; i < mapHeight; i++) {
+    for (let j = 0; j < mapWidth; j++) {
+      result.push({
+        top: i,
+        left: j,
+        ...generateDefault(),
+        id: Math.random().toString(16).substring(2),
+        value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+      });
+    }
   }
 
   result[0] = {
     ...generateDefault(),
+    top: 0,
+    left: 0,
     id: Math.random().toString(16).substring(2),
     type: 'turf',
     kind: 'water',
@@ -174,6 +174,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[1] = {
     ...generateDefault(),
+    top: 0,
+    left: 1,
     id: Math.random().toString(16).substring(2),
     type: 'turf',
     kind: 'grass',
@@ -184,6 +186,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
+    top: 1,
+    left: 3,
     id: Math.random().toString(16).substring(2),
     type: 'wall',
     kind: 'stone',
@@ -192,6 +196,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 2] = {
+    top: 2,
+    left: 0,
     ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     type: 'npc',
@@ -201,6 +207,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[mapWidth * 2 + 3] = {
     ...generateDefault(),
+    top: 2,
+    left: 3,
     id: Math.random().toString(16).substring(2),
     type: 'wall',
     kind: 'wood',
@@ -209,34 +217,52 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 1 + 4] = {
+    top: 1,
+    left: 4,
     ...generateDefault(),
     id: Math.random().toString(16).substring(2),
     type: 'hidden',
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
 
-  result[mapWidth * 2 + 2] = generateBobomb();
+  result[mapWidth * 2 + 2] = {
+    ...generateBobomb(),
+    top: 2,
+    left: 2,
+  }
 
   result[mapWidth * 3 + 3] = {
     ...generateDefault(),
+    top: 3,
+    left: 3,
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[mapWidth * 3 + 5] = generateLaser();
+  result[mapWidth * 3 + 5] = {
+    top: 3,
+    left: 5,
+    ...generateLaser(),
+  }
 
   result[mapWidth * 4 + 3] = {
     ...generateDefault(),
+    top: 4,
+    left: 3,
     id: Math.random().toString(16).substring(2),
     value: 1,
   }
 
-  result[mapWidth * 4 + 5] = generateLaser();
-
-  result[mapWidth * 5 + 6] = generateDummy();
+  result[mapWidth * 4 + 5] = {
+    top: 4,
+    left: 5,
+    ...generateLaser(),
+  };
 
   result[mapWidth * mapHeight - mapWidth] = {
     ...generateDefault(),
+    top: 8,
+    left: 0,
     id: Math.random().toString(16).substring(2),
     type: 'laser',
     value: UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
@@ -252,6 +278,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const portal2id = Math.random().toString(16).substring(2);
 
   result[44] = {
+    top: 4,
+    left: 8,
     ...generateDefault(),
     value: UNIT_MAX_VALUE,
     turrets: [
@@ -261,6 +289,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[8] = {
+    top: 0,
+    left: 8,
     ...generateDefault(),
     valueCountable: false,
     id: portal1id,
@@ -274,6 +304,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * (mapHeight - 1) + 8] = {
+    top: 8,
+    left: 8,
     ...generateDefault(),
     valueCountable: false,
     id: portal2id,
@@ -285,6 +317,8 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
       siblingId: portal1id,
     }
   }
+
+  result.splice(34, 1);
 
   return result;
 };

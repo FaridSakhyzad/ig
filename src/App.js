@@ -53,11 +53,6 @@ function App() {
 
   return (
     <div className="app">
-      {false && (
-        <div className="screen" id="screen">
-          <Tempgrid />
-        </div>
-      )}
       {currentScreen === 'playground' && (
         <div className="screen" id="screen">
           <Playground

@@ -7,6 +7,7 @@ const defaults = {
   maxValue: 4,
   valueCountable: true,
   angle: 0,
+  selectable: true,
   turrets: [
     { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
     { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
@@ -44,18 +45,22 @@ const mapSet = () => [
       swaps: 100,
       rotates: 100,
     },
-    units: ((m, n) => {
+    units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
       const UNIT_MAX_VALUE = 4;
 
       const result = [];
 
-      for (let i = 0; i < m * n; i++) {
-        result.push({
-          ...defaults,
-          id: Math.random().toString(16).substring(2),
-          value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
-        });
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+          result.push({
+            ...defaults,
+            top: i,
+            left: j,
+            id: Math.random().toString(16).substring(2),
+            value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
+          });
+        }
       }
 
       return result;
@@ -67,25 +72,29 @@ const mapSet = () => [
     mapWidth: 3,
     mapHeight: 3,
     ammo: {
-      moves: 10,
-      defaults: 3,
-      bobombs: 3,
-      lasers: 3,
-      swaps: 3,
-      rotates: 3,
+      moves: 100,
+      defaults: 100,
+      bobombs: 100,
+      lasers: 100,
+      swaps: 100,
+      rotates: 100,
     },
-    units: ((m, n) => {
+    units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
       const UNIT_MAX_VALUE = 4;
 
       const result = [];
 
-      for (let i = 0; i < m * n; i++) {
-        result.push({
-          ...defaults,
-          id: Math.random().toString(16).substring(2),
-          value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-        });
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+          result.push({
+            ...defaults,
+            top: i,
+            left: j,
+            id: Math.random().toString(16).substring(2),
+            value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+          });
+        }
       }
 
       return result;
@@ -97,12 +106,12 @@ const mapSet = () => [
     mapWidth: 5,
     mapHeight: 5,
     ammo: {
-      moves: 10,
-      defaults: 4,
-      bobombs: 4,
-      lasers: 4,
-      swaps: 4,
-      rotates: 4,
+      moves: 100,
+      defaults: 100,
+      bobombs: 100,
+      lasers: 100,
+      swaps: 100,
+      rotates: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
@@ -110,12 +119,16 @@ const mapSet = () => [
 
       const result = [];
 
-      for (let i = 0; i < width * height; i++) {
-        result.push({
-          ...defaults,
-          id: Math.random().toString(16).substring(2),
-          value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-        });
+      for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+          result.push({
+            ...defaults,
+            top: i,
+            left: j,
+            id: Math.random().toString(16).substring(2),
+            value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+          });
+        }
       }
 
       return result;
