@@ -23,6 +23,12 @@ const mapSet = () => [
     mapWidth: 9,
     mapHeight: 9,
     comboSequence: [1, 1, 1, 3, 5, 8, 13, 21, 34, 55],
+    reward: {
+      moves: 1,
+    },
+    penalty: {
+      bobombs: 1,
+    },
     ammo: {
       moves: 100,
       defaults: 100,
@@ -31,6 +37,7 @@ const mapSet = () => [
       swaps: 100,
       rotates: 100,
       portals: 100,
+      jumps: 100,
     },
     units: MAP_9x9_0(9, 9)
   },
@@ -48,6 +55,7 @@ const mapSet = () => [
       swaps: 100,
       rotates: 100,
       portals: 100,
+      jumps: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
@@ -84,6 +92,7 @@ const mapSet = () => [
       swaps: 100,
       rotates: 100,
       portals: 100,
+      jumps: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
@@ -120,6 +129,7 @@ const mapSet = () => [
       swaps: 100,
       rotates: 100,
       portals: 100,
+      jumps: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0

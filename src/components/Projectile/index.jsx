@@ -51,9 +51,9 @@ const Projectile = (props) => {
     }
 
     const calculatePortalExitPointCoords = (impactedUnit, newX, newY, projectileAngle) => {
-      const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { siblingId } } = impactedUnit;
+      const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId } } = impactedUnit;
 
-      const target = potentialTargetsMap.find(({ id }) => id === siblingId)
+      const target = potentialTargetsMap.find(({ id }) => id === exitPortalId)
 
       if (!target) {
         return {

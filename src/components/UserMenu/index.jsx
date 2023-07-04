@@ -7,7 +7,7 @@ import './UserMenu.scss';
 import { useSelector } from "react-redux";
 
 const UserMenu = ({ onModeChange, afterInputAction }) => {
-  const { bobombs, defaults, lasers, portals, swaps, rotates } = useSelector(state => state.user);
+  const { bobombs, defaults, lasers, portals, swaps, jumps, rotates } = useSelector(state => state.user);
 
   return (
     <div className="userMenu">
@@ -19,9 +19,9 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
         >Swap {swaps}</button>
         <button
           disabled={swaps < 1}
-          onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'jump' })}
+          onClick={() => onModeChange(SELECT_MODE, { callback: 'jump' })}
           className={classnames('button userMenu-button', { selected: afterInputAction === 'jump' })}
-        >Jumps 0</button>
+        >Jumps {jumps}</button>
         <button
           disabled={rotates < 1}
           onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_ccv' })}

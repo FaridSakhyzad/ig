@@ -112,6 +112,7 @@ export const generateLaser = () => {
 export const generatePortals = (top1, left1, top2, left2) => {
   const portal1id = Math.random().toString(16).substring(2);
   const portal2id = Math.random().toString(16).substring(2);
+  const portal3id = Math.random().toString(16).substring(2);
 
   return [
     {
@@ -124,7 +125,7 @@ export const generatePortals = (top1, left1, top2, left2) => {
       value: UNIT_MAX_VALUE,
       turrets: [],
       meta: {
-        siblingId: portal2id,
+        exitPortalId: portal2id,
       }
     },
     {
@@ -138,7 +139,21 @@ export const generatePortals = (top1, left1, top2, left2) => {
       turrets: [],
       angle: 180,
       meta: {
-        siblingId: portal1id,
+        exitPortalId: portal3id,
+      }
+    },
+    {
+      ...generateDefault(),
+      top: 7,
+      left: 7,
+      valueCountable: false,
+      id: portal3id,
+      type: 'portal',
+      value: UNIT_MAX_VALUE,
+      turrets: [],
+      angle: 180,
+      meta: {
+        exitPortalId: portal1id,
       }
     }
   ];
@@ -274,9 +289,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     ],
   }
 
-  const portal1id = Math.random().toString(16).substring(2);
-  const portal2id = Math.random().toString(16).substring(2);
-
   result[44] = {
     top: 4,
     left: 8,
@@ -287,6 +299,10 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
       { name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
     ],
   }
+
+  const portal1id = Math.random().toString(16).substring(2);
+  const portal2id = Math.random().toString(16).substring(2);
+  const portal3id = Math.random().toString(16).substring(2);
 
   result[8] = {
     top: 0,
@@ -299,7 +315,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     turrets: [],
     angle: 180,
     meta: {
-      siblingId: portal2id,
+      exitPortalId: portal2id,
     }
   }
 
@@ -314,7 +330,22 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     turrets: [],
     angle: 0,
     meta: {
-      siblingId: portal1id,
+      exitPortalId: portal3id,
+    }
+  }
+
+  result[mapWidth * (mapHeight - 2) + 7] = {
+    top: 7,
+    left: 7,
+    ...generateDefault(),
+    valueCountable: false,
+    id: portal3id,
+    type: 'portal',
+    value: UNIT_MAX_VALUE,
+    turrets: [],
+    angle: 270,
+    meta: {
+      exitPortalId: portal1id,
     }
   }
 

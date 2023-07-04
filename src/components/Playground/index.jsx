@@ -15,6 +15,7 @@ import {generateBobomb, generateDefault, generateLaser, generatePortals} from '.
 import { SCREEN_MODES, START_MOVES } from '../../config/config';
 
 import './Playground.scss';
+import classnames from "classnames";
 
 const MAX_MULTISELECT = 2;
 
@@ -36,6 +37,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const [ units, setUnits ] = useState(map.units);
   const [ selectedUnits, setSelectedUnits ] = useState([]);
   const [ unitsMap, setUnitsMap ] = useState([]);
+
+  const [ selectedCells, setSelectedCells ] = useState([]);
 
   const [ projectiles, setProjectiles ] = useState([]);
 
@@ -241,6 +244,18 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     if (userInputMode === SELECT_MODE) {
+      setSelectedUnits([{ unitId, unitIndex }]);
+
+      if (afterInputAction === 'jump' && selectedCells.length > 0) {
+        console.log('handleUnitClick performJump');
+        const { top, left } = selectedCells[0];
+        performJump(unitIndex, top, left);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedCells([]);
+        setSelectedUnits([]);
+      }
+
       if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
         performRotate(unitIndex);
         setAfterInputAction(null);
@@ -266,13 +281,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           setSelectedUnits([]);
         }
 
-        if (afterInputAction === 'jump') {
-          console.log('JUMP');
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
         setAfterInputAction(null);
       }
 
@@ -288,6 +296,26 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       setUserInputMode(GAMEPLAY_MODE);
       setAfterInputAction(null);
     }
+
+    if (userInputMode === SELECT_MODE) {
+      setSelectedCells([{ id, top, left }]);
+
+      if (afterInputAction === 'jump' && selectedUnits.length > 0) {
+        const { unitIndex } = selectedUnits[0];
+        performJump(unitIndex, top, left);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedCells([]);
+        setSelectedUnits([]);
+      }
+    }
+  }
+
+  const performJump = (unitIndex, top, left) => {
+    units[unitIndex].top = top;
+    units[unitIndex].left = left;
+
+    setUnits([...units]);
   }
 
   const removeUnit = (index) => {
@@ -562,7 +590,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     return grid;
   };
 
-  const grid = generateCoordinates(map.mapHeight, map.mapHeight);
+  const [ grid ] = useState(generateCoordinates(map.mapHeight, map.mapHeight));
 
   return (
     <>
@@ -580,9 +608,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           </div>
       )}
 
-      <h1 className="moves">moves: {moves}</h1>
-      <h2 className="mode">gameplay mode: {userInputMode}</h2>
-      <h3 className="currentLevel">currentLevel: {levelCounter}</h3>
+      <h1 className="moves">Moves: {moves}</h1>
+      <h2 className="mode">Gameplay mode: {userInputMode}</h2>
+      <h3 className="currentLevel">CurrentLevel: {levelCounter}</h3>
 
       <div className="field" id="field">
         <div className="projectileLayer">
@@ -605,7 +633,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
               {row.map(({ id, top, left }, colIndex) => (
                 <div
                   onClick={() => handleMapCellClick(id, rowIndex, colIndex)}
-                  className="mapLayer-cell"
+                  className={classnames('mapLayer-cell', { selected: selectedCells.some(cell => cell.id === id) })}
+                  data-id={id}
                   key={id}
                   style={{
                     top: `${top}%`,
