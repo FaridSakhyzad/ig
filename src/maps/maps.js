@@ -22,6 +22,7 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
+    comboSequence: [1, 1, 1, 3, 5, 8, 13, 21, 34, 55],
     ammo: {
       moves: 100,
       defaults: 100,
@@ -29,6 +30,7 @@ const mapSet = () => [
       lasers: 100,
       swaps: 100,
       rotates: 100,
+      portals: 100,
     },
     units: MAP_9x9_0(9, 9)
   },
@@ -37,6 +39,7 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 9,
     mapHeight: 9,
+    comboSequence: [3, 5, 8, 13, 21, 34, 55],
     ammo: {
       moves: 100,
       defaults: 100,
@@ -44,6 +47,7 @@ const mapSet = () => [
       lasers: 100,
       swaps: 100,
       rotates: 100,
+      portals: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
@@ -71,6 +75,7 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 3,
     mapHeight: 3,
+    comboSequence: [3, 5, 8, 13, 21, 34, 55],
     ammo: {
       moves: 100,
       defaults: 100,
@@ -78,6 +83,7 @@ const mapSet = () => [
       lasers: 100,
       swaps: 100,
       rotates: 100,
+      portals: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0
@@ -105,6 +111,7 @@ const mapSet = () => [
     gridHeight: 9,
     mapWidth: 5,
     mapHeight: 5,
+    comboSequence: [3, 5, 8, 13, 21, 34, 55],
     ammo: {
       moves: 100,
       defaults: 100,
@@ -112,6 +119,7 @@ const mapSet = () => [
       lasers: 100,
       swaps: 100,
       rotates: 100,
+      portals: 100,
     },
     units: ((width, height) => {
       const UNIT_MIN_VALUE = 0

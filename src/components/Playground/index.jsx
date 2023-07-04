@@ -143,13 +143,11 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const setNewMovesCount = (altKey, shiftKey) => {
-    const newMoves = moves - 1;
-
     if (!shiftKey && !altKey) {
-      dispatch(setMoves(newMoves));
+      dispatch(setMoves(moves - 1));
     }
 
-    return newMoves;
+    return moves - 1;
   }
 
   const makePlayerMove = (e, unitId, unitIndex) => {
@@ -182,7 +180,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(unitIndex);
         });
 
-        const newMoves = setNewMovesCount();
+        const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
       wall: () => {},
@@ -193,7 +191,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(unitIndex);
         });
 
-        const newMoves = setNewMovesCount();
+        const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
       laser: () => {
@@ -202,7 +200,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(unitIndex);
         });
 
-        const newMoves = setNewMovesCount();
+        const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
       bobomb: () => {
@@ -211,7 +209,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(unitIndex);
         });
 
-        const newMoves = setNewMovesCount();
+        const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
     }
@@ -263,6 +261,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
         if (afterInputAction === 'portal') {
           placePortals();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
+        if (afterInputAction === 'jump') {
+          console.log('JUMP');
 
           setUserInputMode(GAMEPLAY_MODE);
           setSelectedUnits([]);
@@ -352,6 +357,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
+            executeCombo();
           });
         }
 
@@ -359,6 +365,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           setUnitValue(impactedUnitIndex, maxValue + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
+            executeCombo();
           });
         }
 
@@ -368,6 +375,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           setUnitValue(impactedUnitIndex, maxValue + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
+            executeCombo();
           });
         }
       },
@@ -380,6 +388,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
+          executeCombo();
         });
       },
       bobomb: () => {
@@ -388,6 +397,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         setUnitValue(impactedUnitIndex, maxValue + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
+          executeCombo();
         });
       },
       npc: () => {
@@ -396,6 +406,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         setUnitValue(impactedUnitIndex, maxValue + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
+          executeCombo();
         });
       }
     }
@@ -403,6 +414,29 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     callbacks[units[impactedUnitIndex].type] && callbacks[units[impactedUnitIndex].type]();
 
     detectGameOutcome();
+  }
+
+  const combosRewards = [
+    () => {
+      dispatch(setMoves(moves + 1));
+    },
+    () => {
+      dispatch(setAmmo({ bobombs: bobombs + 1 }));
+    },
+    () => {
+      dispatch(setAmmo({ lasers: lasers + 1 }));
+    },
+  ];
+
+  const executeCombo = () => {
+    Playground.comboCounter += 1;
+
+    if (Playground.comboCounter === map.comboSequence[Playground.comboCursor]) {
+      combosRewards[Playground.comboCursor] && combosRewards[Playground.comboCursor]();
+
+      Playground.comboCounter = 0;
+      Playground.comboCursor += 1;
+    }
   }
 
   const onModeChange = (mode, data) => {
@@ -622,5 +656,8 @@ Playground.propTypes = {
 }
 
 Playground.actingProjectilesNumber = 0;
+
+Playground.comboCounter = 0;
+Playground.comboCursor = 0;
 
 export default Playground;

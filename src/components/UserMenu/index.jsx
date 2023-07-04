@@ -7,7 +7,7 @@ import './UserMenu.scss';
 import { useSelector } from "react-redux";
 
 const UserMenu = ({ onModeChange, afterInputAction }) => {
-  const { bobombs, defaults, lasers, swaps, rotates } = useSelector(state => state.user);
+  const { bobombs, defaults, lasers, portals, swaps, rotates } = useSelector(state => state.user);
 
   return (
     <div className="userMenu">
@@ -104,7 +104,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
             <Unit
               key="portal"
               isSelected={afterInputAction === 'portal'}
-              isDisabled={lasers < 1}
+              isDisabled={portals < 1}
               id="3"
               type="portal"
               angle={0}
@@ -114,7 +114,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
               exploding={false}
               idx={0}
             />
-            <div className="userMenu-unitCount">{lasers}</div>
+            <div className="userMenu-unitCount">{portals}</div>
           </div>
         </div>
       </div>
