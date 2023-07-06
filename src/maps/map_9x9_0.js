@@ -175,30 +175,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     }
   }
 
-  result[0] = {
-    ...generateDefault(),
-    top: 0,
-    left: 0,
-    id: Math.random().toString(16).substring(2),
-    type: 'turf',
-    kind: 'water',
-    selectable: false,
-    valueCountable: false,
-    value: 0,
-  }
-
-  result[1] = {
-    ...generateDefault(),
-    top: 0,
-    left: 1,
-    id: Math.random().toString(16).substring(2),
-    type: 'turf',
-    kind: 'grass',
-    selectable: false,
-    valueCountable: false,
-    value: 0,
-  }
-
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
     top: 1,

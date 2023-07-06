@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
-import Tempgrid from "./tempGrid";
 import './App.scss';
 
 import { BASE_VIEWPORT_WIDTH, SCREEN_MODES } from './config/config';

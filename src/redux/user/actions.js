@@ -1,4 +1,4 @@
-import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO } from './constants'
+import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO, SET_STASH } from './constants'
 
 export const setMoves = (data) => ({
   type: SET_MOVES,
@@ -22,4 +22,9 @@ export const setAmmo = (data) => ({
 
 export const resetAmmo = () => ({
   type: RESET_AMMO,
+})
+
+export const setStash = (data) => ({
+  type: SET_STASH,
+  payload: data,
 })

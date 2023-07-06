@@ -7,3 +7,5 @@ export const SET_ROTATES = 'SET_ROTATES';
 export const SET_AMMO = 'SET_AMMO';
 
 export const RESET_AMMO = 'RESET_AMMO';
+
+export const SET_STASH = 'SET_STASH';

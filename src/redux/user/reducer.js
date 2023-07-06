@@ -1,10 +1,11 @@
-import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO } from './constants'
+import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO, SET_STASH } from './constants'
 import mapSet from "../../maps/maps";
 
 const { ammo } = mapSet()[0];
 
 const initialState = {
   ...ammo,
+  stash: {}
 }
 
 const userReducer = (state = initialState, action) => {
@@ -36,6 +37,13 @@ const userReducer = (state = initialState, action) => {
     case RESET_AMMO: {
       return {
         ...initialState,
+      }
+    }
+    case SET_STASH: {
+      console.log('SET_STASH ', action.payload);
+      return {
+        ...state,
+        stash: action.payload,
       }
     }
     default:

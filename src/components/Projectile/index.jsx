@@ -277,7 +277,7 @@ const Projectile = (props) => {
       style={{
         top,
         left,
-        transform: `translate(var(--offset-x), var(--offset-y)) rotate(var(--angle))`
+        transform: `translate3d(var(--offset-x), var(--offset-y), 0) rotate(var(--angle))`
       }}
     >
       <div className="projectile-hitBox" />

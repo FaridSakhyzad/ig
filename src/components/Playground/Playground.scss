@@ -20,6 +20,18 @@
   &.selected {
     outline: 1px solid rgba(0, 0, 0, 1);
   }
+
+  &.mapLayer-cell_grass {
+    background-color: green;
+    opacity: 0.3;
+    border-radius: calc(var(--base-width-unit) * 5px);
+  }
+
+  &.mapLayer-cell_water {
+    background-color: aqua;
+    opacity: 0.5;
+    border-radius: calc(var(--base-width-unit) * 5px);
+  }
 }
 
 .unitLayer {
@@ -87,7 +99,7 @@
 }
 
 .currentLevel {
-  font-size: 13px;
+  font-size: 18px;
   line-height: 1.4;
   margin: 0;
 }

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {number, string} from 'prop-types';
+import { number } from 'prop-types';
+import classnames from 'classnames';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import { setMoves, setSwaps, setRotates, setAmmo, resetAmmo} from 'redux/user/actions';
+import {setMoves, setSwaps, setRotates, setAmmo, resetAmmo, setStash} from 'redux/user/actions';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -11,18 +12,19 @@ import UserMenu from '../UserMenu';
 import mapSet from 'maps/maps';
 
 import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
-import {generateBobomb, generateDefault, generateLaser, generatePortals} from '../../maps/map_9x9_0';
-import { SCREEN_MODES, START_MOVES } from '../../config/config';
+import { generateBobomb, generateDefault, generateLaser, generatePortals } from '../../maps/map_9x9_0';
+import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
-import classnames from "classnames";
 
 const MAX_MULTISELECT = 2;
 
 const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const dispatch = useDispatch();
 
-  const { moves, bobombs, defaults, lasers, portals, swaps, rotates } = useSelector(({ user }) => user);
+  const user = useSelector(({ user }) => user);
+
+  const { moves, bobombs, defaults, lasers, portals, swaps, rotates, jumps } = user;
 
   const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
   const [ afterInputAction, setAfterInputAction ] = useState(null);
@@ -33,6 +35,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const [ map, setMap ] = useState(mapSet()[currentLevel]);
   const [ fieldInfo, setFieldInfo ] = useState({});
+
+  const [ grid, setGrid ] = useState(map.grid);
 
   const [ units, setUnits ] = useState(map.units);
   const [ selectedUnits, setSelectedUnits ] = useState([]);
@@ -247,17 +251,20 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       setSelectedUnits([{ unitId, unitIndex }]);
 
       if (afterInputAction === 'jump' && selectedCells.length > 0) {
-        console.log('handleUnitClick performJump');
         const { top, left } = selectedCells[0];
         performJump(unitIndex, top, left);
 
         setUserInputMode(GAMEPLAY_MODE);
         setSelectedCells([]);
         setSelectedUnits([]);
+        setAfterInputAction(null);
       }
 
       if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
         performRotate(unitIndex);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedUnits([]);
         setAfterInputAction(null);
       }
     }
@@ -307,15 +314,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         setUserInputMode(GAMEPLAY_MODE);
         setSelectedCells([]);
         setSelectedUnits([]);
+        setAfterInputAction(null);
       }
     }
-  }
-
-  const performJump = (unitIndex, top, left) => {
-    units[unitIndex].top = top;
-    units[unitIndex].left = left;
-
-    setUnits([...units]);
   }
 
   const removeUnit = (index) => {
@@ -364,6 +365,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     if (moves >= 0 && !someUnitsLeft) {
       setTimeout(() => {
         setWinScreenVisible(true);
+
+        applyLevelReward(map);
+        applyLevelPenalty(map);
+
       }, projectileExplosionDuration + 300);
     }
   }
@@ -446,13 +451,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const combosRewards = [
     () => {
-      dispatch(setMoves(moves + 1));
+      // dispatch(setMoves(moves + 1));
     },
     () => {
-      dispatch(setAmmo({ bobombs: bobombs + 1 }));
+      // dispatch(setAmmo({ bobombs: bobombs + 1 }));
     },
     () => {
-      dispatch(setAmmo({ lasers: lasers + 1 }));
+      // dispatch(setAmmo({ lasers: lasers + 1 }));
     },
   ];
 
@@ -518,10 +523,16 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     newUnits[unitIndex].angle += (angle * directionMultiplier);
     setUnits(newUnits);
 
-    setUserInputMode(GAMEPLAY_MODE);
-    setSelectedUnits([]);
-
     dispatch(setRotates(rotates - 1));
+  }
+
+  const performJump = (unitIndex, top, left) => {
+    units[unitIndex].top = top;
+    units[unitIndex].left = left;
+
+    setUnits([...units]);
+
+    dispatch(setAmmo({ jumps: jumps - 1 }));
   }
 
   const handleRestartClick = () => {
@@ -533,64 +544,85 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
   }
 
-  const startLevel = (number) => {
-    setLevelCounter(1);
+  const startLevel = (levelIndex) => {
+    setLevelCounter(levelCounter + 1);
 
-    setCurrentLevel(number);
+    const maps = mapSet();
 
-    const level = mapSet()[number];
+    const nextLevelIndex = levelIndex >= (maps.length) ? 0 : levelIndex;
+
+    setCurrentLevel(nextLevelIndex);
+
+    const level = maps[nextLevelIndex];
 
     setMap(level);
 
-    dispatch(setAmmo(level.ammo));
+    setGrid(level.grid);
+
     setUnits(level.units);
+
+    if (level.overrideUserAmmo) {
+      console.log('OVERRIDE AMMO');
+      applyLevelAmmo(level);
+    }
+
+    if (level.restoreUserAmmo) {
+      console.log('RESTORE AMMO');
+      applyUserAmmo(level);
+    }
 
     setWinScreenVisible(false);
     setLoseScreenVisible(false);
   }
 
-  const startNextLevel = () => {
-    setLevelCounter(levelCounter + 1);
+  const applyLevelAmmo = (level) => {
+    const { stash, ...userAmmo } = user;
 
-    const maps = mapSet();
+    console.log('userAmmo', userAmmo);
+    dispatch(setStash(userAmmo));
+    dispatch(setAmmo(level.ammo));
 
-    const nextLevelIndex = currentLevel >= (maps.length - 1) ? 0 : currentLevel + 1;
-
-    setCurrentLevel(nextLevelIndex);
-
-    const nextLevel = maps[nextLevelIndex];
-
-    setMap(nextLevel);
-    setUnits(nextLevel.units);
-
-    dispatch(setAmmo(nextLevel.ammo));
-
-    setUnits(nextLevel.units);
-
-    setWinScreenVisible(false);
+    console.log('applyLevelAmmo | stash', stash);
+    console.log('applyLevelAmmo | user', user);
   }
 
-  const generateCoordinates = (gridWidth, gridHeight) => {
-    const grid = [];
+  const applyUserAmmo = () => {
+    const { stash } = user;
 
-    for (let i = 0; i < gridHeight; ++i) {
-      const row = [];
+    dispatch(setStash({}));
+    dispatch(setAmmo({ ...stash, stash: {} }));
 
-      for (let j = 0; j < gridWidth; ++j) {
-        row[j] = {
-          id: Math.random().toString(16).substring(2),
-          left: j / gridWidth * 100,
-          top: i / gridHeight * 100,
-        };
-      }
+    console.log('applyUserAmmo | stash', stash);
+    console.log('applyUserAmmo | user', user);
+  }
 
-      grid.push(row);
+  const startNextLevel = () => {
+    startLevel(currentLevel + 1);
+  }
+
+  const applyLevelPenalty = (level) => {
+    const reward = {};
+
+    if (!level.penalty) {
+      return
     }
 
-    return grid;
-  };
+    Object.keys(level.penalty).forEach(key => reward[key] = user[key] - level.penalty[key]);
 
-  const [ grid ] = useState(generateCoordinates(map.mapHeight, map.mapHeight));
+    dispatch(setAmmo(reward));
+  }
+
+  const applyLevelReward = (level) => {
+    const reward = {};
+
+    if (!level.reward) {
+      return
+    }
+
+    Object.keys(level.reward).forEach(key => reward[key] = user[key] + level.reward[key]);
+
+    dispatch(setAmmo(reward));
+  }
 
   return (
     <>
@@ -630,10 +662,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         <div className="mapLayer">
           {grid.map((row, rowIndex) => (
             <React.Fragment key={rowIndex}>
-              {row.map(({ id, top, left }, colIndex) => (
+              {row.map(({ id, top, left, type }, colIndex) => (
                 <div
                   onClick={() => handleMapCellClick(id, rowIndex, colIndex)}
-                  className={classnames('mapLayer-cell', { selected: selectedCells.some(cell => cell.id === id) })}
+                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selectedCells.some(cell => cell.id === id) })}
                   data-id={id}
                   key={id}
                   style={{
