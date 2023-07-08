@@ -4,7 +4,8 @@ import { number } from 'prop-types';
 import classnames from 'classnames';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import {setMoves, setSwaps, setRotates, setAmmo, resetAmmo, setStash} from 'redux/user/actions';
+import { setMoves, setSwaps, setRotates, setAmmo, resetAmmo } from 'redux/user/actions';
+import { setStash } from 'redux/userStash/actions';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -23,6 +24,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const dispatch = useDispatch();
 
   const user = useSelector(({ user }) => user);
+  const userStash = useSelector(({ userStash }) => userStash);
 
   const { moves, bobombs, defaults, lasers, portals, swaps, rotates, jumps } = user;
 
@@ -562,38 +564,28 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(level.units);
 
     if (level.overrideUserAmmo) {
-      console.log('OVERRIDE AMMO');
-      applyLevelAmmo(level);
+      applyLevelAmmo(level, level.createUserBackup);
     }
 
     if (level.restoreUserAmmo) {
-      console.log('RESTORE AMMO');
-      applyUserAmmo(level);
+      restoreUserAmmo();
     }
 
     setWinScreenVisible(false);
     setLoseScreenVisible(false);
   }
 
-  const applyLevelAmmo = (level) => {
-    const { stash, ...userAmmo } = user;
+  const applyLevelAmmo = (level, createBackup) => {
+    if (createBackup) {
+      dispatch(setStash(user));
+    }
 
-    console.log('userAmmo', userAmmo);
-    dispatch(setStash(userAmmo));
     dispatch(setAmmo(level.ammo));
-
-    console.log('applyLevelAmmo | stash', stash);
-    console.log('applyLevelAmmo | user', user);
   }
 
-  const applyUserAmmo = () => {
-    const { stash } = user;
-
+  const restoreUserAmmo = () => {
+    dispatch(setAmmo({ userStash }));
     dispatch(setStash({}));
-    dispatch(setAmmo({ ...stash, stash: {} }));
-
-    console.log('applyUserAmmo | stash', stash);
-    console.log('applyUserAmmo | user', user);
   }
 
   const startNextLevel = () => {

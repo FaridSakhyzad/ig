@@ -4,8 +4,7 @@ import mapSet from "../../maps/maps";
 const { ammo } = mapSet()[0];
 
 const initialState = {
-  ...ammo,
-  stash: {}
+  ...ammo
 }
 
 const userReducer = (state = initialState, action) => {
@@ -40,7 +39,6 @@ const userReducer = (state = initialState, action) => {
       }
     }
     case SET_STASH: {
-      console.log('SET_STASH ', action.payload);
       return {
         ...state,
         stash: action.payload,
