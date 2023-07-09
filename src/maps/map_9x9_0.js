@@ -162,7 +162,6 @@ export const generatePortals = (top1, left1, top2, left2) => {
 const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
 
-
   for (let i = 0; i < mapHeight; i++) {
     for (let j = 0; j < mapWidth; j++) {
       result.push({
@@ -174,6 +173,16 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
       });
     }
   }
+
+  /*
+  result[mapWidth * 4 + 4] = {
+    ...generateDefault(),
+    top: 4,
+    left: 4,
+    id: Math.random().toString(16).substring(2),
+    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+  }
+  */
 
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),

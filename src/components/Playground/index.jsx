@@ -60,7 +60,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
       const turretsData = [];
 
-      const { turrets, angle: unitAngle, value, type, meta } = units[index];
+      const { turrets, angle: unitAngle, value, type, meta, explosionStart } = units[index];
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
@@ -90,6 +90,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         turrets: turretsData,
         angle: unitAngle,
         meta,
+        explosionStart,
       };
     })
   }
@@ -125,6 +126,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const newUnits = [ ...units ];
 
     newUnits[unitIndex].exploding = true;
+
+    newUnits[unitIndex].explosionStart = +Date.now();
     newUnits[unitIndex].value = newUnits[unitIndex].minValue;
 
     setUnits(newUnits);
@@ -381,13 +384,17 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     detectGameOutcome();
   }
 
-  const onImpact = (projectileType, impactedUnitIndex) => {
+  const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
     const { maxValue } = units[impactedUnitIndex];
 
     const callbacks = {
       default: () => {
         if (projectileType === 'default') {
           --Playground.actingProjectilesNumber;
+
+          if (impactWithExplodingUnit) {
+            return;
+          }
 
           setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
@@ -407,6 +414,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         if (projectileType === 'bobomb') {
           --Playground.actingProjectilesNumber;
 
+          if (impactWithExplodingUnit) {
+            return;
+          }
+
           setUnitValue(impactedUnitIndex, maxValue + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
@@ -420,6 +431,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       laser: () => {
         --Playground.actingProjectilesNumber;
 
+        if (impactWithExplodingUnit) {
+          return;
+        }
+
         setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
@@ -429,6 +444,12 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       bobomb: () => {
         --Playground.actingProjectilesNumber;
 
+        console.log('BOBOMB');
+
+        if (impactWithExplodingUnit) {
+          return;
+        }
+
         setUnitValue(impactedUnitIndex, maxValue + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
           explodeUnit(impactedUnitIndex);
@@ -437,6 +458,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       },
       npc: () => {
         --Playground.actingProjectilesNumber;
+
+        if (impactWithExplodingUnit) {
+          return;
+        }
 
         setUnitValue(impactedUnitIndex, maxValue + 1, () => {
           dischargeAllTurrets(impactedUnitIndex, unitsMap);
@@ -453,13 +478,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const combosRewards = [
     () => {
-      // dispatch(setMoves(moves + 1));
+      console.log('FIRST COMBO !!!');
     },
     () => {
-      // dispatch(setAmmo({ bobombs: bobombs + 1 }));
+      console.log('SECOND COMBO !!!');
     },
     () => {
-      // dispatch(setAmmo({ lasers: lasers + 1 }));
+      console.log('THIRD COMBO !!!');
     },
   ];
 

@@ -105,7 +105,7 @@ const Projectile = (props) => {
         return;
       }
 
-      const impactedUnit = projectileDidImpact(left + newX, top + newY);
+      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY);
 
       if (impactedUnit && impactedUnitId !== impactedUnit.id) {
         const { id, type: impactedUnitType } = impactedUnit;
@@ -119,7 +119,8 @@ const Projectile = (props) => {
               impactedUnitId = null;
               setProjectileState('impact');
 
-              onImpact(projectileType, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
               return;
             }
           }
@@ -129,7 +130,8 @@ const Projectile = (props) => {
               impactedUnitId = null;
               setProjectileState('impact');
 
-              onImpact(projectileType, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
               return;
             }
           }
@@ -144,20 +146,23 @@ const Projectile = (props) => {
         if (projectileType === 'laser') {
           if (impactedUnitType === 'default') {
             if (impactedUnit.value > 0) {
-              onImpact(projectileType, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
             }
           }
+
           if (impactedUnitType === 'npc') {
             if (impactedUnit.value > 0) {
-              onImpact(projectileType, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
             }
           }
+
           if (impactedUnitType === 'laser') {
             clearTimeout(timer);
             impactedUnitId = null;
             setProjectileState('impact');
 
-            onImpact(projectileType, impactedUnit.index);
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
             return;
           }
 
@@ -174,7 +179,8 @@ const Projectile = (props) => {
           impactedUnitId = null;
           setProjectileState('impact');
 
-          onImpact(projectileType, impactedUnit.index);
+          onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
           return;
         }
 
@@ -184,7 +190,8 @@ const Projectile = (props) => {
             impactedUnitId = null;
             setProjectileState('impact');
 
-            onImpact(projectileType, impactedUnit.index);
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
             return;
           }
           if (impactedUnitType === 'npc') {
@@ -193,9 +200,19 @@ const Projectile = (props) => {
               impactedUnitId = null;
               setProjectileState('impact');
 
-              onImpact(projectileType, impactedUnit.index);
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
               return;
             }
+          }
+          if (impactedUnitType === 'bobomb') {
+            clearTimeout(timer);
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+            return;
           }
         }
       }
@@ -231,13 +248,16 @@ const Projectile = (props) => {
       rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
 
     let impactedUnit = null;
+    let impactWithExplodingUnit = false;
 
     for (let i = 0; i < potentialTargetsMap.length; ++i) {
       const potentialTarget = potentialTargetsMap[i];
 
-      const { value } = units[potentialTarget.index];
+      const { value, explosionStart } = units[potentialTarget.index];
 
-      if (value === 0) {
+      impactWithExplodingUnit = explosionStart !== undefined && ((+Date.now() - explosionStart) < 300);
+
+      if (value === 0 && !impactWithExplodingUnit) {
         continue;
       }
 
@@ -263,7 +283,10 @@ const Projectile = (props) => {
       }
     }
 
-    return impactedUnit;
+    return {
+      impactedUnit,
+      impactWithExplodingUnit
+    };
   }
 
   useEffect(() => {
