@@ -217,9 +217,11 @@ const Projectile = (props) => {
         }
       }
 
-      ref.current.style.setProperty('--offset-x', `${newX}px`);
-      ref.current.style.setProperty('--offset-y', `${newY}px`);
-      ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
+      if (ref.current) {
+        ref.current.style.setProperty('--offset-x', `${newX}px`);
+        ref.current.style.setProperty('--offset-y', `${newY}px`);
+        ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
+      }
 
       launchProjectile(currentDistance, newX, newY, projectileAngle);
     }, speed);

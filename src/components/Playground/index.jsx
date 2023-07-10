@@ -444,8 +444,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       bobomb: () => {
         --Playground.actingProjectilesNumber;
 
-        console.log('BOBOMB');
-
         if (impactWithExplodingUnit) {
           return;
         }

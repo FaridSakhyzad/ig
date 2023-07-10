@@ -174,7 +174,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     }
   }
 
-  /*
   result[mapWidth * 4 + 4] = {
     ...generateDefault(),
     top: 4,
@@ -182,7 +181,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     id: Math.random().toString(16).substring(2),
     value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
   }
-  */
 
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
