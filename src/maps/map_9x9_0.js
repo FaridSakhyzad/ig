@@ -169,19 +169,24 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
         left: j,
         ...generateDefault(),
         id: Math.random().toString(16).substring(2),
-        value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+        value: 4 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
       });
     }
   }
 
+  /*
   result[mapWidth * 4 + 4] = {
     ...generateDefault(),
     top: 4,
-    left: 4,
+    left: 0,
     id: Math.random().toString(16).substring(2),
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
+    turrets: [
+      { name: 'turret1', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    ],
+    value: UNIT_MAX_VALUE,
   }
 
+  /*
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
     top: 1,
@@ -333,6 +338,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result.splice(34, 1);
+  //*/
 
   return result;
 };

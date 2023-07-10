@@ -38,7 +38,45 @@ const Projectile = (props) => {
 
   let impactedUnitId = null;
 
-  const launchProjectile = (currentDistance = 0, currentX = 0, currentY = 0, currentAngle = angle) => {
+  const calculatePortalExitPointCoords = (impactedUnit, newX, newY, projectileAngle) => {
+    const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId } } = impactedUnit;
+
+    const target = potentialTargetsMap.find(({ id }) => id === exitPortalId)
+
+    if (!target) {
+      return {
+        x: newX,
+        y: newY,
+        angle: projectileAngle,
+      }
+    }
+
+    const { top: exitTop, left: exitLeft, angle: exitAngle } = target;
+    const offsetTop = exitTop - entranceTop;
+    const offsetLeft = exitLeft - entranceLeft;
+    const offsetAngle = exitAngle - entranceAngle;
+
+    const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
+
+    if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
+      const newAngle = projectileAngle + (offsetAngle - 180);
+      projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
+
+      return {
+        x: newX + offsetLeft,
+        y: newY + offsetTop,
+        angle: projectileAngle,
+      }
+    }
+
+    return {
+      x: newX,
+      y: newY,
+      angle: projectileAngle,
+    }
+  }
+
+  const launchProjectileWithSetTimeout = (currentDistance = 0, currentX = 0, currentY = 0, currentAngle = angle) => {
     const maxDist = maxDistance || SAFE_MAX_DISTANCE;
 
     if (currentDistance >= maxDist) {
@@ -48,44 +86,6 @@ const Projectile = (props) => {
       onOutOfFiled(id);
 
       return;
-    }
-
-    const calculatePortalExitPointCoords = (impactedUnit, newX, newY, projectileAngle) => {
-      const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId } } = impactedUnit;
-
-      const target = potentialTargetsMap.find(({ id }) => id === exitPortalId)
-
-      if (!target) {
-        return {
-          x: newX,
-          y: newY,
-          angle: projectileAngle,
-        }
-      }
-
-      const { top: exitTop, left: exitLeft, angle: exitAngle } = target;
-      const offsetTop = exitTop - entranceTop;
-      const offsetLeft = exitLeft - entranceLeft;
-      const offsetAngle = exitAngle - entranceAngle;
-
-      const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
-
-      if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
-        const newAngle = projectileAngle + (offsetAngle - 180);
-        projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
-
-        return {
-          x: newX + offsetLeft,
-          y: newY + offsetTop,
-          angle: projectileAngle,
-        }
-      }
-
-      return {
-        x: newX,
-        y: newY,
-        angle: projectileAngle,
-      }
     }
 
     const timer = setTimeout(() => {
@@ -223,9 +223,93 @@ const Projectile = (props) => {
         ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
       }
 
-      launchProjectile(currentDistance, newX, newY, projectileAngle);
+      launchProjectileWithSetTimeout(currentDistance, newX, newY, projectileAngle);
     }, speed);
   };
+
+  const launchProjectileWithRAF = () => {
+    const maxDist = maxDistance || SAFE_MAX_DISTANCE * moveStep;
+    const duration = speed * maxDist;
+
+    let currentAngle = angle;
+    let currentX = 0;
+    let currentY = 0;
+
+    let currentDistance = 0;
+    let initialTimeStamp;
+
+    const animate = (timeStamp) => {
+      if (currentDistance >= maxDist) {
+        impactedUnitId = null;
+        setProjectileState('impact');
+
+        onOutOfFiled(id);
+
+        return;
+      }
+
+      if (!initialTimeStamp) {
+        initialTimeStamp = timeStamp;
+      }
+
+      const deltaTimeStamp = timeStamp - initialTimeStamp;
+
+      const animationPercent = 100 / duration * deltaTimeStamp;
+
+      initialTimeStamp = timeStamp;
+
+      currentDistance = currentDistance + (maxDist * animationPercent / 100);
+
+      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, moveStep);
+
+      let newX = coordinateX;
+      let newY = coordinateY;
+
+      const outOfField = projectileIsOutOfField(left + newX, top + newY);
+
+      if (outOfField) {
+        setProjectileState('impact');
+
+        onOutOfFiled(id);
+        return;
+      }
+
+      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY);
+
+      if (impactedUnit && impactedUnitId !== impactedUnit.id) {
+        const {id, type: impactedUnitType} = impactedUnit;
+
+        impactedUnitId = id;
+
+        if (projectileType === 'default') {
+          if (impactedUnitType === 'default') {
+            if (impactedUnit.value > 0) {
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+              return;
+            }
+          }
+        }
+
+      }
+
+      if (ref.current) {
+        ref.current.style.setProperty('--offset-x', `${newX}px`);
+        ref.current.style.setProperty('--offset-y', `${newY}px`);
+        ref.current.style.setProperty('--angle', `${currentAngle}deg`);
+      }
+
+      currentX = newX;
+      currentY = newY;
+
+      window.requestAnimationFrame(animate);
+    };
+
+    window.requestAnimationFrame(animate);
+  }
 
   const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {
     const { fieldWidth, fieldHeight } = fieldInfo;
@@ -292,7 +376,8 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    launchProjectile();
+    //launchProjectileWithSetTimeout();
+    launchProjectileWithRAF();
   }, []);
 
   return (
