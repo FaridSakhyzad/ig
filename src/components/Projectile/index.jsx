@@ -231,9 +231,9 @@ const Projectile = (props) => {
     const maxDist = maxDistance || SAFE_MAX_DISTANCE * moveStep;
     const duration = speed * maxDist;
 
-    let currentAngle = angle;
     let currentX = 0;
     let currentY = 0;
+    let currentAngle = angle;
 
     let currentDistance = 0;
     let initialTimeStamp;
@@ -292,8 +292,91 @@ const Projectile = (props) => {
               return;
             }
           }
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+              return;
+            }
+          }
+          if (impactedUnitType === 'portal') {
+            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            newX = x;
+            newY = y;
+            currentAngle = angle;
+          }
         }
 
+        if (projectileType === 'laser') {
+          if (impactedUnitType === 'default') {
+            if (impactedUnit.value > 0) {
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+            }
+          }
+
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+            }
+          }
+
+          if (impactedUnitType === 'laser') {
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+            return;
+          }
+
+          if (impactedUnitType === 'portal') {
+            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            newX = x;
+            newY = y;
+            currentAngle = angle;
+          }
+        }
+
+        if (impactedUnitType === 'wall') {
+          impactedUnitId = null;
+          setProjectileState('impact');
+
+          onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+          return;
+        }
+
+        if (projectileType === 'bobomb') {
+          if (impactedUnitType === 'default') {
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+            return;
+          }
+          if (impactedUnitType === 'npc') {
+            if (impactedUnit.value > 0) {
+              impactedUnitId = null;
+              setProjectileState('impact');
+
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+              return;
+            }
+          }
+          if (impactedUnitType === 'bobomb') {
+            impactedUnitId = null;
+            setProjectileState('impact');
+
+            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+
+            return;
+          }
+        }
       }
 
       if (ref.current) {
@@ -376,8 +459,8 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    //launchProjectileWithSetTimeout();
-    launchProjectileWithRAF();
+    launchProjectileWithSetTimeout();
+    //launchProjectileWithRAF();
   }, []);
 
   return (

@@ -169,12 +169,12 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
         left: j,
         ...generateDefault(),
         id: Math.random().toString(16).substring(2),
-        value: 4 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
+        value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
       });
     }
   }
 
-  /*
+  //*
   result[mapWidth * 4 + 4] = {
     ...generateDefault(),
     top: 4,
@@ -186,7 +186,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     value: UNIT_MAX_VALUE,
   }
 
-  /*
   result[mapWidth * 1 + 3] = {
     ...generateDefault(),
     top: 1,
