@@ -260,7 +260,7 @@ const Projectile = (props) => {
 
       currentDistance = currentDistance + (maxDist * animationPercent / 100);
 
-      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, moveStep);
+      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, (maxDist * animationPercent / 100));
 
       let newX = coordinateX;
       let newY = coordinateY;
@@ -459,8 +459,8 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    launchProjectileWithSetTimeout();
-    //launchProjectileWithRAF();
+    //launchProjectileWithSetTimeout();
+    launchProjectileWithRAF();
   }, []);
 
   return (
