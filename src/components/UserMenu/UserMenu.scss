@@ -16,7 +16,7 @@
 
 .userMenu-button {
   margin: 0 6px;
-  min-width: 100px;
+  white-space: nowrap;
 
   &.selected {
     border-width: 3px;
@@ -24,7 +24,7 @@
 }
 
 .userMenu-button_rotate {
-  min-width: 60px;
+  min-width: 50px;
 }
 
 .userMenu-unitsBox {

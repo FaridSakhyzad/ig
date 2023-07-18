@@ -76,6 +76,20 @@ const Projectile = (props) => {
     }
   }
 
+  const calculateDeflectedCoords = (impactedUnit, newX, newY, projectileAngle) => {
+    const { angle } = impactedUnit;
+
+    const projectileToUnitDiffAngle = Math.abs(projectileAngle - angle);
+
+    const angleToNormal = projectileToUnitDiffAngle % 180;
+
+    return {
+      x: newX,
+      y: newY,
+      angle: projectileAngle + ((90 - angleToNormal) * 2),
+    }
+  }
+
   const launchProjectileWithSetTimeout = (currentDistance = 0, currentX = 0, currentY = 0, currentAngle = angle) => {
     const maxDist = maxDistance || SAFE_MAX_DISTANCE;
 
@@ -304,6 +318,13 @@ const Projectile = (props) => {
           }
           if (impactedUnitType === 'portal') {
             const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            newX = x;
+            newY = y;
+            currentAngle = angle;
+          }
+
+          if (impactedUnitType === 'deflector') {
+            const { x, y, angle } = calculateDeflectedCoords(impactedUnit, newX, newY, currentAngle);
             newX = x;
             newY = y;
             currentAngle = angle;

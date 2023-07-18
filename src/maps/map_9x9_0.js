@@ -175,6 +175,25 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   //*
+  result[mapWidth * 6 + 3] = {
+    ...generateDefault(),
+    type: 'deflector',
+    top: 6,
+    left: 3,
+    id: Math.random().toString(16).substring(2),
+    turrets: [],
+    value: 4,
+    // angle: -45,
+  }
+
+  result[mapWidth * 6 + 6] = {
+    ...generateDefault(),
+    top: 6,
+    left: 6,
+    id: Math.random().toString(16).substring(2),
+    value: 4,
+  }
+
   result[mapWidth * 4 + 4] = {
     ...generateDefault(),
     top: 4,
