@@ -183,7 +183,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     id: Math.random().toString(16).substring(2),
     turrets: [],
     value: 4,
-    // angle: -45,
+    angle: -45,
   }
 
   result[mapWidth * 6 + 6] = {
@@ -352,6 +352,40 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     angle: 270,
     meta: {
       exitPortalId: portal1id,
+    }
+  }
+
+
+  const teleport1id = Math.random().toString(16).substring(2);
+  const teleport2id = Math.random().toString(16).substring(2);
+
+  result[mapWidth * 2 + 6] = {
+    top: 2,
+    left: 6,
+    ...generateDefault(),
+    valueCountable: false,
+    id: teleport1id,
+    type: 'teleport',
+    value: UNIT_MAX_VALUE,
+    turrets: [],
+    angle: 0,
+    meta: {
+      exitTeleportId: teleport2id,
+    }
+  }
+
+  result[mapWidth * 6 + 1] = {
+    top: 6,
+    left: 1,
+    ...generateDefault(),
+    valueCountable: false,
+    id: teleport2id,
+    type: 'teleport',
+    value: UNIT_MAX_VALUE,
+    turrets: [],
+    angle: 0,
+    meta: {
+      exitTeleportId: teleport1id,
     }
   }
 

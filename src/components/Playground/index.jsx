@@ -96,7 +96,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const dischargeAllTurrets = (unitIndex, unitsMap) => {
-    const { turrets } = unitsMap[unitIndex];
+    const { id: unitOfOriginId, turrets } = unitsMap[unitIndex];
 
     const moveStep = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-width-unit'));
 
@@ -106,6 +106,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       const id = Math.random().toString(16).substring(2);
 
       projectiles.push({
+        unitOfOriginId,
         id,
         top,
         left,

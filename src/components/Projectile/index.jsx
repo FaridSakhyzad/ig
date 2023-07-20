@@ -86,7 +86,32 @@ const Projectile = (props) => {
     return {
       x: newX,
       y: newY,
-      angle: projectileAngle + ((90 - angleToNormal) * 2),
+      angle: angleToNormal === 90 ? projectileAngle + 180 : projectileAngle + ((90 - angleToNormal) * 2),
+    }
+  }
+
+  const calculateTeleportedCoords = (impactedUnit, newX, newY, projectileAngle) => {
+    const { top: entranceTop, left: entranceLeft, meta: { exitTeleportId } } = impactedUnit;
+
+    const target = potentialTargetsMap.find(({ id }) => id === exitTeleportId)
+
+    if (!target) {
+      return {
+        x: newX,
+        y: newY,
+        angle: projectileAngle,
+      }
+    }
+
+    const { id, top: exitTop, left: exitLeft } = target;
+    const offsetTop = exitTop - entranceTop;
+    const offsetLeft = exitLeft - entranceLeft;
+
+    return {
+      exitTeleportId,
+      x: newX + offsetLeft,
+      y: newY + offsetTop,
+      angle: projectileAngle,
     }
   }
 
@@ -252,6 +277,8 @@ const Projectile = (props) => {
     let currentDistance = 0;
     let initialTimeStamp;
 
+    let unitOfOriginId = props.unitOfOriginId;
+
     const animate = (timeStamp) => {
       if (currentDistance >= maxDist) {
         impactedUnitId = null;
@@ -290,10 +317,11 @@ const Projectile = (props) => {
 
       const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY);
 
-      if (impactedUnit && impactedUnitId !== impactedUnit.id) {
+      if (impactedUnit && impactedUnitId !== impactedUnit.id && unitOfOriginId !== impactedUnit.id) {
         const {id, type: impactedUnitType} = impactedUnit;
 
         impactedUnitId = id;
+        unitOfOriginId = id;
 
         if (projectileType === 'default') {
           if (impactedUnitType === 'default') {
@@ -325,6 +353,14 @@ const Projectile = (props) => {
 
           if (impactedUnitType === 'deflector') {
             const { x, y, angle } = calculateDeflectedCoords(impactedUnit, newX, newY, currentAngle);
+            newX = x;
+            newY = y;
+            currentAngle = angle;
+          }
+
+          if (impactedUnitType === 'teleport') {
+            const { x, y, angle, exitTeleportId } = calculateTeleportedCoords(impactedUnit, newX, newY, currentAngle);
+            unitOfOriginId = exitTeleportId;
             newX = x;
             newY = y;
             currentAngle = angle;
@@ -508,6 +544,7 @@ const Projectile = (props) => {
 
 Projectile.propTypes = {
   id: PropTypes.string,
+  unitOfOriginId: PropTypes.string,
   top: PropTypes.number,
   left: PropTypes.number,
   type: PropTypes.string,
