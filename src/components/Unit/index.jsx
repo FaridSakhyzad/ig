@@ -4,7 +4,27 @@ import classnames from 'classnames';
 import './Unit.scss';
 import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
-const Unit = ({ id, top, left, width, height, kind, type, isSelected, isDisabled, turrets, value, angle, maxValue, idx, onClickHandler, exploding }) => {
+const Unit = (props) => {
+  const {
+    id,
+    top,
+    left,
+    width,
+    height,
+    kind,
+    type,
+    isSelected,
+    isDisabled,
+    turrets,
+    value,
+    angle,
+    maxValue,
+    idx,
+    onClickHandler,
+    exploding,
+    hitBoxRadius
+  } = props;
+
   return (
     <div
       className={classnames('unit', type, kind, { 'unit--selected': isSelected, 'unit--disabled': isDisabled })}
@@ -38,7 +58,12 @@ const Unit = ({ id, top, left, width, height, kind, type, isSelected, isDisabled
           </div>
         ))}
 
-        <div className="unit-hitBox" />
+        <div
+          className="_unit-hit-box unit-hitBox"
+          style={{
+            '--unit-hitBox--radius': `${hitBoxRadius}px`,
+          }}
+        />
       </div>
     </div>
   )
@@ -50,7 +75,7 @@ Unit.propTypes = {
   left: PropTypes.number,
   width: PropTypes.number,
   height: PropTypes.number,
-
+  hitBoxRadius: PropTypes.number,
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
   type: PropTypes.string,

@@ -40,7 +40,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const [ grid, setGrid ] = useState(map.grid);
 
-  const [ units, setUnits ] = useState(map.units);
+  const [ units, setUnits ] = useState(map.units.filter(Boolean));
   const [ selectedUnits, setSelectedUnits ] = useState([]);
   const [ unitsMap, setUnitsMap ] = useState([]);
 
@@ -60,7 +60,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
       const turretsData = [];
 
-      const { turrets, angle: unitAngle, value, type, meta, explosionStart } = units[index];
+      const { turrets, angle: unitAngle, value, type, meta, explosionStart, hitBoxRadius } = units[index] || {};
 
       unit.querySelectorAll('.turret').forEach(turret => {
         const gunpoint = turret.querySelector('.gunpoint');
@@ -82,6 +82,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
       return {
         id: unit.id,
+        hitBoxRadius,
         type,
         index: parseInt(index, 10),
         value,
@@ -96,7 +97,11 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   }
 
   const dischargeAllTurrets = (unitIndex, unitsMap) => {
-    const { id: unitOfOriginId, turrets } = unitsMap[unitIndex];
+    const { id: unitOfOriginId, turrets } = unitsMap[unitIndex] || {};
+
+    if (!unitOfOriginId) {
+      return;
+    }
 
     const moveStep = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-width-unit'));
 
@@ -696,12 +701,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           ))}
         </div>
         <div className="unitLayer">
-          {units.map(({ id, type, kind, angle, value, maxValue, turrets, exploding, top, left }, index) => (
+          {units.map(({ id, hitBoxRadius, type, kind, angle, value, maxValue, turrets, exploding, top, left }, index) => (
             <Unit
               top={grid[top][left].top}
               left={grid[top][left].left}
               width={100 / map.mapWidth}
               height={100 / map.mapHeight}
+              hitBoxRadius={hitBoxRadius}
               key={id}
               isSelected={selectedUnits.some(unit => unit.unitId === id)}
               id={id}
@@ -730,6 +736,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 Playground.propTypes = {
   projectileExplosionDuration: number,
   projectileMoveStep: number,
+  baseWidthUnit: number,
 }
 
 Playground.actingProjectilesNumber = 0;

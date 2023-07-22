@@ -1,9 +1,12 @@
 export const calculateNewCoords = (coordinateX, coordinateY, angle, moveStep) => { // eslint-disable-line
   const theAngle = 90 - angle;
-  const newCoordinateX = moveStep * Math.cos(theAngle * Math.PI / 180);
-  const newCoordinateY = moveStep * Math.sin(theAngle * Math.PI / 180);
+  const newCoordinateX = moveStep * Math.cos(theAngle * Math.PI / 180).toFixed(4);
+  const newCoordinateY = moveStep * Math.sin(theAngle * Math.PI / 180).toFixed(4);
 
-  return { coordinateX: coordinateX + newCoordinateX, coordinateY: coordinateY - newCoordinateY }
+  return {
+    coordinateX: coordinateX + newCoordinateX,
+    coordinateY: coordinateY - newCoordinateY,
+  }
 }
 
 export const findRectangleCircleIntersection = (rectangle, circle) => {

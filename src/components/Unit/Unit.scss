@@ -1,7 +1,3 @@
-:root {
-  --unit-hitBox--radius: calc(var(--base-width-unit) * 2px);
-}
-
 .unit {
   display: flex;
   align-items: center;
@@ -46,8 +42,10 @@
 }
 
 .unit-hitBox {
-  --width: calc(var(--unit-hitBox--radius) * 2);
-  --height: calc(var(--unit-hitBox--radius) * 2);
+  --unit-hitBox--radius-px: calc(var(--base-width-unit) * var(--unit-hitBox--radius));
+
+  --width: calc(var(--unit-hitBox--radius-px) * 2);
+  --height: calc(var(--unit-hitBox--radius-px) * 2);
 
   position: absolute;
   left: 0;
@@ -136,6 +134,12 @@
     opacity: 1;
     height: 20%;
     border-radius: 3px;
+  }
+
+  .unit-hitBox {
+    border-radius: 0;
+    width: 100%;
+    height: calc(var(--base-width-unit) * 4px);
   }
 }
 

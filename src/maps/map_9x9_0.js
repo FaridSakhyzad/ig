@@ -23,6 +23,7 @@ export const generateDefault = () => {
   return {
     ...defaults,
     value: UNIT_MAX_VALUE,
+    hitBoxRadius: 2,
     id: Math.random().toString(16).substring(2),
   };
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { SAFE_MAX_DISTANCE } from '../../config/config';
 import './Projectile.scss';
-import { calculateNewCoords, findRectangleCircleIntersection, rotate } from '../../utils';
+import {calculateNewCoords, findRectangleCircleIntersection, rotate} from '../../utils';
 
 const Projectile = (props) => {
   const {
@@ -27,14 +27,13 @@ const Projectile = (props) => {
 
   const computedStyle = getComputedStyle(document.documentElement);
 
-  const unitRadiusPropValue = computedStyle.getPropertyValue('--unit-hitBox--radius').replace(/calc|px/ig, '');
+  const baseWidthUnit = parseFloat(eval(computedStyle.getPropertyValue('--base-width-unit')), 10);
 
   const projectileWidthPropValue = computedStyle.getPropertyValue('--projectile-hitBox--width').replace(/calc|px/ig, '');
   const projectileHeightPropValue = computedStyle.getPropertyValue('--projectile-hitBox--height').replace(/calc|px/ig, '');
 
-  const unitRadius = parseInt(eval(unitRadiusPropValue), 10);
-  const projectileWidth = parseInt(eval(projectileWidthPropValue), 10);
-  const projectileHeight = parseInt(eval(projectileHeightPropValue), 10);
+  const projectileWidth = parseFloat(eval(projectileWidthPropValue), 10);
+  const projectileHeight = parseFloat(eval(projectileHeightPropValue), 10);
 
   let impactedUnitId = null;
 
@@ -56,6 +55,12 @@ const Projectile = (props) => {
     const offsetLeft = exitLeft - entranceLeft;
     const offsetAngle = exitAngle - entranceAngle;
 
+    const fromEntranceTopToOrigin = entranceTop - top;
+    const fromEntranceLeftToOrigin = entranceLeft - left;
+
+    const correctionX = fromEntranceLeftToOrigin - newX;
+    const correctionY = fromEntranceTopToOrigin - newY;
+
     const projectileToEntranceDiffAngle = Math.abs(projectileAngle - entranceAngle);
 
     if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
@@ -63,8 +68,8 @@ const Projectile = (props) => {
       projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
 
       return {
-        x: newX + offsetLeft,
-        y: newY + offsetTop,
+        x: newX + correctionX + offsetLeft,
+        y: newY + correctionY + offsetTop,
         angle: projectileAngle,
       }
     }
@@ -77,15 +82,21 @@ const Projectile = (props) => {
   }
 
   const calculateDeflectedCoords = (impactedUnit, newX, newY, projectileAngle) => {
-    const { angle } = impactedUnit;
+    const { top: entranceTop, left: entranceLeft, angle } = impactedUnit;
 
     const projectileToUnitDiffAngle = Math.abs(projectileAngle - angle);
 
     const angleToNormal = projectileToUnitDiffAngle % 180;
 
+    const fromEntranceTopToOrigin = entranceTop - top;
+    const fromEntranceLeftToOrigin = entranceLeft - left;
+
+    const correctionX = fromEntranceLeftToOrigin - newX;
+    const correctionY = fromEntranceTopToOrigin - newY;
+
     return {
-      x: newX,
-      y: newY,
+      x: newX + correctionX,
+      y: newY + correctionY,
       angle: angleToNormal === 90 ? projectileAngle + 180 : projectileAngle + ((90 - angleToNormal) * 2),
     }
   }
@@ -107,164 +118,19 @@ const Projectile = (props) => {
     const offsetTop = exitTop - entranceTop;
     const offsetLeft = exitLeft - entranceLeft;
 
+    const fromEntranceTopToOrigin = entranceTop - top;
+    const fromEntranceLeftToOrigin = entranceLeft - left;
+
+    const correctionX = fromEntranceLeftToOrigin - newX;
+    const correctionY = fromEntranceTopToOrigin - newY;
+
     return {
       exitTeleportId,
-      x: newX + offsetLeft,
-      y: newY + offsetTop,
+      x: newX + correctionX + offsetLeft,
+      y: newY + correctionY + offsetTop,
       angle: projectileAngle,
     }
   }
-
-  const launchProjectileWithSetTimeout = (currentDistance = 0, currentX = 0, currentY = 0, currentAngle = angle) => {
-    const maxDist = maxDistance || SAFE_MAX_DISTANCE;
-
-    if (currentDistance >= maxDist) {
-      impactedUnitId = null;
-      setProjectileState('impact');
-
-      onOutOfFiled(id);
-
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      currentDistance += 1;
-      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, moveStep);
-      let newX = coordinateX;
-      let newY = coordinateY;
-      let projectileAngle = currentAngle;
-
-      const outOfField = projectileIsOutOfField(left + newX, top + newY);
-
-      if (outOfField) {
-        clearTimeout(timer);
-        setProjectileState('impact');
-
-        onOutOfFiled(id);
-        return;
-      }
-
-      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY);
-
-      if (impactedUnit && impactedUnitId !== impactedUnit.id) {
-        const { id, type: impactedUnitType } = impactedUnit;
-
-        impactedUnitId = id;
-
-        if (projectileType === 'default') {
-          if (impactedUnitType === 'default') {
-            if (impactedUnit.value > 0) {
-              clearTimeout(timer);
-              impactedUnitId = null;
-              setProjectileState('impact');
-
-              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-              return;
-            }
-          }
-          if (impactedUnitType === 'npc') {
-            if (impactedUnit.value > 0) {
-              clearTimeout(timer);
-              impactedUnitId = null;
-              setProjectileState('impact');
-
-              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-              return;
-            }
-          }
-          if (impactedUnitType === 'portal') {
-            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, projectileAngle);
-            newX = x;
-            newY = y;
-            projectileAngle = angle;
-          }
-        }
-
-        if (projectileType === 'laser') {
-          if (impactedUnitType === 'default') {
-            if (impactedUnit.value > 0) {
-              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-            }
-          }
-
-          if (impactedUnitType === 'npc') {
-            if (impactedUnit.value > 0) {
-              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-            }
-          }
-
-          if (impactedUnitType === 'laser') {
-            clearTimeout(timer);
-            impactedUnitId = null;
-            setProjectileState('impact');
-
-            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-            return;
-          }
-
-          if (impactedUnitType === 'portal') {
-            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, projectileAngle);
-            newX = x;
-            newY = y;
-            projectileAngle = angle;
-          }
-        }
-
-        if (impactedUnitType === 'wall') {
-          clearTimeout(timer);
-          impactedUnitId = null;
-          setProjectileState('impact');
-
-          onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-          return;
-        }
-
-        if (projectileType === 'bobomb') {
-          if (impactedUnitType === 'default') {
-            clearTimeout(timer);
-            impactedUnitId = null;
-            setProjectileState('impact');
-
-            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-            return;
-          }
-          if (impactedUnitType === 'npc') {
-            if (impactedUnit.value > 0) {
-              clearTimeout(timer);
-              impactedUnitId = null;
-              setProjectileState('impact');
-
-              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-              return;
-            }
-          }
-          if (impactedUnitType === 'bobomb') {
-            clearTimeout(timer);
-            impactedUnitId = null;
-            setProjectileState('impact');
-
-            onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
-
-            return;
-          }
-        }
-      }
-
-      if (ref.current) {
-        ref.current.style.setProperty('--offset-x', `${newX}px`);
-        ref.current.style.setProperty('--offset-y', `${newY}px`);
-        ref.current.style.setProperty('--angle', `${projectileAngle}deg`);
-      }
-
-      launchProjectileWithSetTimeout(currentDistance, newX, newY, projectileAngle);
-    }, speed);
-  };
 
   const launchProjectileWithRAF = () => {
     const maxDist = maxDistance || SAFE_MAX_DISTANCE * moveStep;
@@ -315,7 +181,7 @@ const Projectile = (props) => {
         return;
       }
 
-      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY);
+      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY, currentAngle);
 
       if (impactedUnit && impactedUnitId !== impactedUnit.id && unitOfOriginId !== impactedUnit.id) {
         const {id, type: impactedUnitType} = impactedUnit;
@@ -353,6 +219,8 @@ const Projectile = (props) => {
 
           if (impactedUnitType === 'deflector') {
             const { x, y, angle } = calculateDeflectedCoords(impactedUnit, newX, newY, currentAngle);
+            unitOfOriginId = impactedUnit.id;
+
             newX = x;
             newY = y;
             currentAngle = angle;
@@ -361,6 +229,7 @@ const Projectile = (props) => {
           if (impactedUnitType === 'teleport') {
             const { x, y, angle, exitTeleportId } = calculateTeleportedCoords(impactedUnit, newX, newY, currentAngle);
             unitOfOriginId = exitTeleportId;
+
             newX = x;
             newY = y;
             currentAngle = angle;
@@ -469,7 +338,7 @@ const Projectile = (props) => {
     return topLeftIsOut || topRightIsOut;
   }
 
-  const projectileDidImpact = (projectilePivotX, projectilePivotY) => {
+  const projectileDidImpact = (projectilePivotX, projectilePivotY, angle) => {
     const { nx: projectileX, ny: projectileY } =
       rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
 
@@ -487,7 +356,7 @@ const Projectile = (props) => {
         continue;
       }
 
-      const { top: circleY, left: circleX } = potentialTarget;
+      const { top: centerY, left: centerX, angle: hitBoxRadius } = potentialTarget;
 
       const rectangle = {
         rectangleX: projectileX,
@@ -498,9 +367,9 @@ const Projectile = (props) => {
       };
 
       const circle = {
-        circleX: circleX,
-        circleY: circleY,
-        radius: unitRadius
+        circleX: centerX,
+        circleY: centerY,
+        radius: hitBoxRadius * baseWidthUnit
       };
 
       if (findRectangleCircleIntersection(rectangle, circle)) {
@@ -516,7 +385,6 @@ const Projectile = (props) => {
   }
 
   useEffect(() => {
-    //launchProjectileWithSetTimeout();
     launchProjectileWithRAF();
   }, []);
 
