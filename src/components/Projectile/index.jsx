@@ -133,7 +133,7 @@ const Projectile = (props) => {
   }
 
   const launchProjectileWithRAF = () => {
-    const maxDist = maxDistance || SAFE_MAX_DISTANCE * moveStep;
+    const maxDist = (maxDistance || SAFE_MAX_DISTANCE) * moveStep;
     const duration = speed * maxDist;
 
     let currentX = 0;
@@ -356,7 +356,7 @@ const Projectile = (props) => {
         continue;
       }
 
-      const { top: centerY, left: centerX, angle: hitBoxRadius } = potentialTarget;
+      const { top: centerY, left: centerX, hitBoxRadius } = potentialTarget;
 
       const rectangle = {
         rectangleX: projectileX,
