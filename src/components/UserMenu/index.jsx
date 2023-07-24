@@ -25,13 +25,13 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
         <button
           disabled={rotates < 1}
           onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_ccv' })}
-          className={classnames('button userMenu-button userMenu-button_rotate', { selected: afterInputAction === 'rotate_ccv' })}
+          className={classnames('button userMenu-button userMenu-button_rotate-ccv', { selected: afterInputAction === 'rotate_ccv' })}
         >&lt;-</button>
-        <button disabled={rotates < 1}>{rotates}</button>
+        <button className="button userMenu-button userMenu-button_rotates-count" disabled={rotates < 1}>{rotates}</button>
         <button
           disabled={rotates < 1}
           onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_cv' })}
-          className={classnames('button userMenu-button userMenu-button_rotate', { selected: afterInputAction === 'rotate_cv' })}
+          className={classnames('button userMenu-button userMenu-button_rotate-cv', { selected: afterInputAction === 'rotate_cv' })}
         >-&gt;</button>
       </div>
 

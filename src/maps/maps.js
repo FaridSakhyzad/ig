@@ -47,7 +47,6 @@ const mapSet = () => [
     comboSequence: [1, 1, 1, 3, 5, 8, 13, 21, 34, 55],
     reward: {
       moves: 1,
-
       defaults: 1,
       bobombs: 1,
       lasers: 1,

@@ -134,7 +134,7 @@ const Projectile = (props) => {
 
   const launchProjectileWithRAF = () => {
     const maxDist = (maxDistance || SAFE_MAX_DISTANCE) * moveStep;
-    const duration = speed * maxDist;
+    const duration = speed * (maxDistance || SAFE_MAX_DISTANCE);
 
     let currentX = 0;
     let currentY = 0;

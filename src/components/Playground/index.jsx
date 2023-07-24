@@ -13,10 +13,10 @@ import UserMenu from '../UserMenu';
 import mapSet from 'maps/maps';
 
 import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
-import { generateBobomb, generateDefault, generateLaser, generatePortals } from '../../maps/map_9x9_0';
 import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
+import {generateBobomb, generateDefault, generateLaser, generatePortals} from "../../units";
 
 const MAX_MULTISELECT = 2;
 
@@ -662,7 +662,6 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       )}
 
       <h1 className="moves">Moves: {moves}</h1>
-      <h2 className="mode">Gameplay mode: {userInputMode}</h2>
       <h3 className="currentLevel">CurrentLevel: {levelCounter}</h3>
 
       <div className="field" id="field">
