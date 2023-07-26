@@ -1,20 +1,5 @@
 import MAP_9x9_0 from './map_9x9_0';
-import { PROJECTILE_MOVE_DELAY } from '../config/config';
-
-const defaults = {
-  type: 'default',
-  minValue: 0,
-  maxValue: 4,
-  valueCountable: true,
-  angle: 0,
-  selectable: true,
-  turrets: [
-    { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY, }
-  ],
-}
+import {generateDefault} from "../units";
 
 const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
@@ -86,10 +71,7 @@ const mapSet = () => [
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
           result.push({
-            ...defaults,
-            top: i,
-            left: j,
-            id: Math.random().toString(16).substring(2),
+            ...generateDefault(i, j),
             value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
           });
         }
@@ -126,7 +108,7 @@ const mapSet = () => [
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
           result.push({
-            ...defaults,
+            ...generateDefault(i, j),
             top: i,
             left: j,
             id: Math.random().toString(16).substring(2),
@@ -175,7 +157,7 @@ const mapSet = () => [
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
           result.push({
-            ...defaults,
+            ...generateDefault(i, j),
             top: i,
             left: j,
             id: Math.random().toString(16).substring(2),
@@ -205,7 +187,7 @@ const mapSet = () => [
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
           result.push({
-            ...defaults,
+            ...generateDefault(i, j),
             top: i,
             left: j,
             id: Math.random().toString(16).substring(2),
