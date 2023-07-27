@@ -17,8 +17,8 @@ export const defaults = {
   ],
 };
 
-class BaseUnit {
-  constructor(top, left, customParams) {
+export class BaseUnit {
+  constructor(top, left, params) {
     const {
       id,
       value = 0,
@@ -33,7 +33,7 @@ class BaseUnit {
       turrets,
     } = {
       ...defaults,
-      ...customParams
+      ...params
     };
 
     this.top = top;
@@ -54,88 +54,98 @@ class BaseUnit {
   }
 }
 
-export const generateDefault = (top, left, customParams) => {
-  return new BaseUnit(top, left, customParams);
-}
-
-export const generateBobomb = (top, left) => {
-  return {
-    ...generateDefault(top, left),
-    type: 'bobomb',
-    value: 1 * (UNIT_MAX_VALUE || Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)),
-    turrets: [
-      {
-        name: 'turret1',
-        angle: 0,
-        type: 'bobomb',
-        maxDistance: 39,
-        speed: 15
-      },
-      {
-        name: 'turret2',
-        angle: 45,
-        type: 'bobomb',
-        maxDistance: 39 * 1.4142135623730951,
-        speed: 15 / 1.4142135623730951
-      },
-      {
-        name: 'turret3',
-        angle: 90,
-        type: 'bobomb',
-        maxDistance: 39,
-        speed: 15
-      },
-      {
-        name: 'turret4',
-        angle: 135,
-        type: 'bobomb',
-        maxDistance: 39 * 1.4142135623730951,
-        speed: 15 / 1.4142135623730951
-      },
-      {
-        name: 'turret5',
-        angle: 180,
-        type: 'bobomb',
-        maxDistance: 39,
-        speed: 15
-      },
-      {
-        name: 'turret6',
-        angle: 225,
-        type: 'bobomb',
-        maxDistance: 39 * 1.4142135623730951,
-        speed: 15 / 1.4142135623730951
-      },
-      {
-        name: 'turret7',
-        angle: 270,
-        type: 'bobomb',
-        maxDistance: 39,
-        speed: 15
-      },
-      {
-        name: 'turret8',
-        angle: 315,
-        type: 'bobomb',
-        maxDistance: 39 * 1.4142135623730951,
-        speed: 15 / 1.4142135623730951
-      }
-    ],
+export class Bobomb extends BaseUnit {
+  constructor(top, left, params) {
+    super(top, left, {
+      ...params,
+      type: 'bobomb',
+      turrets: [
+        {
+          name: 'turret1',
+          angle: 0,
+          type: 'bobomb',
+          maxDistance: 39,
+          speed: 15
+        },
+        {
+          name: 'turret2',
+          angle: 45,
+          type: 'bobomb',
+          maxDistance: 39 * 1.4142135623730951,
+          speed: 15 / 1.4142135623730951
+        },
+        {
+          name: 'turret3',
+          angle: 90,
+          type: 'bobomb',
+          maxDistance: 39,
+          speed: 15
+        },
+        {
+          name: 'turret4',
+          angle: 135,
+          type: 'bobomb',
+          maxDistance: 39 * 1.4142135623730951,
+          speed: 15 / 1.4142135623730951
+        },
+        {
+          name: 'turret5',
+          angle: 180,
+          type: 'bobomb',
+          maxDistance: 39,
+          speed: 15
+        },
+        {
+          name: 'turret6',
+          angle: 225,
+          type: 'bobomb',
+          maxDistance: 39 * 1.4142135623730951,
+          speed: 15 / 1.4142135623730951
+        },
+        {
+          name: 'turret7',
+          angle: 270,
+          type: 'bobomb',
+          maxDistance: 39,
+          speed: 15
+        },
+        {
+          name: 'turret8',
+          angle: 315,
+          type: 'bobomb',
+          maxDistance: 39 * 1.4142135623730951,
+          speed: 15 / 1.4142135623730951
+        }
+      ],
+    });
   }
 }
 
-export const generateLaser = (top, left) => {
-  return {
-    ...generateDefault(top, left),
-    type: 'laser',
-    value: UNIT_MAX_VALUE,
-    turrets: [
-      { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
-    ],
+export class Laser extends BaseUnit {
+  constructor(top, left, params) {
+    super(top, left, {
+      ...params,
+      type: 'laser',
+      turrets: [
+        { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+        { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+        { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
+        { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
+      ],
+    });
   }
+}
+
+export const generateDefault = (top, left, params) => {
+  return new BaseUnit(top, left, params);
+}
+
+export const generateBobomb = (top, left, params) => {
+  return new Bobomb(top, left, params)
+}
+
+export const generateLaser = (top, left, params) => {
+  return new Laser(top, left, params)
 }
 
 export const generatePortals = (top1, left1, top2, left2) => {

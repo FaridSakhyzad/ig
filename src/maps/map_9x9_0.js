@@ -1,44 +1,37 @@
-import {PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from '../config/config';
-import { generateDefault, generateBobomb, generateLaser } from "../units";
+import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE } from '../config/config';
+import {  BaseUnit, generateDefault, generateBobomb, generateLaser } from "../units";
 
 const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
 
   for (let i = 0; i < mapHeight; i++) {
     for (let j = 0; j < mapWidth; j++) {
-      result.push({
-        ...generateDefault(i, j, {
-          value: 0 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0)
-        })
-      });
+      result.push(new BaseUnit(i, j));
     }
   }
 
   //*
   result[mapWidth * 6 + 3] = {
     ...generateDefault(6, 3),
+    valueCountable: false,
     type: 'deflector',
     turrets: [],
     value: 4,
     angle: -45,
   }
 
-  result[mapWidth * 6 + 6] = {
-    ...generateDefault(6, 6),
-    value: 4,
-  }
+  result[mapWidth * 6 + 6] = new BaseUnit(6, 6, { value: 4 });
 
-  result[mapWidth * 4 + 0] = {
-    ...generateDefault(4, 0),
+  result[mapWidth * 4 + 0] = new BaseUnit(4, 0, {
+    value: UNIT_MAX_VALUE,
     turrets: [
       { name: 'turret1', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
     ],
-    value: UNIT_MAX_VALUE,
-  }
+  });
+
 
   result[mapWidth * 1 + 3] = {
     ...generateDefault(1, 3),
-    id: Math.random().toString(16).substring(2),
     type: 'wall',
     kind: 'stone',
     valueCountable: false,
@@ -47,7 +40,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[mapWidth * 2] = {
     ...generateDefault(2, 0),
-    id: Math.random().toString(16).substring(2),
     type: 'npc',
     selectable: false,
     value: UNIT_MAX_VALUE,
@@ -55,7 +47,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[mapWidth * 2 + 3] = {
     ...generateDefault(2, 3),
-    id: Math.random().toString(16).substring(2),
     type: 'wall',
     kind: 'wood',
     valueCountable: false,
@@ -69,7 +60,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 2 + 2] = {
-    ...generateBobomb(2, 2),
+    ...generateBobomb(2, 2, { value: UNIT_MAX_VALUE }),
   }
 
   result[mapWidth * 3 + 3] = {
@@ -79,7 +70,7 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 3 + 5] = {
-    ...generateLaser(3, 5),
+    ...generateLaser(3, 5, { value: UNIT_MAX_VALUE }),
   }
 
   result[mapWidth * 4 + 3] = {
@@ -88,11 +79,11 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   result[mapWidth * 4 + 5] = {
-    ...generateLaser(4, 5),
+    ...generateLaser(4, 5, { value: UNIT_MAX_VALUE }),
   };
 
   result[mapWidth * 8 + 0] = {
-    ...generateLaser(8, 0),
+    ...generateLaser(8, 0, { value: UNIT_MAX_VALUE }),
   }
 
   result[44] = {

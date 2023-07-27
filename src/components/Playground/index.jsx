@@ -347,10 +347,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
     }
 
-    const newUnit = generators[afterInputAction]();
-
-    newUnit.top = top;
-    newUnit.left = left;
+    const newUnit = generators[afterInputAction](top, left, { value: 4 });
 
     const newUnits = [ ...units ];
 

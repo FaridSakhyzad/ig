@@ -70,10 +70,9 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push({
-            ...generateDefault(i, j),
-            value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE),
-          });
+          result.push(generateDefault(i, j, {
+            value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)
+          }));
         }
       }
 
@@ -107,13 +106,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push({
-            ...generateDefault(i, j),
-            top: i,
-            left: j,
-            id: Math.random().toString(16).substring(2),
-            value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-          });
+          result.push(generateDefault(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
         }
       }
 
@@ -156,13 +149,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push({
-            ...generateDefault(i, j),
-            top: i,
-            left: j,
-            id: Math.random().toString(16).substring(2),
-            value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-          });
+          result.push(generateDefault(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
         }
       }
 
@@ -179,20 +166,11 @@ const mapSet = () => [
     reward: {},
     penalty: {},
     units: ((width, height) => {
-      const UNIT_MIN_VALUE = 0
-      const UNIT_MAX_VALUE = 4;
-
       const result = [];
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push({
-            ...generateDefault(i, j),
-            top: i,
-            left: j,
-            id: Math.random().toString(16).substring(2),
-            value: 4 * Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0),
-          });
+          result.push(generateDefault(i, j, { value: 4 }));
         }
       }
 
