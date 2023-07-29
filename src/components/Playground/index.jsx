@@ -16,7 +16,7 @@ import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../.
 import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
-import {generateBobomb, generateDefault, generateLaser, generatePortals} from "../../units";
+import {BaseUnit, Bobomb, Laser, generatePortals, generateTeleports} from "../../units";
 
 const MAX_MULTISELECT = 2;
 
@@ -299,6 +299,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           setSelectedUnits([]);
         }
 
+        if (afterInputAction === 'teleport') {
+          placeTeleports();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
         setAfterInputAction(null);
       }
 
@@ -336,9 +343,9 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
   const placeUnit = (top, left) => {
     const generators = {
-      'default': generateDefault,
-      'bobomb': generateBobomb,
-      'laser': generateLaser,
+      'default': (top, left, params) => new BaseUnit(top, left, params),
+      'bobomb': (top, left, params) => new Bobomb(top, left, params),
+      'laser': (top, left, params) => new Laser(top, left, params),
     }
 
     const callbacks = {
@@ -541,6 +548,23 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
 
     dispatch(setAmmo({ portals: portals - 1 }));
+  }
+
+  const placeTeleports = () => {
+    const newUnits = [ ...units ];
+
+    const { unitIndex: unit0Index } = selectedUnits[0];
+    const { unitIndex: unit1Index } = selectedUnits[1];
+
+    const { top: top0, left: left0 } = newUnits[unit0Index];
+    const { top: top1, left: left1 } = newUnits[unit1Index];
+
+    const [ teleport1, teleport2 ] = generateTeleports(top0, left0, top1, left1);
+
+    newUnits[unit0Index] = teleport1;
+    newUnits[unit1Index] = teleport2;
+
+    setUnits(newUnits);
   }
 
   const performRotate = (unitIndex, angle = 45) => {

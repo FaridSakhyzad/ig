@@ -1,4 +1,4 @@
-import {PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE} from "./config/config";
+import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE } from "./config/config";
 
 export const defaults = {
   type: 'default',
@@ -57,8 +57,6 @@ export class BaseUnit {
 export class Bobomb extends BaseUnit {
   constructor(top, left, params) {
     super(top, left, {
-      ...params,
-      type: 'bobomb',
       turrets: [
         {
           name: 'turret1',
@@ -117,6 +115,8 @@ export class Bobomb extends BaseUnit {
           speed: 15 / 1.4142135623730951
         }
       ],
+      ...params,
+      type: 'bobomb',
     });
   }
 }
@@ -124,58 +124,112 @@ export class Bobomb extends BaseUnit {
 export class Laser extends BaseUnit {
   constructor(top, left, params) {
     super(top, left, {
-      ...params,
-      type: 'laser',
       turrets: [
         { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
         { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
         { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
         { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
       ],
+      ...params,
+      type: 'laser',
     });
   }
 }
 
-export const generateDefault = (top, left, params) => {
-  return new BaseUnit(top, left, params);
+export class Deflector extends BaseUnit {
+  constructor(top, left, params) {
+    super(top, left, {
+      ...params,
+      type: 'deflector',
+      valueCountable: false,
+      turrets: [],
+      value: 4,
+    });
+  }
 }
 
-export const generateBobomb = (top, left, params) => {
-  return new Bobomb(top, left, params)
+export class Wall extends BaseUnit {
+  constructor(top, left, params = {}) {
+    super(top, left, {
+      ...params,
+      type: 'wall',
+      valueCountable: false,
+      value: UNIT_MAX_VALUE,
+    });
+
+    this.kind = params.kind || 'stone';
+  }
 }
 
-export const generateLaser = (top, left, params) => {
-  return new Laser(top, left, params)
+export class Npc extends BaseUnit {
+  constructor(top, left, params) {
+    super(top, left, {
+      ...params,
+      type: 'npc',
+      selectable: false,
+      value: UNIT_MAX_VALUE,
+    });
+  }
+}
+
+export class Hidden extends BaseUnit {
+  constructor(top, left, params) {
+    super(top, left, {
+      ...params,
+      type: 'hidden',
+      value: UNIT_MAX_VALUE,
+    });
+  }
+}
+
+export class Portal extends BaseUnit {
+  constructor(top, left, params = {}) {
+    super(top, left, {
+      ...params,
+      valueCountable: false,
+      type: 'portal',
+      value: UNIT_MAX_VALUE,
+    });
+
+    this.meta = params.meta || {};
+  }
+  setExitPortalId(id) {
+    this.meta.exitPortalId = id;
+  }
+}
+
+export class Teleport extends BaseUnit {
+  constructor(top, left, params = {}) {
+    super(top, left, {
+      ...params,
+      valueCountable: false,
+      type: 'teleport',
+      value: UNIT_MAX_VALUE,
+    });
+
+    this.meta = params.meta || {};
+  }
+  setExitTeleportId(id) {
+    this.meta.exitTeleportId = id;
+  }
 }
 
 export const generatePortals = (top1, left1, top2, left2) => {
-  const portal1id = Math.random().toString(16).substring(2);
-  const portal2id = Math.random().toString(16).substring(2);
+  const portal1 = new Portal(top1, left1);
+  const portal2 = new Portal(top2, left2, { angle: 180 });
 
-  return [
-    {
-      ...generateDefault(top1, left1),
-      valueCountable: false,
-      id: portal1id,
-      type: 'portal',
-      value: UNIT_MAX_VALUE,
-      turrets: [],
-      meta: {
-        exitPortalId: portal2id,
-      }
-    },
-    {
-      ...generateDefault(top2, left2),
+  portal1.setExitPortalId(portal2.id);
+  portal2.setExitPortalId(portal1.id);
 
-      valueCountable: false,
-      id: portal2id,
-      type: 'portal',
-      value: UNIT_MAX_VALUE,
-      turrets: [],
-      angle: 180,
-      meta: {
-        exitPortalId: portal1id,
-      }
-    },
-  ];
+  return [ portal1, portal2 ];
+}
+
+export const generateTeleports = (top1, left1, top2, left2) => {
+  const teleport1 = new Teleport(top1, left1);
+  const teleport2 = new Teleport(top2, left2);
+
+  teleport1.setExitTeleportId(teleport2.id);
+  teleport2.setExitTeleportId(teleport1.id);
+
+  return [ teleport1, teleport2 ];
 }

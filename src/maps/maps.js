@@ -1,5 +1,5 @@
 import MAP_9x9_0 from './map_9x9_0';
-import {generateDefault} from "../units";
+import { BaseUnit } from "../units";
 
 const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
@@ -70,7 +70,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push(generateDefault(i, j, {
+          result.push(new BaseUnit(i, j, {
             value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)
           }));
         }
@@ -106,7 +106,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push(generateDefault(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
+          result.push(new BaseUnit(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
         }
       }
 
@@ -149,7 +149,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push(generateDefault(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
+          result.push(new BaseUnit(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
         }
       }
 
@@ -170,7 +170,7 @@ const mapSet = () => [
 
       for (let i = 0; i < height; i++) {
         for (let j = 0; j < width; j++) {
-          result.push(generateDefault(i, j, { value: 4 }));
+          result.push(new BaseUnit(i, j, { value: 4 }));
         }
       }
 

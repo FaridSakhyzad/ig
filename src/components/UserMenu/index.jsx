@@ -116,6 +116,25 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
             />
             <div className="userMenu-unitCount">{portals}</div>
           </div>
+
+          <div
+            className="userMenu-unit"
+            onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'teleport' })}
+          >
+            <Unit
+              key="teleport"
+              isSelected={afterInputAction === 'teleport'}
+              id="4"
+              type="teleport"
+              angle={0}
+              value={1}
+              maxValue={1}
+              turrets={[]}
+              exploding={false}
+              idx={0}
+            />
+            <div className="userMenu-unitCount">&infin;</div>
+          </div>
         </div>
       </div>
     </div>

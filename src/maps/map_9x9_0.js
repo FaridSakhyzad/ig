@@ -1,5 +1,15 @@
 import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE } from '../config/config';
-import {  BaseUnit, generateDefault, generateBobomb, generateLaser } from "../units";
+import {
+  BaseUnit,
+  Bobomb,
+  Laser,
+  Deflector,
+  Wall,
+  Npc,
+  Hidden,
+  Portal,
+  Teleport,
+} from "../units";
 
 const MAP_9x9_0 = (mapWidth, mapHeight) => {
   const result = [];
@@ -11,14 +21,9 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
   }
 
   //*
-  result[mapWidth * 6 + 3] = {
-    ...generateDefault(6, 3),
-    valueCountable: false,
-    type: 'deflector',
-    turrets: [],
-    value: 4,
-    angle: -45,
-  }
+  result[mapWidth * 6 + 3] = new Deflector(6, 3, {
+    angle: -45
+  });
 
   result[mapWidth * 6 + 6] = new BaseUnit(6, 6, { value: 4 });
 
@@ -29,143 +34,61 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
     ],
   });
 
+  result[mapWidth * 1 + 3] = new Wall(1, 3);
 
-  result[mapWidth * 1 + 3] = {
-    ...generateDefault(1, 3),
-    type: 'wall',
-    kind: 'stone',
-    valueCountable: false,
-    value: UNIT_MAX_VALUE,
-  }
-
-  result[mapWidth * 2] = {
-    ...generateDefault(2, 0),
-    type: 'npc',
-    selectable: false,
-    value: UNIT_MAX_VALUE,
-  }
-
-  result[mapWidth * 2 + 3] = {
-    ...generateDefault(2, 3),
-    type: 'wall',
+  result[mapWidth * 2 + 3] = new Wall(2, 3, {
     kind: 'wood',
-    valueCountable: false,
+  });
+
+  result[mapWidth * 2 + 0] = new Npc(2, 0);
+
+  result[mapWidth * 1 + 4] = new Hidden(1, 4);
+
+  result[mapWidth * 2 + 2] = new Bobomb(2, 2, { value: UNIT_MAX_VALUE });
+
+  result[mapWidth * 3 + 3] = new BaseUnit(3, 3, { value: 1 });
+
+  result[mapWidth * 3 + 5] = new Laser(3, 5, { value: UNIT_MAX_VALUE });
+
+  result[mapWidth * 4 + 3] = new BaseUnit(4, 3, { value: 1 });
+
+  result[mapWidth * 4 + 5] = new Laser(4, 5, { value: UNIT_MAX_VALUE });
+
+  result[mapWidth * 8 + 0] = new Laser(8, 0, { value: UNIT_MAX_VALUE });
+
+  result[mapWidth * 4 + 8] = new BaseUnit(4, 8, {
     value: UNIT_MAX_VALUE,
-  }
+    turrets: [
+      { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      { name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+    ]
+  });
 
-  result[mapWidth * 1 + 4] = {
-    ...generateDefault(1, 4),
-    type: 'hidden',
-    value: UNIT_MAX_VALUE,
-  }
+  const portal1 = new Portal(0, 8, { angle: 180 });
+  const portal2 = new Portal(8, 8, {});
+  const portal3 = new Portal(7, 7, { angle: 270 });
 
-  result[mapWidth * 2 + 2] = {
-    ...generateBobomb(2, 2, { value: UNIT_MAX_VALUE }),
-  }
+  portal1.setExitPortalId(portal2.id);
+  portal2.setExitPortalId(portal3.id);
+  portal3.setExitPortalId(portal1.id);
 
-  result[mapWidth * 3 + 3] = {
-    ...generateDefault(3, 3, {
-      value: 1
-    }),
-  }
+  result[mapWidth * 0 + 8] = portal1;
 
-  result[mapWidth * 3 + 5] = {
-    ...generateLaser(3, 5, { value: UNIT_MAX_VALUE }),
-  }
+  result[mapWidth * 8 + 8] = portal2;
 
-  result[mapWidth * 4 + 3] = {
-    ...generateDefault(4, 3),
-    value: 1,
-  }
-
-  result[mapWidth * 4 + 5] = {
-    ...generateLaser(4, 5, { value: UNIT_MAX_VALUE }),
-  };
-
-  result[mapWidth * 8 + 0] = {
-    ...generateLaser(8, 0, { value: UNIT_MAX_VALUE }),
-  }
-
-  result[44] = {
-    ...generateDefault(4, 8, {
-      value: UNIT_MAX_VALUE,
-      turrets: [
-        { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-        { name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-      ]
-    })
-  }
-
-  const portal1id = Math.random().toString(16).substring(2);
-  const portal2id = Math.random().toString(16).substring(2);
-  const portal3id = Math.random().toString(16).substring(2);
-
-  result[8] = {
-    ...generateDefault(0, 8),
-    valueCountable: false,
-    id: portal1id,
-    type: 'portal',
-    value: UNIT_MAX_VALUE,
-    angle: 180,
-    meta: {
-      exitPortalId: portal2id,
-    }
-  }
-
-  result[mapWidth * 8 + 8] = {
-    ...generateDefault(8, 8),
-    valueCountable: false,
-    id: portal2id,
-    type: 'portal',
-    value: UNIT_MAX_VALUE,
-    angle: 0,
-    meta: {
-      exitPortalId: portal3id,
-    }
-  }
-
-  result[mapWidth * 7 + 7] = {
-    ...generateDefault(7, 7),
-    valueCountable: false,
-    id: portal3id,
-    type: 'portal',
-    value: UNIT_MAX_VALUE,
-
-    angle: 270,
-    meta: {
-      exitPortalId: portal1id,
-    }
-  }
-
+  result[mapWidth * 7 + 7] = portal3;
 
   const teleport1id = Math.random().toString(16).substring(2);
   const teleport2id = Math.random().toString(16).substring(2);
 
-  result[mapWidth * 2 + 6] = {
-    ...generateDefault(2, 6),
-    valueCountable: false,
-    id: teleport1id,
-    type: 'teleport',
-    value: UNIT_MAX_VALUE,
-    turrets: [],
-    angle: 0,
-    meta: {
-      exitTeleportId: teleport2id,
-    }
-  }
+  const teleport1 = new Teleport(2, 6);
+  const teleport2 = new Teleport(6, 1);
 
-  result[mapWidth * 6 + 1] = {
-    ...generateDefault(6, 1),
-    valueCountable: false,
-    id: teleport2id,
-    type: 'teleport',
-    value: UNIT_MAX_VALUE,
-    turrets: [],
-    angle: 0,
-    meta: {
-      exitTeleportId: teleport1id,
-    }
-  }
+  teleport1.setExitTeleportId(teleport2.id);
+  teleport2.setExitTeleportId(teleport1.id);
+
+  result[mapWidth * 2 + 6] = teleport1;
+  result[mapWidth * 6 + 1] = teleport2;
 
   result.splice(34, 1);
   //*/
