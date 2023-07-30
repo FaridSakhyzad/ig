@@ -16,7 +16,7 @@ import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../.
 import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
-import {BaseUnit, Bobomb, Laser, generatePortals, generateTeleports} from "../../units";
+import {BaseUnit, Bobomb, Laser, generatePortals, generateTeleports, Deflector, Wall} from "../../units";
 
 const MAX_MULTISELECT = 2;
 
@@ -346,12 +346,16 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       'default': (top, left, params) => new BaseUnit(top, left, params),
       'bobomb': (top, left, params) => new Bobomb(top, left, params),
       'laser': (top, left, params) => new Laser(top, left, params),
+      'deflector': (top, left, params) => new Deflector(top, left, params),
+      'wall': (top, left, params) => new Wall(top, left, params),
     }
 
     const callbacks = {
       'default': () => dispatch(setAmmo({ defaults: defaults - 1 })),
       'bobomb': () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
       'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
+      'deflector': () => {},
+      'wall': () => {},
     }
 
     const newUnit = generators[afterInputAction](top, left, { value: 4 });

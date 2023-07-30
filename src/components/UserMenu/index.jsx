@@ -45,7 +45,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
                 key="default"
                 isSelected={afterInputAction === 'default'}
                 isDisabled={defaults < 1}
-                id="1"
+                id="default"
                 type="default"
                 angle={0}
                 value={1}
@@ -65,7 +65,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
                 key="bobomb"
                 isSelected={afterInputAction === 'bobomb'}
                 isDisabled={bobombs < 1}
-                id="2"
+                id="bobomb"
                 type="bobomb"
                 angle={0}
                 value={1}
@@ -85,7 +85,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
                 key="laser"
                 isSelected={afterInputAction === 'laser'}
                 isDisabled={lasers < 1}
-                id="3"
+                id="laser"
                 type="laser"
                 angle={0}
                 value={1}
@@ -105,7 +105,7 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
               key="portal"
               isSelected={afterInputAction === 'portal'}
               isDisabled={portals < 1}
-              id="3"
+              id="portal"
               type="portal"
               angle={0}
               value={1}
@@ -119,13 +119,53 @@ const UserMenu = ({ onModeChange, afterInputAction }) => {
 
           <div
             className="userMenu-unit"
+            onClick={() => onModeChange(PlACING_MODE, { callback: 'deflector' })}
+          >
+            <Unit
+              key="deflector"
+              isSelected={afterInputAction === 'deflector'}
+              isDisabled={portals < 1}
+              id="deflector"
+              type="deflector"
+              angle={0}
+              value={1}
+              maxValue={1}
+              turrets={[]}
+              exploding={false}
+              idx={0}
+            />
+            <div className="userMenu-unitCount">&infin;</div>
+          </div>
+
+          <div
+            className="userMenu-unit"
             onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'teleport' })}
           >
             <Unit
               key="teleport"
               isSelected={afterInputAction === 'teleport'}
-              id="4"
+              id="teleport"
               type="teleport"
+              angle={0}
+              value={1}
+              maxValue={1}
+              turrets={[]}
+              exploding={false}
+              idx={0}
+            />
+            <div className="userMenu-unitCount">&infin;</div>
+          </div>
+
+          <div
+            className="userMenu-unit"
+            onClick={() => onModeChange(PlACING_MODE, { callback: 'wall' })}
+          >
+            <Unit
+              key="wall"
+              kind="stone"
+              isSelected={afterInputAction === 'wall'}
+              id="wall"
+              type="wall"
               angle={0}
               value={1}
               maxValue={1}
