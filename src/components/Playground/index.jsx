@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import { number } from 'prop-types';
 import classnames from 'classnames';
@@ -32,15 +32,14 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   const [ afterInputAction, setAfterInputAction ] = useState(null);
 
   const [ currentLevel, setCurrentLevel ] = useState(0);
+  const [ levelCounter, setLevelCounter ] = useState(0);
 
-  const [ levelCounter, setLevelCounter ] = useState(1);
-
-  const [ map, setMap ] = useState(mapSet()[currentLevel]);
+  const [ map, setMap ] = useState([]);
   const [ fieldInfo, setFieldInfo ] = useState({});
 
-  const [ grid, setGrid ] = useState(map.grid);
+  const [ grid, setGrid ] = useState([]);
 
-  const [ units, setUnits ] = useState(map.units.filter(Boolean));
+  const [ units, setUnits ] = useState([]);
   const [ selectedUnits, setSelectedUnits ] = useState([]);
   const [ unitsMap, setUnitsMap ] = useState([]);
 
@@ -600,6 +599,12 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
   }
 
+  const applyLevelRestrictions = (level) => {
+    if (level.ammoRestrictions) {
+      dispatch(setAmmo({ ammoRestrictions: level.ammoRestrictions }));
+    }
+  };
+
   const startLevel = (levelIndex) => {
     setLevelCounter(levelCounter + 1);
 
@@ -616,6 +621,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setGrid(level.grid);
 
     setUnits(level.units);
+
+    applyLevelRestrictions(level);
 
     if (level.overrideUserAmmo) {
       applyLevelAmmo(level, level.createUserBackup);
@@ -669,6 +676,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
     dispatch(setAmmo(reward));
   }
+
+  useEffect(() => {
+    startLevel(0);
+  }, []);
 
   return (
     <>

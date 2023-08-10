@@ -110,7 +110,8 @@
 
 .hidden {
   .unit-image {
-    opacity: 0.1;
+    border: 2px dashed aqua;
+    background-color: transparent;
   }
 }
 

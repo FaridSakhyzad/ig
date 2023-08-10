@@ -11,7 +11,7 @@ import {
   Teleport,
 } from "../units";
 
-const MAP_9x9_0 = (mapWidth, mapHeight) => {
+const TestUnitsSet1 = (mapWidth, mapHeight) => {
   const result = [];
 
   for (let i = 0; i < mapHeight; i++) {
@@ -78,9 +78,6 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 
   result[mapWidth * 7 + 7] = portal3;
 
-  const teleport1id = Math.random().toString(16).substring(2);
-  const teleport2id = Math.random().toString(16).substring(2);
-
   const teleport1 = new Teleport(2, 6);
   const teleport2 = new Teleport(6, 1);
 
@@ -97,4 +94,4 @@ const MAP_9x9_0 = (mapWidth, mapHeight) => {
 };
 
 
-export default MAP_9x9_0;
+export default TestUnitsSet1;

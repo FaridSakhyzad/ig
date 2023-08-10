@@ -29,9 +29,9 @@ body, html, #root {
 }
 
 .button {
-  padding: calc(var(--base-width-unit) * 8px) calc(var(--base-width-unit) * 16px);
+  padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 12px);
   border: 1px solid black;
   border-radius: 65536px;
   font-family: var(--font-family-default);
-  font-size: calc(var(--base-width-unit) * 16px);
+  font-size: calc(var(--base-width-unit) * 12px);
 }

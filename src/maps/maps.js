@@ -1,4 +1,4 @@
-import MAP_9x9_0 from './map_9x9_0';
+import TestUnitsSet1 from './test_units_set1';
 import { BaseUnit } from "../units";
 
 const generateGrid = (gridWidth, gridHeight) => {
@@ -19,102 +19,99 @@ const generateGrid = (gridWidth, gridHeight) => {
     grid.push(row);
   }
 
-  grid[1][1].type = 'grass';
-  grid[2][2].type = 'water';
-
   return grid;
 };
 
+const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 4) => {
+  const result = [];
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      result.push(new BaseUnit(i, j, {
+        value: Math.floor(Math.random() * (unitMaxValue - unitMinValue + 1) + unitMinValue)
+      }));
+    }
+  }
+
+  return result;
+}
+
+const defaults = {
+  mapWidth: 9,
+  mapHeight: 9,
+  comboSequence: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
+  overrideUserAmmo: false,
+  createUserBackup: false,
+  ammo: {},
+  reward: {
+    moves: 1,
+    defaults: 1,
+    bobombs: 1,
+    lasers: 1,
+  },
+  penalty: {},
+}
+
+class Map {
+  constructor(params = {}) {
+    const {
+      mapWidth,
+      mapHeight,
+      comboSequence,
+      reward,
+      penalty,
+      overrideUserAmmo,
+      ammo,
+      ammoRestrictions = {},
+      grid,
+      units,
+    } = {
+      ...defaults,
+      ...params
+    };
+
+    this.mapWidth = mapWidth;
+    this.mapHeight = mapHeight;
+    this.comboSequence = comboSequence;
+    this.reward = reward;
+    this.penalty = penalty;
+    this.overrideUserAmmo = overrideUserAmmo;
+    this.ammo = ammo;
+    this.ammoRestrictions = ammoRestrictions;
+
+    this.grid = grid || generateGrid(mapWidth, mapHeight);
+    this.units = units || generateRandomUnitsSet(mapWidth, mapHeight);
+  }
+}
+
 const mapSet = () => [
-  {
-    mapWidth: 9,
-    mapHeight: 9,
-    comboSequence: [1, 1, 1, 3, 5, 8, 13, 21, 34, 55],
-    reward: {
-      moves: 1,
-      defaults: 1,
-      bobombs: 1,
-      lasers: 1,
-    },
-    penalty: {},
+  new Map({
     overrideUserAmmo: true,
     ammo: {
       moves: 1000,
+      swaps: 10,
+      rotates: 10,
+      jumps: 10,
+
       defaults: 1,
       bobombs: 1,
       lasers: 1,
-      swaps: 1,
-      rotates: 100,
+      deflectors: 1,
+      walls: 1,
+      npc: 1,
+      hidden: 1,
       portals: 1,
-      jumps: 1,
+      teleports: 1,
     },
-    units: MAP_9x9_0(9, 9),
-    grid: generateGrid(9, 9),
-  },
-  {
-    mapWidth: 9,
-    mapHeight: 9,
-    comboSequence: [3, 5, 8, 13, 21, 34, 55],
-    ammo: {},
-    reward: {
-      moves: 1,
-      defaults: 1,
-      bobombs: 1,
-      lasers: 1,
-    },
-    units: ((width, height) => {
-      const UNIT_MIN_VALUE = 0
-      const UNIT_MAX_VALUE = 4;
-
-      const result = [];
-
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-          result.push(new BaseUnit(i, j, {
-            value: Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE)
-          }));
-        }
-      }
-
-      return result;
-    })(9, 9),
-    grid: generateGrid(9, 9),
-  },
-  {
+    units: TestUnitsSet1(9, 9)
+  }),
+  new Map(),
+  new Map({
     mapWidth: 3,
     mapHeight: 3,
-    comboSequence: [3, 5, 8, 13, 21, 34, 55],
-    overrideUserAmmo: true,
-    createUserBackup: true,
-    ammo: {
-      moves: 5,
-      swaps: 100,
-      jumps: 100,
-      rotates: 100,
-      bobombs: 100,
-      lasers: 100,
-      defaults: 100,
-      portals: 100,
-    },
-    reward: {},
-    penalty: {},
-    units: ((width, height) => {
-      const UNIT_MIN_VALUE = 0
-      const UNIT_MAX_VALUE = 4;
+  }),
 
-      const result = [];
-
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-          result.push(new BaseUnit(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
-        }
-      }
-
-      return result;
-    })(3, 3),
-    grid: generateGrid(3, 3),
-  },
-  {
+  new Map({
     mapWidth: 5,
     mapHeight: 5,
     comboSequence: [3, 5, 8, 13, 21, 34, 55],
@@ -140,24 +137,8 @@ const mapSet = () => [
       portals: 10,
       jumps: 10,
     },
-    penalty: {},
-    units: ((width, height) => {
-      const UNIT_MIN_VALUE = 0
-      const UNIT_MAX_VALUE = 4;
-
-      const result = [];
-
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-          result.push(new BaseUnit(i, j, { value: Math.pow(Math.floor(Math.random() * (UNIT_MAX_VALUE - UNIT_MIN_VALUE + 1) + UNIT_MIN_VALUE), 0) }));
-        }
-      }
-
-      return result;
-    })(5, 5),
-    grid: generateGrid(5, 5),
-  },
-  {
+  }),
+  new Map({
     mapWidth: 6,
     mapHeight: 6,
     comboSequence: [3, 5, 8, 13, 21, 34, 55],
@@ -165,20 +146,6 @@ const mapSet = () => [
     ammo: {},
     reward: {},
     penalty: {},
-    units: ((width, height) => {
-      const result = [];
-
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-          result.push(new BaseUnit(i, j, { value: 4 }));
-        }
-      }
-
-      return result;
-    })(6, 6),
-    grid: generateGrid(6, 6),
-  },
+  }),
 ]
 export default mapSet;
-
-
