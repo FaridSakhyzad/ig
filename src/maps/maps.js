@@ -36,39 +36,26 @@ const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 
   return result;
 }
 
-const defaults = {
-  mapWidth: 9,
-  mapHeight: 9,
-  comboSequence: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
-  overrideUserAmmo: false,
-  createUserBackup: false,
-  ammo: {},
-  reward: {
-    moves: 1,
-    defaults: 1,
-    bobombs: 1,
-    lasers: 1,
-  },
-  penalty: {},
-}
-
 class Map {
   constructor(params = {}) {
     const {
-      mapWidth,
-      mapHeight,
-      comboSequence,
-      reward,
-      penalty,
-      overrideUserAmmo,
-      ammo,
+      mapWidth = 9,
+      mapHeight = 9,
+      comboSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
+      reward = {
+        moves: 1,
+        defaults: 1,
+        bobombs: 1,
+        lasers: 1,
+      },
+      penalty = {},
+      overrideUserAmmo = false,
+      createUserBackup = false,
+      ammo = {},
       ammoRestrictions = {},
       grid,
       units,
-    } = {
-      ...defaults,
-      ...params
-    };
+    } = params;
 
     this.mapWidth = mapWidth;
     this.mapHeight = mapHeight;
@@ -77,7 +64,12 @@ class Map {
     this.penalty = penalty;
     this.overrideUserAmmo = overrideUserAmmo;
     this.ammo = ammo;
-    this.ammoRestrictions = ammoRestrictions;
+    this.ammoRestrictions = {
+      npc: true,
+      hidden: true,
+
+      ...ammoRestrictions,
+    };
 
     this.grid = grid || generateGrid(mapWidth, mapHeight);
     this.units = units || generateRandomUnitsSet(mapWidth, mapHeight);
