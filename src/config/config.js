@@ -8,6 +8,7 @@ export const UNIT_MIN_VALUE = 0;
 
 export const SCREEN_MODES = {
     menu: 'menu',
+    levelsList: 'levelsList',
     playground: 'playground',
     settings: 'settings'
 }

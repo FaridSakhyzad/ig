@@ -625,7 +625,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     applyLevelRestrictions(level);
 
     if (level.overrideUserAmmo) {
-      applyLevelAmmo(level, level.createUserBackup);
+      applyLevelAmmo(level);
     }
 
     if (level.restoreUserAmmo) {
@@ -636,8 +636,8 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setLoseScreenVisible(false);
   }
 
-  const applyLevelAmmo = (level, createBackup) => {
-    if (createBackup) {
+  const applyLevelAmmo = (level) => {
+    if (level.createUserBackup) {
       dispatch(setStash(user));
     }
 

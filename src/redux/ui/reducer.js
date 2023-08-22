@@ -2,7 +2,7 @@ import { SET_CURRENT_SCREEN } from './constants'
 import { SCREEN_MODES } from "../../config/config";
 
 const initialState = {
-  currentScreen: SCREEN_MODES.playground,
+  currentScreen: SCREEN_MODES.levelsList,
 }
 
 const uiReducer = (state = initialState, action) => {

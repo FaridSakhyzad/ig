@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes, {string} from 'prop-types';
+import { useSelector } from 'react-redux';
 import classnames from 'classnames';
 import { MULTISELECT_MODE, PlACING_MODE, SELECT_MODE } from 'constants/constants';
 import Unit from '../Unit';
 import './UserMenu.scss';
-import { useSelector } from "react-redux";
 
 const UserMenu = ({ onModeChange, afterInputAction }) => {
   const {

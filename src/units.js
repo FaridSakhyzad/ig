@@ -27,7 +27,6 @@ export class BaseUnit {
       maxValue,
       selectable,
       valueCountable,
-      exploding,
       hitBoxRadius,
       angle,
       turrets,
@@ -47,7 +46,8 @@ export class BaseUnit {
     this.maxValue = maxValue;
     this.selectable = selectable;
     this.valueCountable = valueCountable;
-    this.exploding = exploding;
+
+    this.exploding = false;
     this.hitBoxRadius = hitBoxRadius;
     this.angle = angle;
     this.turrets = turrets;

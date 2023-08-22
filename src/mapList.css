@@ -1,0 +1,16 @@
+.mapList {
+    margin-bottom: 18px;
+    width: 100%;
+}
+
+.mapList-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mapList-itemName {}
+
+.mapList-itemControls {
+    margin-left: auto;
+}
