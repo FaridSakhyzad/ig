@@ -1,17 +1,17 @@
 import TestUnitsSet1 from './test_units_set1';
-import { BaseUnit } from "../units";
+import { BaseUnit } from '../units';
 
 const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
 
-  for (let i = 0; i < gridHeight; ++i) {
+  for (let i = 0; i < gridHeight; i += 1) {
     const row = [];
 
-    for (let j = 0; j < gridWidth; ++j) {
+    for (let j = 0; j < gridWidth; j += 1) {
       row[j] = {
         id: Math.random().toString(16).substring(2),
-        left: j / gridWidth * 100,
-        top: i / gridHeight * 100,
+        left: (j / gridWidth) * 100,
+        top: (i / gridHeight) * 100,
         type: 'turf',
       };
     }
@@ -25,19 +25,19 @@ const generateGrid = (gridWidth, gridHeight) => {
 const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 4) => {
   const result = [];
 
-  for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
+  for (let i = 0; i < height; i += 1) {
+    for (let j = 0; j < width; j += 1) {
       result.push(new BaseUnit(i, j, {
-        value: Math.floor(Math.random() * (unitMaxValue - unitMinValue + 1) + unitMinValue)
+        value: Math.floor(Math.random() * (unitMaxValue - unitMinValue + 1) + unitMinValue),
       }));
     }
   }
 
   return result;
-}
+};
 
 export class Map {
-  constructor(params = {}) {
+  constructor(params = {}, controls = {}) {
     const {
       name,
       mapWidth = 9,
@@ -56,8 +56,12 @@ export class Map {
       ammo = {},
       ammoRestrictions = {},
       grid,
-      units,
+      units = [],
     } = params;
+
+    const {
+      generateRandomUnits = true,
+    } = controls;
 
     this.name = name;
     this.id = Math.random().toString(16).substring(2);
@@ -78,7 +82,12 @@ export class Map {
     };
 
     this.grid = grid || generateGrid(mapWidth, mapHeight);
-    this.units = units || generateRandomUnitsSet(mapWidth, mapHeight);
+
+    if (generateRandomUnits) {
+      this.units = units;
+    } else {
+      this.units = generateRandomUnitsSet(mapWidth, mapHeight);
+    }
   }
 }
 
@@ -101,14 +110,14 @@ const mapSet = () => [
       portals: 1,
       teleports: 1,
     },
-    units: TestUnitsSet1(9, 9)
+    units: TestUnitsSet1(9, 9),
   }),
   new Map(),
   new Map({
     mapWidth: 3,
     mapHeight: 3,
   }),
-
+  /**/
   new Map({
     mapWidth: 5,
     mapHeight: 5,
@@ -117,7 +126,7 @@ const mapSet = () => [
     createUserBackup: true,
     ammo: {
       moves: 10,
-      defaults: 0,
+      defaults: 100,
       bobombs: 0,
       lasers: 0,
       swaps: 0,
@@ -145,5 +154,5 @@ const mapSet = () => [
     reward: {},
     penalty: {},
   }),
-]
+];
 export default mapSet;

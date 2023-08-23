@@ -1,99 +1,125 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { number } from 'prop-types';
 import classnames from 'classnames';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import { setMoves, setSwaps, setRotates, setAmmo, resetAmmo } from 'redux/user/actions';
+import {
+  setMoves,
+  setSwaps,
+  setRotates,
+  setAmmo,
+  resetAmmo,
+} from 'redux/user/actions';
 import { setStash } from 'redux/userStash/actions';
 
+import mapSet from 'maps/maps';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import UserMenu from '../UserMenu';
-import mapSet from 'maps/maps';
 
-import { MULTISELECT_MODE, GAMEPLAY_MODE, SELECT_MODE, PlACING_MODE } from '../../constants/constants';
+import {
+  MULTISELECT_MODE,
+  GAMEPLAY_MODE,
+  SELECT_MODE,
+  PLACING_MODE,
+} from '../../constants/constants';
 import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
-import {BaseUnit, Bobomb, Laser, generatePortals, generateTeleports, Deflector, Wall} from "../../units";
+import {
+  BaseUnit,
+  Bobomb,
+  Laser,
+  generatePortals,
+  generateTeleports,
+  Deflector,
+  Wall,
+} from 'units';
 
 const MAX_MULTISELECT = 2;
 
-const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
+function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const dispatch = useDispatch();
 
   const user = useSelector(({ user }) => user);
   const userStash = useSelector(({ userStash }) => userStash);
 
-  const { moves, bobombs, defaults, lasers, portals, swaps, rotates, jumps } = user;
+  const {
+    moves, bobombs, defaults, lasers, portals, swaps, rotates, jumps,
+  } = user;
 
-  const [ userInputMode, setUserInputMode ] = useState(GAMEPLAY_MODE);
-  const [ afterInputAction, setAfterInputAction ] = useState(null);
+  const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
+  const [afterInputAction, setAfterInputAction] = useState(null);
 
-  const [ currentLevel, setCurrentLevel ] = useState(0);
-  const [ levelCounter, setLevelCounter ] = useState(0);
+  const [currentLevel, setCurrentLevel] = useState(0);
+  const [levelCounter, setLevelCounter] = useState(0);
 
-  const [ map, setMap ] = useState([]);
-  const [ fieldInfo, setFieldInfo ] = useState({});
+  const [map, setMap] = useState([]);
+  const [fieldInfo, setFieldInfo] = useState({});
 
-  const [ grid, setGrid ] = useState([]);
+  const [grid, setGrid] = useState([]);
 
-  const [ units, setUnits ] = useState([]);
-  const [ selectedUnits, setSelectedUnits ] = useState([]);
-  const [ unitsMap, setUnitsMap ] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [selectedUnits, setSelectedUnits] = useState([]);
+  const [unitsMap, setUnitsMap] = useState([]);
 
-  const [ selectedCells, setSelectedCells ] = useState([]);
+  const [selectedCells, setSelectedCells] = useState([]);
 
-  const [ projectiles, setProjectiles ] = useState([]);
+  const [projectiles, setProjectiles] = useState([]);
 
-  const [ winScreenVisible, setWinScreenVisible ] = useState(false);
-  const [ loseScreenVisible, setLoseScreenVisible ] = useState(false);
+  const [winScreenVisible, setWinScreenVisible] = useState(false);
+  const [loseScreenVisible, setLoseScreenVisible] = useState(false);
 
-  const generateUnitsMap = (fieldTop, fieldLeft) => {
-    return [ ...document.querySelectorAll('.unit') ].map(unit => {
-      const { dataset } = unit;
-      const { index } = dataset;
+  const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
+    const { dataset } = unit;
+    const { index } = dataset;
 
-      const { top, left } = unit.querySelector('.unit-pivot').getBoundingClientRect();
+    const { top, left } = unit.querySelector('.unit-pivot').getBoundingClientRect();
 
-      const turretsData = [];
+    const turretsData = [];
 
-      const { turrets, angle: unitAngle, value, type, meta, explosionStart, hitBoxRadius } = units[index] || {};
+    const {
+      turrets, angle: unitAngle, value, type, meta, explosionStart, hitBoxRadius,
+    } = units[index] || {};
 
-      unit.querySelectorAll('.turret').forEach(turret => {
-        const gunpoint = turret.querySelector('.gunpoint');
-        const { name: turretName } = turret.dataset;
-        const { top: gunpointTop, left: gunpointLeft } = gunpoint.getBoundingClientRect();
+    unit.querySelectorAll('.turret').forEach((turret) => {
+      const gunpoint = turret.querySelector('.gunpoint');
+      const { name: turretName } = turret.dataset;
+      const { top: gunpointTop, left: gunpointLeft } = gunpoint.getBoundingClientRect();
 
-        const { angle, type, maxDistance, speed } = turrets.find(({ name }) => (name === turretName));
-
-        turretsData.push({
-          turretName,
-          gunpointTop: gunpointTop - fieldTop,
-          gunpointLeft: gunpointLeft - fieldLeft,
-          angle: unitAngle + angle,
-          type,
-          maxDistance,
-          speed,
-        })
-      });
-
-      return {
-        id: unit.id,
-        hitBoxRadius,
+      const {
+        angle,
         type,
-        index: parseInt(index, 10),
-        value,
-        top: top - fieldTop,
-        left: left - fieldLeft,
-        turrets: turretsData,
-        angle: unitAngle,
-        meta,
-        explosionStart,
-      };
-    })
-  }
+        maxDistance,
+        speed,
+      } = turrets.find(({ name }) => (name === turretName));
+
+      turretsData.push({
+        turretName,
+        gunpointTop: gunpointTop - fieldTop,
+        gunpointLeft: gunpointLeft - fieldLeft,
+        angle: unitAngle + angle,
+        type,
+        maxDistance,
+        speed,
+      });
+    });
+
+    return {
+      id: unit.id,
+      hitBoxRadius,
+      type,
+      index: parseInt(index, 10),
+      value,
+      top: top - fieldTop,
+      left: left - fieldLeft,
+      turrets: turretsData,
+      angle: unitAngle,
+      meta,
+      explosionStart,
+    };
+  });
 
   const dischargeAllTurrets = (unitIndex, unitsMap) => {
     const { id: unitOfOriginId, turrets } = unitsMap[unitIndex] || {};
@@ -104,8 +130,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
     const moveStep = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--base-width-unit'));
 
-    turrets.forEach(turret => {
-      const { gunpointTop: top, gunpointLeft: left, angle, type, maxDistance, speed } = turret;
+    turrets.forEach((turret) => {
+      const {
+        gunpointTop: top, gunpointLeft: left, angle, type, maxDistance, speed,
+      } = turret;
 
       const id = Math.random().toString(16).substring(2);
 
@@ -118,17 +146,17 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         type,
         maxDistance,
         speed,
-        moveStep
+        moveStep,
       });
-    })
+    });
 
     Playground.actingProjectilesNumber += turrets.length;
 
     setProjectiles(projectiles);
-  }
+  };
 
   const explodeUnit = (unitIndex) => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     newUnits[unitIndex].exploding = true;
 
@@ -139,7 +167,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
   };
 
   const setUnitValue = (unitIndex, newValue, onValueExceed) => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
     const { maxValue, minValue } = newUnits[unitIndex];
 
     if (newValue > maxValue) {
@@ -151,13 +179,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     setUnits(newUnits);
-  }
+  };
 
   const detectUserMoveOutcome = (moves) => {
     if (Playground.actingProjectilesNumber === 0 && moves <= 0) {
       setLoseScreenVisible(true);
     }
-  }
+  };
 
   const setNewMovesCount = (altKey, shiftKey) => {
     if (!shiftKey && !altKey) {
@@ -165,14 +193,18 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     return moves - 1;
-  }
+  };
 
   const makePlayerMove = (e, unitId, unitIndex) => {
     setProjectiles([]);
 
-    const { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight } = document.querySelector('#field').getBoundingClientRect();
+    const {
+      top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight,
+    } = document.querySelector('#field').getBoundingClientRect();
 
-    const fieldInfo = { fieldTop, fieldLeft, fieldWidth, fieldHeight };
+    const fieldInfo = {
+      fieldTop, fieldLeft, fieldWidth, fieldHeight,
+    };
     const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
 
     setFieldInfo(fieldInfo);
@@ -229,10 +261,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
-    }
+    };
 
     callbacks[units[unitIndex].type] && callbacks[units[unitIndex].type]();
-  }
+  };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
     if (Playground.actingProjectilesNumber > 0) {
@@ -247,7 +279,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       makePlayerMove(e, unitId, unitIndex);
     }
 
-    if (userInputMode === PlACING_MODE) {
+    if (userInputMode === PLACING_MODE) {
       const { top, left } = units[unitIndex];
 
       removeUnit(unitIndex);
@@ -281,7 +313,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
     if (userInputMode === MULTISELECT_MODE) {
       selectedUnits.push({ unitId, unitIndex });
-      setSelectedUnits([ ...selectedUnits ]);
+      setSelectedUnits([...selectedUnits]);
 
       if (selectedUnits.length >= MAX_MULTISELECT) {
         if (afterInputAction === 'swap') {
@@ -312,10 +344,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
       setUnitsMap(unitsMap);
     }
-  }
+  };
 
   const handleMapCellClick = (id, top, left) => {
-    if (userInputMode === PlACING_MODE) {
+    if (userInputMode === PLACING_MODE) {
       placeUnit(top, left);
       setUserInputMode(GAMEPLAY_MODE);
       setAfterInputAction(null);
@@ -334,39 +366,39 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         setAfterInputAction(null);
       }
     }
-  }
+  };
 
   const removeUnit = (index) => {
     setUnits(units.splice(index, 1));
-  }
+  };
 
   const placeUnit = (top, left) => {
     const generators = {
-      'default': (top, left, params) => new BaseUnit(top, left, params),
-      'bobomb': (top, left, params) => new Bobomb(top, left, params),
-      'laser': (top, left, params) => new Laser(top, left, params),
-      'deflector': (top, left, params) => new Deflector(top, left, params),
-      'wall': (top, left, params) => new Wall(top, left, params),
-    }
+      default: (top, left, params) => new BaseUnit(top, left, params),
+      bobomb: (top, left, params) => new Bobomb(top, left, params),
+      laser: (top, left, params) => new Laser(top, left, params),
+      deflector: (top, left, params) => new Deflector(top, left, params),
+      wall: (top, left, params) => new Wall(top, left, params),
+    };
 
     const callbacks = {
-      'default': () => dispatch(setAmmo({ defaults: defaults - 1 })),
-      'bobomb': () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
-      'laser': () => dispatch(setAmmo({ lasers: lasers - 1 })),
-      'deflector': () => {},
-      'wall': () => {},
-    }
+      default: () => dispatch(setAmmo({ defaults: defaults - 1 })),
+      bobomb: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
+      laser: () => dispatch(setAmmo({ lasers: lasers - 1 })),
+      deflector: () => {},
+      wall: () => {},
+    };
 
     const newUnit = generators[afterInputAction](top, left, { value: 4 });
 
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     newUnits.push(newUnit);
 
     setUnits(newUnits);
 
     callbacks[afterInputAction]();
-  }
+  };
 
   const detectGameOutcome = () => {
     if (Playground.actingProjectilesNumber !== 0) {
@@ -386,16 +418,15 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
         applyLevelReward(map);
         applyLevelPenalty(map);
-
       }, projectileExplosionDuration + 300);
     }
-  }
+  };
 
   const onOutOfFiled = () => {
     --Playground.actingProjectilesNumber;
 
     detectGameOutcome();
-  }
+  };
 
   const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
     const { maxValue } = units[impactedUnitIndex];
@@ -479,13 +510,13 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           explodeUnit(impactedUnitIndex);
           executeCombo();
         });
-      }
-    }
+      },
+    };
 
     callbacks[units[impactedUnitIndex].type] && callbacks[units[impactedUnitIndex].type]();
 
     detectGameOutcome();
-  }
+  };
 
   const combosRewards = [
     () => {
@@ -508,15 +539,15 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       Playground.comboCounter = 0;
       Playground.comboCursor += 1;
     }
-  }
+  };
 
   const onModeChange = (mode, data) => {
     setAfterInputAction(data.callback);
     setUserInputMode(mode);
-  }
+  };
 
   const performSwap = () => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     const { unitIndex: unit0Index } = selectedUnits[0];
     const { unitIndex: unit1Index } = selectedUnits[1];
@@ -532,10 +563,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
 
     dispatch(setSwaps(swaps - 1));
-  }
+  };
 
   const placePortals = () => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     const { unitIndex: unit0Index } = selectedUnits[0];
     const { unitIndex: unit1Index } = selectedUnits[1];
@@ -543,7 +574,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const { top: top0, left: left0 } = newUnits[unit0Index];
     const { top: top1, left: left1 } = newUnits[unit1Index];
 
-    const [ portal1, portal2 ] = generatePortals(top0, left0, top1, left1);
+    const [portal1, portal2] = generatePortals(top0, left0, top1, left1);
 
     newUnits[unit0Index] = portal1;
     newUnits[unit1Index] = portal2;
@@ -551,10 +582,10 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
 
     dispatch(setAmmo({ portals: portals - 1 }));
-  }
+  };
 
   const placeTeleports = () => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     const { unitIndex: unit0Index } = selectedUnits[0];
     const { unitIndex: unit1Index } = selectedUnits[1];
@@ -562,16 +593,16 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     const { top: top0, left: left0 } = newUnits[unit0Index];
     const { top: top1, left: left1 } = newUnits[unit1Index];
 
-    const [ teleport1, teleport2 ] = generateTeleports(top0, left0, top1, left1);
+    const [teleport1, teleport2] = generateTeleports(top0, left0, top1, left1);
 
     newUnits[unit0Index] = teleport1;
     newUnits[unit1Index] = teleport2;
 
     setUnits(newUnits);
-  }
+  };
 
   const performRotate = (unitIndex, angle = 45) => {
-    const newUnits = [ ...units ];
+    const newUnits = [...units];
 
     const directionMultiplier = afterInputAction === 'rotate_ccv' ? -1 : 1;
 
@@ -579,7 +610,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits(newUnits);
 
     dispatch(setRotates(rotates - 1));
-  }
+  };
 
   const performJump = (unitIndex, top, left) => {
     units[unitIndex].top = top;
@@ -588,16 +619,16 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     setUnits([...units]);
 
     dispatch(setAmmo({ jumps: jumps - 1 }));
-  }
+  };
 
   const handleRestartClick = () => {
     dispatch(resetAmmo());
     startLevel(0);
-  }
+  };
 
   const handleMenuClick = () => {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
-  }
+  };
 
   const applyLevelRestrictions = (level) => {
     if (level.ammoRestrictions) {
@@ -634,7 +665,7 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
 
     setWinScreenVisible(false);
     setLoseScreenVisible(false);
-  }
+  };
 
   const applyLevelAmmo = (level) => {
     if (level.createUserBackup) {
@@ -642,40 +673,40 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
     }
 
     dispatch(setAmmo(level.ammo));
-  }
+  };
 
   const restoreUserAmmo = () => {
     dispatch(setAmmo({ userStash }));
     dispatch(setStash({}));
-  }
+  };
 
   const startNextLevel = () => {
     startLevel(currentLevel + 1);
-  }
+  };
 
   const applyLevelPenalty = (level) => {
     const reward = {};
 
     if (!level.penalty) {
-      return
+      return;
     }
 
-    Object.keys(level.penalty).forEach(key => reward[key] = user[key] - level.penalty[key]);
+    Object.keys(level.penalty).forEach((key) => reward[key] = user[key] - level.penalty[key]);
 
     dispatch(setAmmo(reward));
-  }
+  };
 
   const applyLevelReward = (level) => {
     const reward = {};
 
     if (!level.reward) {
-      return
+      return;
     }
 
-    Object.keys(level.reward).forEach(key => reward[key] = user[key] + level.reward[key]);
+    Object.keys(level.reward).forEach((key) => reward[key] = user[key] + level.reward[key]);
 
     dispatch(setAmmo(reward));
-  }
+  };
 
   useEffect(() => {
     startLevel(0);
@@ -690,15 +721,21 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
       )}
 
       {loseScreenVisible && (
-          <div className="loseMessage">
-            <h1>You Loose</h1>
-            <button className="button" onClick={handleRestartClick}>Restart</button>
-            <button className="button" onClick={handleMenuClick}>Menu</button>
-          </div>
+      <div className="loseMessage">
+        <h1>You Loose</h1>
+        <button className="button" onClick={handleRestartClick}>Restart</button>
+        <button className="button" onClick={handleMenuClick}>Menu</button>
+      </div>
       )}
 
-      <h1 className="moves">Moves: {moves}</h1>
-      <h3 className="currentLevel">CurrentLevel: {levelCounter}</h3>
+      <h1 className="moves">
+        Moves:
+        {moves}
+      </h1>
+      <h3 className="currentLevel">
+        CurrentLevel:
+        {levelCounter}
+      </h3>
 
       <div className="field" id="field">
         <div className="projectileLayer">
@@ -718,10 +755,12 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         <div className="mapLayer">
           {grid.map((row, rowIndex) => (
             <React.Fragment key={rowIndex}>
-              {row.map(({ id, top, left, type }, colIndex) => (
+              {row.map(({
+                id, top, left, type,
+              }, colIndex) => (
                 <div
                   onClick={() => handleMapCellClick(id, rowIndex, colIndex)}
-                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selectedCells.some(cell => cell.id === id) })}
+                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selectedCells.some((cell) => cell.id === id) })}
                   data-id={id}
                   key={id}
                   style={{
@@ -736,15 +775,17 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
           ))}
         </div>
         <div className="unitLayer">
-          {units.map(({ id, hitBoxRadius, type, kind, angle, value, maxValue, turrets, exploding, top, left }, index) => (
+          {units.map(({
+            id, hitBoxRadius, type, kind, angle, value, maxValue, turrets, exploding, top, left,
+          }, index) => (
             <Unit
-              top={grid[top][left].top}
-              left={grid[top][left].left}
+              top={grid[top] && grid[top][left] && grid[top][left].top}
+              left={grid[top] && grid[top][left] && grid[top][left].left}
               width={100 / map.mapWidth}
               height={100 / map.mapHeight}
               hitBoxRadius={hitBoxRadius}
               key={id}
-              isSelected={selectedUnits.some(unit => unit.unitId === id)}
+              isSelected={selectedUnits.some((unit) => unit.unitId === id)}
               id={id}
               type={type}
               kind={kind}
@@ -765,14 +806,14 @@ const Playground = ({ projectileExplosionDuration, projectileMoveStep }) => {
         onModeChange={onModeChange}
       />
     </>
-  )
+  );
 }
 
 Playground.propTypes = {
   projectileExplosionDuration: number,
   projectileMoveStep: number,
   baseWidthUnit: number,
-}
+};
 
 Playground.actingProjectilesNumber = 0;
 

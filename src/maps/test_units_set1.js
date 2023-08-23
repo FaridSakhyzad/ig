@@ -9,20 +9,20 @@ import {
   Hidden,
   Portal,
   Teleport,
-} from "../units";
+} from '../units';
 
 const TestUnitsSet1 = (mapWidth, mapHeight) => {
   const result = [];
 
-  for (let i = 0; i < mapHeight; i++) {
-    for (let j = 0; j < mapWidth; j++) {
-      result.push(new BaseUnit(i, j));
+  for (let i = 0; i < mapHeight; i += 1) {
+    for (let j = 0; j < mapWidth; j += 1) {
+      // result.push(new BaseUnit(i, j));
     }
   }
 
   //*
   result[mapWidth * 6 + 3] = new Deflector(6, 3, {
-    angle: -45
+    angle: -45,
   });
 
   result[mapWidth * 6 + 6] = new BaseUnit(6, 6, { value: 4 });
@@ -30,7 +30,9 @@ const TestUnitsSet1 = (mapWidth, mapHeight) => {
   result[mapWidth * 4 + 0] = new BaseUnit(4, 0, {
     value: UNIT_MAX_VALUE,
     turrets: [
-      { name: 'turret1', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
+      {
+        name: 'turret1', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+      },
     ],
   });
 
@@ -59,9 +61,13 @@ const TestUnitsSet1 = (mapWidth, mapHeight) => {
   result[mapWidth * 4 + 8] = new BaseUnit(4, 8, {
     value: UNIT_MAX_VALUE,
     turrets: [
-      { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-      { name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    ]
+      {
+        name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+      },
+      {
+        name: 'turret2', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+      },
+    ],
   });
 
   const portal1 = new Portal(0, 8, { angle: 180 });
@@ -88,10 +94,9 @@ const TestUnitsSet1 = (mapWidth, mapHeight) => {
   result[mapWidth * 6 + 1] = teleport2;
 
   result.splice(34, 1);
-  //*/
+  //* /
 
-  return result;
+  return result.filter(Boolean);
 };
-
 
 export default TestUnitsSet1;

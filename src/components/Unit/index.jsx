@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import './Unit.scss';
 import { UNIT_EXPLOSION_DURATION } from '../../config/config';
 
-const Unit = (props) => {
+function Unit(props) {
   const {
     id,
     top,
@@ -22,8 +22,12 @@ const Unit = (props) => {
     idx,
     onClickHandler,
     exploding,
-    hitBoxRadius
+    hitBoxRadius,
   } = props;
+
+  if (id === undefined || top === undefined || left === undefined) {
+    return null;
+  }
 
   return (
     <div
@@ -41,16 +45,16 @@ const Unit = (props) => {
     >
       <div className="unit-pivot">
         {exploding && (
-            <div
-                className='unit-image unit-image--exploding'
-                style={{ '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms` }}
-            />
+        <div
+          className="unit-image unit-image--exploding"
+          style={{ '--unit-image--explosion-duration': `${UNIT_EXPLOSION_DURATION}ms` }}
+        />
         )}
         <div
           className="unit-image"
           style={{ '--unit-image--width': `${value * (100 / maxValue) / 2}%` }}
         />
-        {turrets && turrets.map(({ angle, name}, turretIndex) => (
+        {turrets && turrets.map(({ angle, name }, turretIndex) => (
           <div className={`turret ${name}`} data-name={name} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>
             <div className="weapon">
               <div className="gunpoint" />
@@ -66,33 +70,42 @@ const Unit = (props) => {
         />
       </div>
     </div>
-  )
+  );
 }
 
 Unit.propTypes = {
-  id: PropTypes.string,
-  top: PropTypes.number,
-  left: PropTypes.number,
+  id: PropTypes.string.isRequired,
+  top: PropTypes.number.isRequired,
+  left: PropTypes.number.isRequired,
   width: PropTypes.number,
   height: PropTypes.number,
   hitBoxRadius: PropTypes.number,
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
-  type: PropTypes.string,
+  type: PropTypes.string.isRequired,
   kind: PropTypes.string,
-  value: PropTypes.number,
-  angle: PropTypes.number,
-  maxValue: PropTypes.number,
-  turrets: PropTypes.array,
+  value: PropTypes.number.isRequired,
+  angle: PropTypes.number.isRequired,
+  maxValue: PropTypes.number.isRequired,
+  turrets: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    type: PropTypes.string,
+    angle: PropTypes.number,
+    speed: PropTypes.number,
+  })).isRequired,
   onClickHandler: PropTypes.func,
-  exploding: PropTypes.bool,
-  idx: PropTypes.number
+  exploding: PropTypes.bool.isRequired,
+  idx: PropTypes.number.isRequired,
 };
 
 Unit.defaultProps = {
   isSelected: false,
   isDisabled: false,
   onClickHandler: () => {},
-}
+  kind: null,
+  hitBoxRadius: null,
+  width: null,
+  height: null,
+};
 
 export default Unit;

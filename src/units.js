@@ -1,4 +1,4 @@
-import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE } from "./config/config";
+import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE } from './config/config';
 
 export const defaults = {
   type: 'default',
@@ -10,10 +10,18 @@ export const defaults = {
   hitBoxRadius: 4,
   angle: 0,
   turrets: [
-    { name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY, },
-    { name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY, }
+    {
+      name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+    },
+    {
+      name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+    },
+    {
+      name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+    },
+    {
+      name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY,
+    },
   ],
 };
 
@@ -32,7 +40,7 @@ export class BaseUnit {
       turrets,
     } = {
       ...defaults,
-      ...params
+      ...params,
     };
 
     this.top = top;
@@ -63,57 +71,57 @@ export class Bobomb extends BaseUnit {
           angle: 0,
           type: 'bobomb',
           maxDistance: 39,
-          speed: 15
+          speed: 15,
         },
         {
           name: 'turret2',
           angle: 45,
           type: 'bobomb',
           maxDistance: 39 * 1.4142135623730951,
-          speed: 15 / 1.4142135623730951
+          speed: 15 / 1.4142135623730951,
         },
         {
           name: 'turret3',
           angle: 90,
           type: 'bobomb',
           maxDistance: 39,
-          speed: 15
+          speed: 15,
         },
         {
           name: 'turret4',
           angle: 135,
           type: 'bobomb',
           maxDistance: 39 * 1.4142135623730951,
-          speed: 15 / 1.4142135623730951
+          speed: 15 / 1.4142135623730951,
         },
         {
           name: 'turret5',
           angle: 180,
           type: 'bobomb',
           maxDistance: 39,
-          speed: 15
+          speed: 15,
         },
         {
           name: 'turret6',
           angle: 225,
           type: 'bobomb',
           maxDistance: 39 * 1.4142135623730951,
-          speed: 15 / 1.4142135623730951
+          speed: 15 / 1.4142135623730951,
         },
         {
           name: 'turret7',
           angle: 270,
           type: 'bobomb',
           maxDistance: 39,
-          speed: 15
+          speed: 15,
         },
         {
           name: 'turret8',
           angle: 315,
           type: 'bobomb',
           maxDistance: 39 * 1.4142135623730951,
-          speed: 15 / 1.4142135623730951
-        }
+          speed: 15 / 1.4142135623730951,
+        },
       ],
       ...params,
       type: 'bobomb',
@@ -125,10 +133,18 @@ export class Laser extends BaseUnit {
   constructor(top, left, params) {
     super(top, left, {
       turrets: [
-        { name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-        { name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-        { name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY, },
-        { name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY, }
+        {
+          name: 'turret1', angle: 0, type: 'laser', speed: PROJECTILE_MOVE_DELAY,
+        },
+        {
+          name: 'turret2', angle: 90, type: 'laser', speed: PROJECTILE_MOVE_DELAY,
+        },
+        {
+          name: 'turret3', angle: 180, type: 'laser', speed: PROJECTILE_MOVE_DELAY,
+        },
+        {
+          name: 'turret4', angle: 270, type: 'laser', speed: PROJECTILE_MOVE_DELAY,
+        },
       ],
       ...params,
       type: 'laser',
@@ -193,6 +209,7 @@ export class Portal extends BaseUnit {
 
     this.meta = params.meta || {};
   }
+
   setExitPortalId(id) {
     this.meta.exitPortalId = id;
   }
@@ -209,6 +226,7 @@ export class Teleport extends BaseUnit {
 
     this.meta = params.meta || {};
   }
+
   setExitTeleportId(id) {
     this.meta.exitTeleportId = id;
   }
@@ -221,8 +239,8 @@ export const generatePortals = (top1, left1, top2, left2) => {
   portal1.setExitPortalId(portal2.id);
   portal2.setExitPortalId(portal1.id);
 
-  return [ portal1, portal2 ];
-}
+  return [portal1, portal2];
+};
 
 export const generateTeleports = (top1, left1, top2, left2) => {
   const teleport1 = new Teleport(top1, left1);
@@ -231,5 +249,5 @@ export const generateTeleports = (top1, left1, top2, left2) => {
   teleport1.setExitTeleportId(teleport2.id);
   teleport2.setExitTeleportId(teleport1.id);
 
-  return [ teleport1, teleport2 ];
-}
+  return [teleport1, teleport2];
+};

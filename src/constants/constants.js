@@ -4,4 +4,4 @@ export const GAMEPLAY_MODE = 'gameplay';
 
 export const MULTISELECT_MODE = 'multiselect';
 
-export const PlACING_MODE = 'placing';
+export const PLACING_MODE = 'placing';
