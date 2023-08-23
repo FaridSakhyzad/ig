@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes, { string } from 'prop-types';
 import { useSelector } from 'react-redux';
 import classnames from 'classnames';
-import { MULTISELECT_MODE, PLACING_MODE, SELECT_MODE } from 'constants/constants';
+import {
+  CELL_MULTISELECT_MODE,
+  ITEM_MULTISELECT_MODE,
+  PLACING_MODE,
+  SELECT_MODE,
+} from 'constants/constants';
 import Unit from '../Unit';
 import './UserMenu.scss';
 
@@ -30,7 +35,7 @@ function UserMenu({ onModeChange, afterInputAction }) {
           <button
             type="button"
             disabled={swaps < 1}
-            onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'swap' })}
+            onClick={() => onModeChange(ITEM_MULTISELECT_MODE, { callback: 'swap' })}
             className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
           >
             Swap {swaps}
@@ -154,7 +159,7 @@ function UserMenu({ onModeChange, afterInputAction }) {
           {!ammoRestrictions.portals && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'portal' })}
+              onClick={() => onModeChange(CELL_MULTISELECT_MODE, { callback: 'portal' })}
             >
               <Unit
                 key="portal"
@@ -202,7 +207,7 @@ function UserMenu({ onModeChange, afterInputAction }) {
           {!ammoRestrictions.teleports && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(MULTISELECT_MODE, { callback: 'teleport' })}
+              onClick={() => onModeChange(CELL_MULTISELECT_MODE, { callback: 'teleport' })}
             >
               <Unit
                 key="teleport"

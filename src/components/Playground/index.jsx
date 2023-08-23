@@ -28,7 +28,7 @@ import Unit from '../Unit';
 import UserMenu from '../UserMenu';
 
 import {
-  MULTISELECT_MODE,
+  ITEM_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   SELECT_MODE,
   PLACING_MODE,
@@ -42,11 +42,17 @@ const MAX_MULTISELECT = 2;
 function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const dispatch = useDispatch();
 
-  const user = useSelector(({ user }) => user);
-  const userStash = useSelector(({ userStash }) => userStash);
+  const { user, userStash } = useSelector((state) => state);
 
   const {
-    moves, bobombs, defaults, lasers, portals, swaps, rotates, jumps,
+    moves,
+    bobombs,
+    defaults,
+    lasers,
+    portals,
+    swaps,
+    rotates,
+    jumps,
   } = user;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
@@ -90,7 +96,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
       const {
         angle,
-        type,
+        type: turretType,
         maxDistance,
         speed,
       } = turrets.find(({ name }) => (name === turretName));
@@ -100,7 +106,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         gunpointTop: gunpointTop - fieldTop,
         gunpointLeft: gunpointLeft - fieldLeft,
         angle: unitAngle + angle,
-        type,
+        type: turretType,
         maxDistance,
         speed,
       });
@@ -121,8 +127,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     };
   });
 
-  const dischargeAllTurrets = (unitIndex, unitsMap) => {
-    const { id: unitOfOriginId, turrets } = unitsMap[unitIndex] || {};
+  const dischargeAllTurrets = (unitIndex, theUnitsMap) => {
+    const { id: unitOfOriginId, turrets } = theUnitsMap[unitIndex] || {};
 
     if (!unitOfOriginId) {
       return;
@@ -181,8 +187,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     setUnits(newUnits);
   };
 
-  const detectUserMoveOutcome = (moves) => {
-    if (Playground.actingProjectilesNumber === 0 && moves <= 0) {
+  const detectUserMoveOutcome = (userMoves) => {
+    if (Playground.actingProjectilesNumber === 0 && userMoves <= 0) {
       setLoseScreenVisible(true);
     }
   };
@@ -193,357 +199,6 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     }
 
     return moves - 1;
-  };
-
-  const makePlayerMove = (e, unitId, unitIndex) => {
-    setProjectiles([]);
-
-    const {
-      top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight,
-    } = document.querySelector('#field').getBoundingClientRect();
-
-    const fieldInfo = {
-      fieldTop, fieldLeft, fieldWidth, fieldHeight,
-    };
-    const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
-
-    setFieldInfo(fieldInfo);
-    setUnitsMap(unitsMap);
-
-    const { altKey, shiftKey } = e;
-
-    let newValue = units[unitIndex].value + 1;
-
-    if (altKey) {
-      newValue = 0;
-    }
-
-    if (shiftKey) {
-      newValue = units[unitIndex].maxValue;
-    }
-
-    const callbacks = {
-      default: () => {
-        setUnitValue(unitIndex, newValue, () => {
-          dischargeAllTurrets(unitIndex, unitsMap);
-          explodeUnit(unitIndex);
-        });
-
-        const newMoves = setNewMovesCount(altKey, shiftKey);
-        detectUserMoveOutcome(newMoves);
-      },
-      wall: () => {},
-      portal: () => {},
-      hidden: () => {
-        setUnitValue(unitIndex, newValue, () => {
-          dischargeAllTurrets(unitIndex, unitsMap);
-          explodeUnit(unitIndex);
-        });
-
-        const newMoves = setNewMovesCount(altKey, shiftKey);
-        detectUserMoveOutcome(newMoves);
-      },
-      laser: () => {
-        setUnitValue(unitIndex, newValue, () => {
-          dischargeAllTurrets(unitIndex, unitsMap);
-          explodeUnit(unitIndex);
-        });
-
-        const newMoves = setNewMovesCount(altKey, shiftKey);
-        detectUserMoveOutcome(newMoves);
-      },
-      bobomb: () => {
-        setUnitValue(unitIndex, newValue, () => {
-          dischargeAllTurrets(unitIndex, unitsMap);
-          explodeUnit(unitIndex);
-        });
-
-        const newMoves = setNewMovesCount(altKey, shiftKey);
-        detectUserMoveOutcome(newMoves);
-      },
-    };
-
-    callbacks[units[unitIndex].type] && callbacks[units[unitIndex].type]();
-  };
-
-  const handleUnitClick = (e, unitId, unitIndex) => {
-    if (Playground.actingProjectilesNumber > 0) {
-      return;
-    }
-
-    if (!units[unitIndex].selectable) {
-      return;
-    }
-
-    if (userInputMode === GAMEPLAY_MODE) {
-      makePlayerMove(e, unitId, unitIndex);
-    }
-
-    if (userInputMode === PLACING_MODE) {
-      const { top, left } = units[unitIndex];
-
-      removeUnit(unitIndex);
-      placeUnit(top, left);
-
-      setUserInputMode(GAMEPLAY_MODE);
-      setAfterInputAction(null);
-    }
-
-    if (userInputMode === SELECT_MODE) {
-      setSelectedUnits([{ unitId, unitIndex }]);
-
-      if (afterInputAction === 'jump' && selectedCells.length > 0) {
-        const { top, left } = selectedCells[0];
-        performJump(unitIndex, top, left);
-
-        setUserInputMode(GAMEPLAY_MODE);
-        setSelectedCells([]);
-        setSelectedUnits([]);
-        setAfterInputAction(null);
-      }
-
-      if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
-        performRotate(unitIndex);
-
-        setUserInputMode(GAMEPLAY_MODE);
-        setSelectedUnits([]);
-        setAfterInputAction(null);
-      }
-    }
-
-    if (userInputMode === MULTISELECT_MODE) {
-      selectedUnits.push({ unitId, unitIndex });
-      setSelectedUnits([...selectedUnits]);
-
-      if (selectedUnits.length >= MAX_MULTISELECT) {
-        if (afterInputAction === 'swap') {
-          performSwap();
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
-        if (afterInputAction === 'portal') {
-          placePortals();
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
-        if (afterInputAction === 'teleport') {
-          placeTeleports();
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
-        setAfterInputAction(null);
-      }
-
-      const { fieldTop, fieldLeft } = fieldInfo;
-      const unitsMap = generateUnitsMap(fieldTop, fieldLeft);
-      setUnitsMap(unitsMap);
-    }
-  };
-
-  const handleMapCellClick = (id, top, left) => {
-    if (userInputMode === PLACING_MODE) {
-      placeUnit(top, left);
-      setUserInputMode(GAMEPLAY_MODE);
-      setAfterInputAction(null);
-    }
-
-    if (userInputMode === SELECT_MODE) {
-      setSelectedCells([{ id, top, left }]);
-
-      if (afterInputAction === 'jump' && selectedUnits.length > 0) {
-        const { unitIndex } = selectedUnits[0];
-        performJump(unitIndex, top, left);
-
-        setUserInputMode(GAMEPLAY_MODE);
-        setSelectedCells([]);
-        setSelectedUnits([]);
-        setAfterInputAction(null);
-      }
-    }
-  };
-
-  const removeUnit = (index) => {
-    setUnits(units.splice(index, 1));
-  };
-
-  const placeUnit = (top, left) => {
-    const generators = {
-      default: (top, left, params) => new BaseUnit(top, left, params),
-      bobomb: (top, left, params) => new Bobomb(top, left, params),
-      laser: (top, left, params) => new Laser(top, left, params),
-      deflector: (top, left, params) => new Deflector(top, left, params),
-      wall: (top, left, params) => new Wall(top, left, params),
-    };
-
-    const callbacks = {
-      default: () => dispatch(setAmmo({ defaults: defaults - 1 })),
-      bobomb: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
-      laser: () => dispatch(setAmmo({ lasers: lasers - 1 })),
-      deflector: () => {},
-      wall: () => {},
-    };
-
-    const newUnit = generators[afterInputAction](top, left, { value: 4 });
-
-    const newUnits = [...units];
-
-    newUnits.push(newUnit);
-
-    setUnits(newUnits);
-
-    callbacks[afterInputAction]();
-  };
-
-  const detectGameOutcome = () => {
-    if (Playground.actingProjectilesNumber !== 0) {
-      return;
-    }
-
-    const someUnitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
-
-    if (moves < 1 && someUnitsLeft) {
-      setLoseScreenVisible(true);
-      return;
-    }
-
-    if (moves >= 0 && !someUnitsLeft) {
-      setTimeout(() => {
-        setWinScreenVisible(true);
-
-        applyLevelReward(map);
-        applyLevelPenalty(map);
-      }, projectileExplosionDuration + 300);
-    }
-  };
-
-  const onOutOfFiled = () => {
-    --Playground.actingProjectilesNumber;
-
-    detectGameOutcome();
-  };
-
-  const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
-    const { maxValue } = units[impactedUnitIndex];
-
-    const callbacks = {
-      default: () => {
-        if (projectileType === 'default') {
-          --Playground.actingProjectilesNumber;
-
-          if (impactWithExplodingUnit) {
-            return;
-          }
-
-          setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
-            dischargeAllTurrets(impactedUnitIndex, unitsMap);
-            explodeUnit(impactedUnitIndex);
-            executeCombo();
-          });
-        }
-
-        if (projectileType === 'laser') {
-          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
-            dischargeAllTurrets(impactedUnitIndex, unitsMap);
-            explodeUnit(impactedUnitIndex);
-            executeCombo();
-          });
-        }
-
-        if (projectileType === 'bobomb') {
-          --Playground.actingProjectilesNumber;
-
-          if (impactWithExplodingUnit) {
-            return;
-          }
-
-          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
-            dischargeAllTurrets(impactedUnitIndex, unitsMap);
-            explodeUnit(impactedUnitIndex);
-            executeCombo();
-          });
-        }
-      },
-      wall: () => {
-        --Playground.actingProjectilesNumber;
-      },
-      laser: () => {
-        --Playground.actingProjectilesNumber;
-
-        if (impactWithExplodingUnit) {
-          return;
-        }
-
-        setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
-          dischargeAllTurrets(impactedUnitIndex, unitsMap);
-          explodeUnit(impactedUnitIndex);
-          executeCombo();
-        });
-      },
-      bobomb: () => {
-        --Playground.actingProjectilesNumber;
-
-        if (impactWithExplodingUnit) {
-          return;
-        }
-
-        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
-          dischargeAllTurrets(impactedUnitIndex, unitsMap);
-          explodeUnit(impactedUnitIndex);
-          executeCombo();
-        });
-      },
-      npc: () => {
-        --Playground.actingProjectilesNumber;
-
-        if (impactWithExplodingUnit) {
-          return;
-        }
-
-        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
-          dischargeAllTurrets(impactedUnitIndex, unitsMap);
-          explodeUnit(impactedUnitIndex);
-          executeCombo();
-        });
-      },
-    };
-
-    callbacks[units[impactedUnitIndex].type] && callbacks[units[impactedUnitIndex].type]();
-
-    detectGameOutcome();
-  };
-
-  const combosRewards = [
-    () => {
-      console.log('FIRST COMBO !!!');
-    },
-    () => {
-      console.log('SECOND COMBO !!!');
-    },
-    () => {
-      console.log('THIRD COMBO !!!');
-    },
-  ];
-
-  const executeCombo = () => {
-    Playground.comboCounter += 1;
-
-    if (Playground.comboCounter === map.comboSequence[Playground.comboCursor]) {
-      combosRewards[Playground.comboCursor] && combosRewards[Playground.comboCursor]();
-
-      Playground.comboCounter = 0;
-      Playground.comboCursor += 1;
-    }
-  };
-
-  const onModeChange = (mode, data) => {
-    setAfterInputAction(data.callback);
-    setUserInputMode(mode);
   };
 
   const performSwap = () => {
@@ -621,19 +276,409 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     dispatch(setAmmo({ jumps: jumps - 1 }));
   };
 
-  const handleRestartClick = () => {
-    dispatch(resetAmmo());
-    startLevel(0);
+  const makePlayerMove = (e, unitId, unitIndex) => {
+    setProjectiles([]);
+
+    const {
+      top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight,
+    } = document.querySelector('#field').getBoundingClientRect();
+
+    const newFieldInfo = {
+      fieldTop, fieldLeft, fieldWidth, fieldHeight,
+    };
+
+    const newUnitsMap = generateUnitsMap(fieldTop, fieldLeft);
+
+    setFieldInfo(newFieldInfo);
+    setUnitsMap(newUnitsMap);
+
+    const { altKey, shiftKey } = e;
+
+    let newValue = units[unitIndex].value + 1;
+
+    if (altKey) {
+      newValue = 0;
+    }
+
+    if (shiftKey) {
+      newValue = units[unitIndex].maxValue;
+    }
+
+    const callbacks = {
+      default: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, newUnitsMap);
+          explodeUnit(unitIndex);
+        });
+
+        const newMoves = setNewMovesCount(altKey, shiftKey);
+        detectUserMoveOutcome(newMoves);
+      },
+      wall: () => {},
+      portal: () => {},
+      hidden: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, newUnitsMap);
+          explodeUnit(unitIndex);
+        });
+
+        const newMoves = setNewMovesCount(altKey, shiftKey);
+        detectUserMoveOutcome(newMoves);
+      },
+      laser: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, newUnitsMap);
+          explodeUnit(unitIndex);
+        });
+
+        const newMoves = setNewMovesCount(altKey, shiftKey);
+        detectUserMoveOutcome(newMoves);
+      },
+      bobomb: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, newUnitsMap);
+          explodeUnit(unitIndex);
+        });
+
+        const newMoves = setNewMovesCount(altKey, shiftKey);
+        detectUserMoveOutcome(newMoves);
+      },
+    };
+
+    if (callbacks[units[unitIndex].type]) {
+      callbacks[units[unitIndex].type]();
+    }
   };
 
-  const handleMenuClick = () => {
-    dispatch(setCurrentScreen(SCREEN_MODES.menu));
+  const removeUnit = (index) => {
+    setUnits(units.splice(index, 1));
+  };
+
+  const placeUnit = (newUnitTop, newUnitLeft) => {
+    const generators = {
+      default: (unitTop, unitLeft, params) => new BaseUnit(unitTop, unitLeft, params),
+      bobomb: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
+      laser: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
+      deflector: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
+      wall: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
+    };
+
+    const callbacks = {
+      default: () => dispatch(setAmmo({ defaults: defaults - 1 })),
+      bobomb: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
+      laser: () => dispatch(setAmmo({ lasers: lasers - 1 })),
+      deflector: () => {},
+      wall: () => {},
+    };
+
+    const newUnit = generators[afterInputAction](newUnitTop, newUnitLeft, { value: 4 });
+
+    const newUnits = [...units];
+
+    newUnits.push(newUnit);
+
+    setUnits(newUnits);
+
+    callbacks[afterInputAction]();
+  };
+
+  const handleUnitClick = (e, unitId, unitIndex) => {
+    if (Playground.actingProjectilesNumber > 0) {
+      return;
+    }
+
+    if (!units[unitIndex].selectable) {
+      return;
+    }
+
+    if (userInputMode === GAMEPLAY_MODE) {
+      makePlayerMove(e, unitId, unitIndex);
+    }
+
+    if (userInputMode === PLACING_MODE) {
+      const { top, left } = units[unitIndex];
+
+      removeUnit(unitIndex);
+      placeUnit(top, left);
+
+      setUserInputMode(GAMEPLAY_MODE);
+      setAfterInputAction(null);
+    }
+
+    if (userInputMode === SELECT_MODE) {
+      setSelectedUnits([{ unitId, unitIndex }]);
+
+      if (afterInputAction === 'jump' && selectedCells.length > 0) {
+        const { top, left } = selectedCells[0];
+        performJump(unitIndex, top, left);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedCells([]);
+        setSelectedUnits([]);
+        setAfterInputAction(null);
+      }
+
+      if (afterInputAction === 'rotate_ccv' || afterInputAction === 'rotate_cv') {
+        performRotate(unitIndex);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedUnits([]);
+        setAfterInputAction(null);
+      }
+    }
+
+    if (userInputMode === ITEM_MULTISELECT_MODE) {
+      selectedUnits.push({ unitId, unitIndex });
+      setSelectedUnits([...selectedUnits]);
+
+      if (selectedUnits.length >= MAX_MULTISELECT) {
+        if (afterInputAction === 'swap') {
+          performSwap();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
+        if (afterInputAction === 'portal') {
+          placePortals();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
+        if (afterInputAction === 'teleport') {
+          placeTeleports();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedUnits([]);
+        }
+
+        setAfterInputAction(null);
+      }
+
+      const { fieldTop, fieldLeft } = fieldInfo;
+      const newUnitsMap = generateUnitsMap(fieldTop, fieldLeft);
+      setUnitsMap(newUnitsMap);
+    }
+  };
+
+  const handleMapCellClick = (id, top, left) => {
+    if (userInputMode === PLACING_MODE) {
+      placeUnit(top, left);
+      setUserInputMode(GAMEPLAY_MODE);
+      setAfterInputAction(null);
+    }
+
+    if (userInputMode === SELECT_MODE) {
+      setSelectedCells([{ id, top, left }]);
+
+      if (afterInputAction === 'jump' && selectedUnits.length > 0) {
+        const { unitIndex } = selectedUnits[0];
+        performJump(unitIndex, top, left);
+
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedCells([]);
+        setSelectedUnits([]);
+        setAfterInputAction(null);
+      }
+    }
+  };
+
+  const applyLevelPenalty = (level) => {
+    const reward = {};
+
+    if (!level.penalty) {
+      return;
+    }
+
+    Object.keys(level.penalty).forEach((key) => {
+      reward[key] = user[key] - level.penalty[key];
+    });
+
+    dispatch(setAmmo(reward));
+  };
+
+  const applyLevelReward = (level) => {
+    const reward = {};
+
+    if (!level.reward) {
+      return;
+    }
+
+    Object.keys(level.reward).forEach((key) => {
+      reward[key] = user[key] + level.reward[key];
+    });
+
+    dispatch(setAmmo(reward));
+  };
+
+  const detectGameOutcome = () => {
+    if (Playground.actingProjectilesNumber !== 0) {
+      return;
+    }
+
+    const someUnitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
+
+    if (moves < 1 && someUnitsLeft) {
+      setLoseScreenVisible(true);
+      return;
+    }
+
+    if (moves >= 0 && !someUnitsLeft) {
+      setTimeout(() => {
+        setWinScreenVisible(true);
+
+        applyLevelReward(map);
+        applyLevelPenalty(map);
+      }, projectileExplosionDuration + 300);
+    }
+  };
+
+  const onOutOfFiled = () => {
+    Playground.actingProjectilesNumber -= 1;
+
+    detectGameOutcome();
+  };
+
+  const combosRewards = [
+    () => {
+      console.log('FIRST COMBO !!!');
+    },
+    () => {
+      console.log('SECOND COMBO !!!');
+    },
+    () => {
+      console.log('THIRD COMBO !!!');
+    },
+  ];
+
+  const executeCombo = () => {
+    Playground.comboCounter += 1;
+
+    if (Playground.comboCounter === map.comboSequence[Playground.comboCursor]) {
+      if (combosRewards[Playground.comboCursor]) {
+        combosRewards[Playground.comboCursor]();
+      }
+
+      Playground.comboCounter = 0;
+      Playground.comboCursor += 1;
+    }
+  };
+
+  const onModeChange = (mode, data) => {
+    setAfterInputAction(data.callback);
+    setUserInputMode(mode);
+  };
+
+  const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
+    const { maxValue } = units[impactedUnitIndex];
+
+    const callbacks = {
+      default: () => {
+        if (projectileType === 'default') {
+          Playground.actingProjectilesNumber -= 1;
+
+          if (impactWithExplodingUnit) {
+            return;
+          }
+
+          setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
+            dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
+            executeCombo();
+          });
+        }
+
+        if (projectileType === 'laser') {
+          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+            dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
+            executeCombo();
+          });
+        }
+
+        if (projectileType === 'bobomb') {
+          Playground.actingProjectilesNumber -= 1;
+
+          if (impactWithExplodingUnit) {
+            return;
+          }
+
+          setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+            dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
+            executeCombo();
+          });
+        }
+      },
+      wall: () => {
+        Playground.actingProjectilesNumber -= 1;
+      },
+      laser: () => {
+        Playground.actingProjectilesNumber -= 1;
+
+        if (impactWithExplodingUnit) {
+          return;
+        }
+
+        setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
+          dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
+          executeCombo();
+        });
+      },
+      bobomb: () => {
+        Playground.actingProjectilesNumber -= 1;
+
+        if (impactWithExplodingUnit) {
+          return;
+        }
+
+        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+          dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
+          executeCombo();
+        });
+      },
+      npc: () => {
+        Playground.actingProjectilesNumber -= 1;
+
+        if (impactWithExplodingUnit) {
+          return;
+        }
+
+        setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+          dischargeAllTurrets(impactedUnitIndex, unitsMap);
+          explodeUnit(impactedUnitIndex);
+          executeCombo();
+        });
+      },
+    };
+
+    if (callbacks[units[impactedUnitIndex].type]) {
+      callbacks[units[impactedUnitIndex].type]();
+    }
+
+    detectGameOutcome();
   };
 
   const applyLevelRestrictions = (level) => {
     if (level.ammoRestrictions) {
       dispatch(setAmmo({ ammoRestrictions: level.ammoRestrictions }));
     }
+  };
+
+  const applyLevelAmmo = (level) => {
+    if (level.createUserBackup) {
+      dispatch(setStash(user));
+    }
+
+    dispatch(setAmmo(level.ammo));
+  };
+
+  const restoreUserAmmo = () => {
+    dispatch(setAmmo({ userStash }));
+    dispatch(setStash({}));
   };
 
   const startLevel = (levelIndex) => {
@@ -667,45 +712,17 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     setLoseScreenVisible(false);
   };
 
-  const applyLevelAmmo = (level) => {
-    if (level.createUserBackup) {
-      dispatch(setStash(user));
-    }
-
-    dispatch(setAmmo(level.ammo));
+  const handleRestartClick = () => {
+    dispatch(resetAmmo());
+    startLevel(0);
   };
 
-  const restoreUserAmmo = () => {
-    dispatch(setAmmo({ userStash }));
-    dispatch(setStash({}));
+  const handleMenuClick = () => {
+    dispatch(setCurrentScreen(SCREEN_MODES.menu));
   };
 
   const startNextLevel = () => {
     startLevel(currentLevel + 1);
-  };
-
-  const applyLevelPenalty = (level) => {
-    const reward = {};
-
-    if (!level.penalty) {
-      return;
-    }
-
-    Object.keys(level.penalty).forEach((key) => reward[key] = user[key] - level.penalty[key]);
-
-    dispatch(setAmmo(reward));
-  };
-
-  const applyLevelReward = (level) => {
-    const reward = {};
-
-    if (!level.reward) {
-      return;
-    }
-
-    Object.keys(level.reward).forEach((key) => reward[key] = user[key] + level.reward[key]);
-
-    dispatch(setAmmo(reward));
   };
 
   useEffect(() => {
@@ -723,8 +740,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
       {loseScreenVisible && (
       <div className="loseMessage">
         <h1>You Loose</h1>
-        <button className="button" onClick={handleRestartClick}>Restart</button>
-        <button className="button" onClick={handleMenuClick}>Menu</button>
+        <button type="button" className="button" onClick={handleRestartClick}>Restart</button>
+        <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
       </div>
       )}
 
@@ -748,12 +765,13 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
               onOutOfFiled={onOutOfFiled}
               onImpact={onImpact}
               moveStep={projectileMoveStep}
-              {...projectileProps}
+              {...projectileProps} // eslint-disable-line react/jsx-props-no-spreading
             />
           ))}
         </div>
         <div className="mapLayer">
           {grid.map((row, rowIndex) => (
+            /* eslint-disable-next-line react/no-array-index-key */
             <React.Fragment key={rowIndex}>
               {row.map(({
                 id, top, left, type,
@@ -813,6 +831,12 @@ Playground.propTypes = {
   projectileExplosionDuration: number,
   projectileMoveStep: number,
   baseWidthUnit: number,
+};
+
+Playground.defaultProps = {
+  projectileExplosionDuration: 100,
+  projectileMoveStep: 1,
+  baseWidthUnit: 1,
 };
 
 Playground.actingProjectilesNumber = 0;
