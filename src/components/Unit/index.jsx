@@ -52,10 +52,15 @@ function Unit(props) {
         )}
         <div
           className="unit-image"
-          style={{ '--unit-image--width': `${value * (100 / maxValue) / 2}%` }}
+          style={{ '--unit-image--width': `${(value * 100) / (maxValue / 2)}%` }}
         />
-        {turrets && turrets.map(({ angle, name }, turretIndex) => (
-          <div className={`turret ${name}`} data-name={name} style={{ transform: `rotate(${angle}deg)` }} key={turretIndex}>
+        {turrets && turrets.map(({ angle: turretAngle, name }, turretIndex) => (
+          <div
+            className={`turret ${name}`}
+            data-name={name}
+            style={{ transform: `rotate(${turretAngle}deg)` }}
+            key={turretIndex} // eslint-disable-line react/no-array-index-key
+          >
             <div className="weapon">
               <div className="gunpoint" />
             </div>
