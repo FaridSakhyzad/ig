@@ -14,6 +14,15 @@ import {
 import { setStash } from 'redux/userStash/actions';
 
 import mapSet from 'maps/maps';
+import {
+  BaseUnit,
+  Bobomb,
+  Laser,
+  generatePortals,
+  generateTeleports,
+  Deflector,
+  Wall,
+} from 'units';
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import UserMenu from '../UserMenu';
@@ -27,15 +36,6 @@ import {
 import { SCREEN_MODES } from '../../config/config';
 
 import './Playground.scss';
-import {
-  BaseUnit,
-  Bobomb,
-  Laser,
-  generatePortals,
-  generateTeleports,
-  Deflector,
-  Wall,
-} from 'units';
 
 const MAX_MULTISELECT = 2;
 

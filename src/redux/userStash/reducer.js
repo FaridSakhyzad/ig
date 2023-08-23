@@ -1,7 +1,6 @@
-import { SET_STASH } from './constants'
-import mapSet from "../../maps/maps";
+import { SET_STASH } from './constants';
 
-const initialState = {}
+const initialState = {};
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -9,11 +8,11 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         stash: action.payload,
-      }
+      };
     }
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default userReducer
+export default userReducer;

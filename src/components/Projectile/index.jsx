@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { SAFE_MAX_DISTANCE } from '../../config/config';
 import './Projectile.scss';
-import {calculateNewCoords, findRectangleCircleIntersection, rotate} from '../../utils';
+import { calculateNewCoords, findRectangleCircleIntersection, rotate } from '../../utils';
 
-const Projectile = (props) => {
+function Projectile(props) {
   const {
     id,
     top,
@@ -21,7 +21,7 @@ const Projectile = (props) => {
     moveStep,
   } = props;
 
-  const [ projectileState, setProjectileState ] = useState('inFlight');
+  const [projectileState, setProjectileState] = useState('inFlight');
 
   const ref = useRef(null);
 
@@ -38,16 +38,18 @@ const Projectile = (props) => {
   let impactedUnitId = null;
 
   const calculatePortalExitPointCoords = (impactedUnit, newX, newY, projectileAngle) => {
-    const { top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId } } = impactedUnit;
+    const {
+      top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId },
+    } = impactedUnit;
 
-    const target = potentialTargetsMap.find(({ id }) => id === exitPortalId)
+    const target = potentialTargetsMap.find(({ id }) => id === exitPortalId);
 
     if (!target) {
       return {
         x: newX,
         y: newY,
         angle: projectileAngle,
-      }
+      };
     }
 
     const { top: exitTop, left: exitLeft, angle: exitAngle } = target;
@@ -71,15 +73,15 @@ const Projectile = (props) => {
         x: newX + correctionX + offsetLeft,
         y: newY + correctionY + offsetTop,
         angle: projectileAngle,
-      }
+      };
     }
 
     return {
       x: newX,
       y: newY,
       angle: projectileAngle,
-    }
-  }
+    };
+  };
 
   const calculateDeflectedCoords = (impactedUnit, newX, newY, projectileAngle) => {
     const { top: entranceTop, left: entranceLeft, angle } = impactedUnit;
@@ -98,20 +100,20 @@ const Projectile = (props) => {
       x: newX + correctionX,
       y: newY + correctionY,
       angle: angleToNormal === 90 ? projectileAngle + 180 : projectileAngle + ((90 - angleToNormal) * 2),
-    }
-  }
+    };
+  };
 
   const calculateTeleportedCoords = (impactedUnit, newX, newY, projectileAngle) => {
     const { top: entranceTop, left: entranceLeft, meta: { exitTeleportId } } = impactedUnit;
 
-    const target = potentialTargetsMap.find(({ id }) => id === exitTeleportId)
+    const target = potentialTargetsMap.find(({ id }) => id === exitTeleportId);
 
     if (!target) {
       return {
         x: newX,
         y: newY,
         angle: projectileAngle,
-      }
+      };
     }
 
     const { id, top: exitTop, left: exitLeft } = target;
@@ -129,8 +131,8 @@ const Projectile = (props) => {
       x: newX + correctionX + offsetLeft,
       y: newY + correctionY + offsetTop,
       angle: projectileAngle,
-    }
-  }
+    };
+  };
 
   const launchProjectileWithRAF = () => {
     const maxDist = (maxDistance || SAFE_MAX_DISTANCE) * moveStep;
@@ -143,7 +145,7 @@ const Projectile = (props) => {
     let currentDistance = 0;
     let initialTimeStamp;
 
-    let unitOfOriginId = props.unitOfOriginId;
+    let { unitOfOriginId } = props;
 
     const animate = (timeStamp) => {
       if (currentDistance >= maxDist) {
@@ -165,7 +167,7 @@ const Projectile = (props) => {
 
       initialTimeStamp = timeStamp;
 
-      currentDistance = currentDistance + (maxDist * animationPercent / 100);
+      currentDistance += (maxDist * animationPercent / 100);
 
       const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, (maxDist * animationPercent / 100));
 
@@ -184,7 +186,7 @@ const Projectile = (props) => {
       const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY, currentAngle);
 
       if (impactedUnit && impactedUnitId !== impactedUnit.id && unitOfOriginId !== impactedUnit.id) {
-        const {id, type: impactedUnitType} = impactedUnit;
+        const { id, type: impactedUnitType } = impactedUnit;
 
         impactedUnitId = id;
         unitOfOriginId = id;
@@ -227,7 +229,9 @@ const Projectile = (props) => {
           }
 
           if (impactedUnitType === 'teleport') {
-            const { x, y, angle, exitTeleportId } = calculateTeleportedCoords(impactedUnit, newX, newY, currentAngle);
+            const {
+              x, y, angle, exitTeleportId,
+            } = calculateTeleportedCoords(impactedUnit, newX, newY, currentAngle);
             unitOfOriginId = exitTeleportId;
 
             newX = x;
@@ -318,7 +322,7 @@ const Projectile = (props) => {
     };
 
     window.requestAnimationFrame(animate);
-  }
+  };
 
   const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {
     const { fieldWidth, fieldHeight } = fieldInfo;
@@ -336,11 +340,10 @@ const Projectile = (props) => {
     const topRightIsOut = topRightNewX <= 0 || topRightNewY <= 0 || topRightNewX >= fieldWidth || topRightNewY >= fieldHeight;
 
     return topLeftIsOut || topRightIsOut;
-  }
+  };
 
   const projectileDidImpact = (projectilePivotX, projectilePivotY, angle) => {
-    const { nx: projectileX, ny: projectileY } =
-      rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
+    const { nx: projectileX, ny: projectileY } = rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
 
     let impactedUnit = null;
     let impactWithExplodingUnit = false;
@@ -369,7 +372,7 @@ const Projectile = (props) => {
       const circle = {
         circleX: centerX,
         circleY: centerY,
-        radius: hitBoxRadius * baseWidthUnit
+        radius: hitBoxRadius * baseWidthUnit,
       };
 
       if (findRectangleCircleIntersection(rectangle, circle)) {
@@ -380,22 +383,23 @@ const Projectile = (props) => {
 
     return {
       impactedUnit,
-      impactWithExplodingUnit
+      impactWithExplodingUnit,
     };
-  }
+  };
 
   useEffect(() => {
     launchProjectileWithRAF();
   }, []);
 
   return (
-    <div className={`projectile ${projectileType}`}
+    <div
+      className={`projectile ${projectileType}`}
       id={id}
       ref={ref}
       style={{
         top,
         left,
-        transform: `translate3d(var(--offset-x), var(--offset-y), 0) rotate(var(--angle))`
+        transform: 'translate3d(var(--offset-x), var(--offset-y), 0) rotate(var(--angle))',
       }}
     >
       <div className="projectile-hitBox" />
@@ -407,7 +411,7 @@ const Projectile = (props) => {
         <div className="projectile-explosion" />
       )}
     </div>
-  )
+  );
 }
 
 Projectile.propTypes = {

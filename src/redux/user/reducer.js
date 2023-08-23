@@ -1,4 +1,6 @@
-import { SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO, SET_STASH } from './constants'
+import {
+  SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO, SET_STASH,
+} from './constants';
 
 const initialState = {
   moves: 0,
@@ -30,9 +32,9 @@ const initialState = {
     npc: false,
     hidden: false,
     portals: false,
-    teleports: false
+    teleports: false,
   },
-}
+};
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -40,40 +42,40 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         moves: action.payload,
-      }
+      };
     }
     case SET_SWAPS: {
       return {
         ...state,
         swaps: action.payload,
-      }
+      };
     }
     case SET_ROTATES: {
       return {
         ...state,
         rotates: action.payload,
-      }
+      };
     }
     case SET_AMMO: {
       return {
         ...state,
         ...action.payload,
-      }
+      };
     }
     case RESET_AMMO: {
       return {
         ...initialState,
-      }
+      };
     }
     case SET_STASH: {
       return {
         ...state,
         stash: action.payload,
-      }
+      };
     }
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default userReducer
+export default userReducer;
