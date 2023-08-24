@@ -16,6 +16,8 @@ function UserMenu({ onModeChange, afterInputAction }) {
     swaps,
     rotates,
     jumps,
+    deletes,
+
     defaults,
     bobombs,
     lasers,
@@ -31,6 +33,17 @@ function UserMenu({ onModeChange, afterInputAction }) {
   return (
     <div className="userMenu">
       <div className="userMenu-row">
+        {!ammoRestrictions.deletes && (
+          <button
+            type="button"
+            disabled={swaps < 1}
+            onClick={() => onModeChange(SELECT_MODE, { callback: 'delete' })}
+            className={classnames('button userMenu-button', { selected: afterInputAction === 'delete' })}
+          >
+            Dels {deletes}
+          </button>
+        )}
+
         {!ammoRestrictions.swaps && (
           <button
             type="button"
@@ -38,7 +51,7 @@ function UserMenu({ onModeChange, afterInputAction }) {
             onClick={() => onModeChange(ITEM_MULTISELECT_MODE, { callback: 'swap' })}
             className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
           >
-            Swap {swaps}
+            Swaps {swaps}
           </button>
         )}
 

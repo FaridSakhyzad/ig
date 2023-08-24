@@ -5,7 +5,7 @@ import classnames from 'classnames';
 
 import { setCurrentScreen } from 'redux/ui/actions';
 import {
-  setMoves,
+  setUserMoves,
   setSwaps,
   setRotates,
   setAmmo,
@@ -29,6 +29,7 @@ import UserMenu from '../UserMenu';
 
 import {
   ITEM_MULTISELECT_MODE,
+  CELL_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   SELECT_MODE,
   PLACING_MODE,
@@ -45,7 +46,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const { user, userStash } = useSelector((state) => state);
 
   const {
-    moves,
+    userMoves,
     bobombs,
     defaults,
     lasers,
@@ -68,9 +69,9 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
   const [units, setUnits] = useState([]);
   const [selectedUnits, setSelectedUnits] = useState([]);
-  const [unitsMap, setUnitsMap] = useState([]);
-
   const [selectedCells, setSelectedCells] = useState([]);
+
+  const [unitsMap, setUnitsMap] = useState([]);
 
   const [projectiles, setProjectiles] = useState([]);
 
@@ -187,18 +188,18 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     setUnits(newUnits);
   };
 
-  const detectUserMoveOutcome = (userMoves) => {
-    if (Playground.actingProjectilesNumber === 0 && userMoves <= 0) {
+  const detectUserMoveOutcome = (currentUserMoves) => {
+    if (Playground.actingProjectilesNumber === 0 && currentUserMoves <= 0) {
       setLoseScreenVisible(true);
     }
   };
 
   const setNewMovesCount = (altKey, shiftKey) => {
     if (!shiftKey && !altKey) {
-      dispatch(setMoves(moves - 1));
+      dispatch(setUserMoves(userMoves - 1));
     }
 
-    return moves - 1;
+    return userMoves - 1;
   };
 
   const performSwap = () => {
@@ -223,16 +224,13 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const placePortals = () => {
     const newUnits = [...units];
 
-    const { unitIndex: unit0Index } = selectedUnits[0];
-    const { unitIndex: unit1Index } = selectedUnits[1];
-
-    const { top: top0, left: left0 } = newUnits[unit0Index];
-    const { top: top1, left: left1 } = newUnits[unit1Index];
+    const { top: top0, left: left0 } = selectedCells[0];
+    const { top: top1, left: left1 } = selectedCells[1];
 
     const [portal1, portal2] = generatePortals(top0, left0, top1, left1);
 
-    newUnits[unit0Index] = portal1;
-    newUnits[unit1Index] = portal2;
+    newUnits.push(portal1);
+    newUnits.push(portal2);
 
     setUnits(newUnits);
 
@@ -242,16 +240,13 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const placeTeleports = () => {
     const newUnits = [...units];
 
-    const { unitIndex: unit0Index } = selectedUnits[0];
-    const { unitIndex: unit1Index } = selectedUnits[1];
-
-    const { top: top0, left: left0 } = newUnits[unit0Index];
-    const { top: top1, left: left1 } = newUnits[unit1Index];
+    const { top: top0, left: left0 } = selectedCells[0];
+    const { top: top1, left: left1 } = selectedCells[1];
 
     const [teleport1, teleport2] = generateTeleports(top0, left0, top1, left1);
 
-    newUnits[unit0Index] = teleport1;
-    newUnits[unit1Index] = teleport2;
+    newUnits.push(teleport1);
+    newUnits.push(teleport2);
 
     setUnits(newUnits);
   };
@@ -351,7 +346,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   };
 
   const removeUnit = (index) => {
-    setUnits(units.splice(index, 1));
+    units.splice(parseInt(index, 10), 1);
+    setUnits([...units]);
   };
 
   const placeUnit = (newUnitTop, newUnitLeft) => {
@@ -395,16 +391,6 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
       makePlayerMove(e, unitId, unitIndex);
     }
 
-    if (userInputMode === PLACING_MODE) {
-      const { top, left } = units[unitIndex];
-
-      removeUnit(unitIndex);
-      placeUnit(top, left);
-
-      setUserInputMode(GAMEPLAY_MODE);
-      setAfterInputAction(null);
-    }
-
     if (userInputMode === SELECT_MODE) {
       setSelectedUnits([{ unitId, unitIndex }]);
 
@@ -412,6 +398,14 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         const { top, left } = selectedCells[0];
         performJump(unitIndex, top, left);
 
+        setUserInputMode(GAMEPLAY_MODE);
+        setSelectedCells([]);
+        setSelectedUnits([]);
+        setAfterInputAction(null);
+      }
+
+      if (afterInputAction === 'delete') {
+        removeUnit(unitIndex);
         setUserInputMode(GAMEPLAY_MODE);
         setSelectedCells([]);
         setSelectedUnits([]);
@@ -434,20 +428,6 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
       if (selectedUnits.length >= MAX_MULTISELECT) {
         if (afterInputAction === 'swap') {
           performSwap();
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
-        if (afterInputAction === 'portal') {
-          placePortals();
-
-          setUserInputMode(GAMEPLAY_MODE);
-          setSelectedUnits([]);
-        }
-
-        if (afterInputAction === 'teleport') {
-          placeTeleports();
 
           setUserInputMode(GAMEPLAY_MODE);
           setSelectedUnits([]);
@@ -479,6 +459,30 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         setUserInputMode(GAMEPLAY_MODE);
         setSelectedCells([]);
         setSelectedUnits([]);
+        setAfterInputAction(null);
+      }
+    }
+
+    if (userInputMode === CELL_MULTISELECT_MODE) {
+      selectedCells.push({ id, top, left });
+      setSelectedCells([...selectedCells]);
+
+      if (selectedCells.length >= MAX_MULTISELECT) {
+        if (afterInputAction === 'portal') {
+          placePortals();
+
+          setUserInputMode(GAMEPLAY_MODE);
+
+          setSelectedCells([]);
+        }
+
+        if (afterInputAction === 'teleport') {
+          placeTeleports();
+
+          setUserInputMode(GAMEPLAY_MODE);
+          setSelectedCells([]);
+        }
+
         setAfterInputAction(null);
       }
     }
@@ -519,12 +523,12 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
     const someUnitsLeft = units.some((unit) => unit.valueCountable && unit.value > 0);
 
-    if (moves < 1 && someUnitsLeft) {
+    if (userMoves < 1 && someUnitsLeft) {
       setLoseScreenVisible(true);
       return;
     }
 
-    if (moves >= 0 && !someUnitsLeft) {
+    if (userMoves >= 0 && !someUnitsLeft) {
       setTimeout(() => {
         setWinScreenVisible(true);
 
@@ -747,7 +751,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
       <h1 className="moves">
         Moves:
-        {moves}
+        {userMoves}
       </h1>
       <h3 className="currentLevel">
         CurrentLevel:

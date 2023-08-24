@@ -44,12 +44,41 @@ export class Map {
       mapHeight = 9,
       comboSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
       reward = {
-        moves: 1,
+        userMoves: 1,
+
         defaults: 1,
         bobombs: 1,
         lasers: 1,
+        deflectors: 0,
+        walls: 0,
+        npc: 0,
+        hidden: 0,
+        portals: 0,
+        teleports: 0,
+
+        swaps: 0,
+        rotates: 0,
+        jumps: 0,
+        deletes: 0,
       },
-      penalty = {},
+      penalty = {
+        userMoves: 0,
+
+        defaults: 0,
+        bobombs: 0,
+        lasers: 0,
+        deflectors: 0,
+        walls: 0,
+        npc: 0,
+        hidden: 0,
+        portals: 0,
+        teleports: 0,
+
+        swaps: 0,
+        rotates: 0,
+        jumps: 0,
+        deletes: 0,
+      },
       overrideUserAmmo = false,
       createUserBackup = false,
       restoreUserAmmo = false,
@@ -95,10 +124,12 @@ const mapSet = () => [
   new Map({
     overrideUserAmmo: true,
     ammo: {
-      moves: 1000,
+      userMoves: 1000,
+
       swaps: 10,
       rotates: 10,
       jumps: 10,
+      deletes: 10,
 
       defaults: 1,
       bobombs: 1,
@@ -125,7 +156,7 @@ const mapSet = () => [
     overrideUserAmmo: true,
     createUserBackup: true,
     ammo: {
-      moves: 10,
+      userMoves: 10,
       defaults: 100,
       bobombs: 0,
       lasers: 0,
@@ -135,7 +166,7 @@ const mapSet = () => [
       jumps: 0,
     },
     reward: {
-      moves: 10,
+      userMoves: 10,
       defaults: 10,
       bobombs: 10,
       lasers: 10,

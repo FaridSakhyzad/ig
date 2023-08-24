@@ -52,7 +52,7 @@ function Unit(props) {
         )}
         <div
           className="unit-image"
-          style={{ '--unit-image--width': `${(value * 100) / (maxValue / 2)}%` }}
+          style={{ '--unit-image--width': `${(value * (100 / maxValue)) / 2}%` }}
         />
         {turrets && turrets.map(({ angle: turretAngle, name }, turretIndex) => (
           <div

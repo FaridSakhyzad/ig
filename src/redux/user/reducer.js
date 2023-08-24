@@ -1,12 +1,13 @@
 import {
-  SET_MOVES, SET_SWAPS, SET_ROTATES, SET_AMMO, RESET_AMMO, SET_STASH,
+  SET_USER_MOVES,
+  SET_SWAPS,
+  SET_ROTATES,
+  SET_AMMO,
+  RESET_AMMO,
 } from './constants';
 
 const initialState = {
-  moves: 0,
-  swaps: 0,
-  rotates: 0,
-  jumps: 0,
+  userMoves: 0,
 
   defaults: 0,
   bobombs: 0,
@@ -18,11 +19,16 @@ const initialState = {
   portals: 0,
   teleports: 0,
 
+  swaps: 0,
+  rotates: 0,
+  jumps: 0,
+  deletes: 0,
+
   ammoRestrictions: {
-    moves: false,
     swaps: false,
     rotates: false,
     jumps: false,
+    deletes: false,
 
     defaults: false,
     bobombs: false,
@@ -38,10 +44,10 @@ const initialState = {
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_MOVES: {
+    case SET_USER_MOVES: {
       return {
         ...state,
-        moves: action.payload,
+        userMoves: action.payload,
       };
     }
     case SET_SWAPS: {
@@ -65,12 +71,6 @@ const userReducer = (state = initialState, action) => {
     case RESET_AMMO: {
       return {
         ...initialState,
-      };
-    }
-    case SET_STASH: {
-      return {
-        ...state,
-        stash: action.payload,
       };
     }
     default:
