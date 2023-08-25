@@ -1,42 +1,12 @@
-export const calculateNewCoords = (coordinateX, coordinateY, angle, moveStep) => { // eslint-disable-line
+export const calcNewCoords = (coordinateX, coordinateY, angle, moveStep) => { // eslint-disable-line
   const theAngle = 90 - angle;
-  const newCoordinateX = moveStep * Math.cos(theAngle * Math.PI / 180).toFixed(4);
-  const newCoordinateY = moveStep * Math.sin(theAngle * Math.PI / 180).toFixed(4);
+  const newCoordinateX = moveStep * Math.cos((theAngle * Math.PI) / 180).toFixed(4);
+  const newCoordinateY = moveStep * Math.sin((theAngle * Math.PI) / 180).toFixed(4);
 
   return {
     coordinateX: coordinateX + newCoordinateX,
     coordinateY: coordinateY - newCoordinateY,
   };
-};
-
-export const findRectangleCircleIntersection = (rectangle, circle) => {
-  const {
-    rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle,
-  } = rectangle;
-  const { circleX, circleY, radius } = circle;
-
-  const { nx: newCircleX, ny: newCircleY } = rotate(rectangleX, rectangleY, circleX, circleY, angle);
-
-  const centersDistanceX = rectangleX > newCircleX ? rectangleX - newCircleX : newCircleX - rectangleX;
-  const centersDistanceY = rectangleY > newCircleY ? rectangleY - newCircleY : newCircleY - rectangleY;
-
-  if (centersDistanceX >= ((rectangleWidth / 2) + radius)) {
-    return false;
-  }
-
-  if (centersDistanceY >= ((rectangleHeight / 2) + radius)) {
-    return false;
-  }
-
-  const closestCornerX = newCircleX < rectangleX ? rectangleX - (rectangleWidth / 2) : rectangleX + (rectangleWidth / 2);
-  const closestCornerY = newCircleY < rectangleY ? rectangleY - (rectangleHeight / 2) : rectangleX + (rectangleHeight / 2);
-
-  const deltaX = newCircleX < closestCornerX ? newCircleX - closestCornerX : closestCornerX - newCircleX;
-  const deltaY = newCircleY < closestCornerY ? newCircleY - closestCornerY : closestCornerY - newCircleY;
-
-  const cornerDistancePow = deltaX ** 2 + deltaY ** 2;
-
-  return cornerDistancePow < radius ** 2;
 };
 
 export const rotate = (cx, cy, x, y, angle) => {
@@ -47,6 +17,51 @@ export const rotate = (cx, cy, x, y, angle) => {
   const ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
 
   return { nx, ny };
+};
+
+export const findRectangleCircleIntersection = (rectangle, circle) => {
+  const {
+    rectangleX, rectangleY, rectangleWidth, rectangleHeight, angle,
+  } = rectangle;
+  const { circleX, circleY, radius } = circle;
+
+  const {
+    nx: newCircleX,
+    ny: newCircleY,
+  } = rotate(rectangleX, rectangleY, circleX, circleY, angle);
+
+  const centersDistanceX = rectangleX > newCircleX
+    ? rectangleX - newCircleX
+    : newCircleX - rectangleX;
+  const centersDistanceY = rectangleY > newCircleY
+    ? rectangleY - newCircleY
+    : newCircleY - rectangleY;
+
+  if (centersDistanceX >= ((rectangleWidth / 2) + radius)) {
+    return false;
+  }
+
+  if (centersDistanceY >= ((rectangleHeight / 2) + radius)) {
+    return false;
+  }
+
+  const closestCornerX = newCircleX < rectangleX
+    ? rectangleX - (rectangleWidth / 2)
+    : rectangleX + (rectangleWidth / 2);
+  const closestCornerY = newCircleY < rectangleY
+    ? rectangleY - (rectangleHeight / 2)
+    : rectangleX + (rectangleHeight / 2);
+
+  const deltaX = newCircleX < closestCornerX
+    ? newCircleX - closestCornerX
+    : closestCornerX - newCircleX;
+  const deltaY = newCircleY < closestCornerY
+    ? newCircleY - closestCornerY
+    : closestCornerY - newCircleY;
+
+  const cornerDistancePow = deltaX ** 2 + deltaY ** 2;
+
+  return cornerDistancePow < radius ** 2;
 };
 
 export const findCircleLineIntersections = (circleRadius, circleX, circleY, m, n) => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { SAFE_MAX_DISTANCE } from '../../config/config';
 import './Projectile.scss';
-import { calculateNewCoords, findRectangleCircleIntersection, rotate } from '../../utils';
+import { calcNewCoords, findRectangleCircleIntersection, rotate } from '../../utils';
 
 function Projectile(props) {
   const {
@@ -27,12 +27,15 @@ function Projectile(props) {
 
   const computedStyle = getComputedStyle(document.documentElement);
 
+  // eslint-disable-next-line no-eval
   const baseWidthUnit = parseFloat(eval(computedStyle.getPropertyValue('--base-width-unit')), 10);
 
   const projectileWidthPropValue = computedStyle.getPropertyValue('--projectile-hitBox--width').replace(/calc|px/ig, '');
   const projectileHeightPropValue = computedStyle.getPropertyValue('--projectile-hitBox--height').replace(/calc|px/ig, '');
 
+  // eslint-disable-next-line no-eval
   const projectileWidth = parseFloat(eval(projectileWidthPropValue), 10);
+  // eslint-disable-next-line no-eval
   const projectileHeight = parseFloat(eval(projectileHeightPropValue), 10);
 
   let impactedUnitId = null;
@@ -42,7 +45,8 @@ function Projectile(props) {
       top: entranceTop, left: entranceLeft, angle: entranceAngle, meta: { exitPortalId },
     } = impactedUnit;
 
-    const target = potentialTargetsMap.find(({ id }) => id === exitPortalId);
+    const target = potentialTargetsMap
+      .find(({ id: potentialTargetId }) => potentialTargetId === exitPortalId);
 
     if (!target) {
       return {
@@ -67,6 +71,7 @@ function Projectile(props) {
 
     if (projectileToEntranceDiffAngle > 90 && projectileToEntranceDiffAngle < 270) {
       const newAngle = projectileAngle + (offsetAngle - 180);
+      // eslint-disable-next-line no-param-reassign
       projectileAngle = Math.abs(newAngle) < 360 ? newAngle : newAngle % 360;
 
       return {
@@ -84,9 +89,9 @@ function Projectile(props) {
   };
 
   const calculateDeflectedCoords = (impactedUnit, newX, newY, projectileAngle) => {
-    const { top: entranceTop, left: entranceLeft, angle } = impactedUnit;
+    const { top: entranceTop, left: entranceLeft, angle: impactedUnitAngle } = impactedUnit;
 
-    const projectileToUnitDiffAngle = Math.abs(projectileAngle - angle);
+    const projectileToUnitDiffAngle = Math.abs(projectileAngle - impactedUnitAngle);
 
     const angleToNormal = projectileToUnitDiffAngle % 180;
 
@@ -99,14 +104,17 @@ function Projectile(props) {
     return {
       x: newX + correctionX,
       y: newY + correctionY,
-      angle: angleToNormal === 90 ? projectileAngle + 180 : projectileAngle + ((90 - angleToNormal) * 2),
+      angle: angleToNormal === 90
+        ? projectileAngle + 180
+        : projectileAngle + ((90 - angleToNormal) * 2),
     };
   };
 
   const calculateTeleportedCoords = (impactedUnit, newX, newY, projectileAngle) => {
     const { top: entranceTop, left: entranceLeft, meta: { exitTeleportId } } = impactedUnit;
 
-    const target = potentialTargetsMap.find(({ id }) => id === exitTeleportId);
+    const target = potentialTargetsMap
+      .find(({ id: potentialTargetId }) => potentialTargetId === exitTeleportId);
 
     if (!target) {
       return {
@@ -116,7 +124,7 @@ function Projectile(props) {
       };
     }
 
-    const { id, top: exitTop, left: exitLeft } = target;
+    const { top: exitTop, left: exitLeft } = target;
     const offsetTop = exitTop - entranceTop;
     const offsetLeft = exitLeft - entranceLeft;
 
@@ -131,6 +139,87 @@ function Projectile(props) {
       x: newX + correctionX + offsetLeft,
       y: newY + correctionY + offsetTop,
       angle: projectileAngle,
+    };
+  };
+
+  const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {
+    const { fieldWidth, fieldHeight } = fieldInfo;
+
+    const topLeftX = projectilePivotX - (projectileWidth / 2);
+    const topLeftY = projectilePivotY - (projectileHeight / 2);
+
+    const topRightX = projectilePivotX + (projectileWidth / 2);
+    const topRightY = projectilePivotY + (projectileHeight / 2);
+
+    const {
+      nx: topLeftNewX,
+      ny: topLeftNewY,
+    } = rotate(projectilePivotX, projectilePivotY, topLeftX, topLeftY, angle * -1);
+    const {
+      nx: topRightNewX,
+      ny: topRightNewY,
+    } = rotate(projectilePivotX, projectilePivotY, topRightX, topRightY, angle * -1);
+
+    const topLeftIsOut = topLeftNewX <= 0
+      || topLeftNewY <= 0
+      || topLeftNewX >= fieldWidth
+      || topLeftNewY >= fieldHeight;
+    const topRightIsOut = topRightNewX <= 0
+      || topRightNewY <= 0
+      || topRightNewX >= fieldWidth
+      || topRightNewY >= fieldHeight;
+
+    return topLeftIsOut || topRightIsOut;
+  };
+
+  const projectileDidImpact = (projectilePivotX, projectilePivotY, projectileAngle) => {
+    const {
+      nx: projectileX,
+      ny: projectileY,
+      // eslint-disable-next-line max-len
+    } = rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, projectileAngle * -1);
+
+    let impactedUnit = null;
+    let impactWithExplodingUnit = false;
+
+    for (let i = 0; i < potentialTargetsMap.length; i += 1) {
+      const potentialTarget = potentialTargetsMap[i];
+
+      const { value, explosionStart } = units[potentialTarget.index];
+
+      impactWithExplodingUnit = explosionStart !== undefined
+        && ((+Date.now() - explosionStart) < 300);
+
+      if (value === 0 && !impactWithExplodingUnit) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      const { top: centerY, left: centerX, hitBoxRadius } = potentialTarget;
+
+      const rectangle = {
+        rectangleX: projectileX,
+        rectangleY: projectileY,
+        rectangleWidth: projectileWidth,
+        rectangleHeight: projectileHeight,
+        angle: projectileAngle,
+      };
+
+      const circle = {
+        circleX: centerX,
+        circleY: centerY,
+        radius: hitBoxRadius * baseWidthUnit,
+      };
+
+      if (findRectangleCircleIntersection(rectangle, circle)) {
+        impactedUnit = potentialTarget;
+        break;
+      }
+    }
+
+    return {
+      impactedUnit,
+      impactWithExplodingUnit,
     };
   };
 
@@ -163,13 +252,16 @@ function Projectile(props) {
 
       const deltaTimeStamp = timeStamp - initialTimeStamp;
 
-      const animationPercent = 100 / duration * deltaTimeStamp;
+      const animationPercent = (100 / duration) * deltaTimeStamp;
 
       initialTimeStamp = timeStamp;
 
-      currentDistance += (maxDist * animationPercent / 100);
+      currentDistance += ((maxDist * animationPercent) / 100);
 
-      const { coordinateX, coordinateY } = calculateNewCoords(currentX, currentY, currentAngle, (maxDist * animationPercent / 100));
+      const {
+        coordinateX,
+        coordinateY,
+      } = calcNewCoords(currentX, currentY, currentAngle, ((maxDist * animationPercent) / 100));
 
       let newX = coordinateX;
       let newY = coordinateY;
@@ -183,13 +275,20 @@ function Projectile(props) {
         return;
       }
 
-      const { impactedUnit, impactWithExplodingUnit } = projectileDidImpact(left + newX, top + newY, currentAngle);
+      const {
+        impactedUnit,
+        impactWithExplodingUnit,
+      } = projectileDidImpact(left + newX, top + newY, currentAngle);
 
-      if (impactedUnit && impactedUnitId !== impactedUnit.id && unitOfOriginId !== impactedUnit.id) {
-        const { id, type: impactedUnitType } = impactedUnit;
+      if (
+        impactedUnit
+        && impactedUnitId !== impactedUnit.id
+        && unitOfOriginId !== impactedUnit.id
+      ) {
+        const { type: impactedUnitType } = impactedUnit;
 
-        impactedUnitId = id;
-        unitOfOriginId = id;
+        impactedUnitId = impactedUnit.id;
+        unitOfOriginId = impactedUnit.id;
 
         if (projectileType === 'default') {
           if (impactedUnitType === 'default') {
@@ -213,30 +312,43 @@ function Projectile(props) {
             }
           }
           if (impactedUnitType === 'portal') {
-            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            const {
+              x,
+              y,
+              angle: newAngle,
+            } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+
             newX = x;
             newY = y;
-            currentAngle = angle;
+            currentAngle = newAngle;
           }
 
           if (impactedUnitType === 'deflector') {
-            const { x, y, angle } = calculateDeflectedCoords(impactedUnit, newX, newY, currentAngle);
+            const {
+              x,
+              y,
+              angle: newAngle,
+            } = calculateDeflectedCoords(impactedUnit, newX, newY, currentAngle);
+
             unitOfOriginId = impactedUnit.id;
 
             newX = x;
             newY = y;
-            currentAngle = angle;
+            currentAngle = newAngle;
           }
 
           if (impactedUnitType === 'teleport') {
             const {
-              x, y, angle, exitTeleportId,
+              x,
+              y,
+              angle: newAngle,
+              exitTeleportId,
             } = calculateTeleportedCoords(impactedUnit, newX, newY, currentAngle);
             unitOfOriginId = exitTeleportId;
 
             newX = x;
             newY = y;
-            currentAngle = angle;
+            currentAngle = newAngle;
           }
         }
 
@@ -263,10 +375,14 @@ function Projectile(props) {
           }
 
           if (impactedUnitType === 'portal') {
-            const { x, y, angle } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            const {
+              x,
+              y,
+              angle: newAngle,
+            } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
             newX = x;
             newY = y;
-            currentAngle = angle;
+            currentAngle = newAngle;
           }
         }
 
@@ -324,69 +440,6 @@ function Projectile(props) {
     window.requestAnimationFrame(animate);
   };
 
-  const projectileIsOutOfField = (projectilePivotX, projectilePivotY) => {
-    const { fieldWidth, fieldHeight } = fieldInfo;
-
-    const topLeftX = projectilePivotX - (projectileWidth / 2);
-    const topLeftY = projectilePivotY - (projectileHeight / 2);
-
-    const topRightX = projectilePivotX + (projectileWidth / 2);
-    const topRightY = projectilePivotY + (projectileHeight / 2);
-
-    const { nx: topLeftNewX, ny: topLeftNewY } = rotate(projectilePivotX, projectilePivotY, topLeftX, topLeftY, angle * -1);
-    const { nx: topRightNewX, ny: topRightNewY } = rotate(projectilePivotX, projectilePivotY, topRightX, topRightY, angle * -1);
-
-    const topLeftIsOut = topLeftNewX <= 0 || topLeftNewY <= 0 || topLeftNewX >= fieldWidth || topLeftNewY >= fieldHeight;
-    const topRightIsOut = topRightNewX <= 0 || topRightNewY <= 0 || topRightNewX >= fieldWidth || topRightNewY >= fieldHeight;
-
-    return topLeftIsOut || topRightIsOut;
-  };
-
-  const projectileDidImpact = (projectilePivotX, projectilePivotY, angle) => {
-    const { nx: projectileX, ny: projectileY } = rotate(projectilePivotX, projectilePivotY, projectilePivotX, projectilePivotY, angle * -1);
-
-    let impactedUnit = null;
-    let impactWithExplodingUnit = false;
-
-    for (let i = 0; i < potentialTargetsMap.length; ++i) {
-      const potentialTarget = potentialTargetsMap[i];
-
-      const { value, explosionStart } = units[potentialTarget.index];
-
-      impactWithExplodingUnit = explosionStart !== undefined && ((+Date.now() - explosionStart) < 300);
-
-      if (value === 0 && !impactWithExplodingUnit) {
-        continue;
-      }
-
-      const { top: centerY, left: centerX, hitBoxRadius } = potentialTarget;
-
-      const rectangle = {
-        rectangleX: projectileX,
-        rectangleY: projectileY,
-        rectangleWidth: projectileWidth,
-        rectangleHeight: projectileHeight,
-        angle,
-      };
-
-      const circle = {
-        circleX: centerX,
-        circleY: centerY,
-        radius: hitBoxRadius * baseWidthUnit,
-      };
-
-      if (findRectangleCircleIntersection(rectangle, circle)) {
-        impactedUnit = potentialTarget;
-        break;
-      }
-    }
-
-    return {
-      impactedUnit,
-      impactWithExplodingUnit,
-    };
-  };
-
   useEffect(() => {
     launchProjectileWithRAF();
   }, []);
@@ -415,20 +468,23 @@ function Projectile(props) {
 }
 
 Projectile.propTypes = {
-  id: PropTypes.string,
-  unitOfOriginId: PropTypes.string,
-  top: PropTypes.number,
-  left: PropTypes.number,
-  type: PropTypes.string,
-  maxDistance: PropTypes.number,
-  speed: PropTypes.number,
-  angle: PropTypes.number,
-  units: PropTypes.array,
-  potentialTargetsMap: PropTypes.array,
-  fieldInfo: PropTypes.object,
-  onOutOfFiled: PropTypes.func,
-  onImpact: PropTypes.func,
-  moveStep: PropTypes.number,
+  id: PropTypes.string.isRequired,
+  unitOfOriginId: PropTypes.string.isRequired,
+  top: PropTypes.number.isRequired,
+  left: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
+  maxDistance: PropTypes.number.isRequired,
+  speed: PropTypes.number.isRequired,
+  angle: PropTypes.number.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  units: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  potentialTargetsMap: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  fieldInfo: PropTypes.object.isRequired,
+  onOutOfFiled: PropTypes.func.isRequired,
+  onImpact: PropTypes.func.isRequired,
+  moveStep: PropTypes.number.isRequired,
 };
 
 export default Projectile;
