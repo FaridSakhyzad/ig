@@ -40,6 +40,7 @@ export class Map {
   constructor(params = {}, controls = {}) {
     const {
       name,
+      index = 0,
       mapWidth = 9,
       mapHeight = 9,
       comboSequence = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
@@ -93,6 +94,7 @@ export class Map {
     } = controls;
 
     this.name = name;
+    this.index = index;
     this.id = Math.random().toString(16).substring(2);
     this.mapWidth = mapWidth;
     this.mapHeight = mapHeight;

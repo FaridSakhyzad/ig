@@ -63,8 +63,8 @@ export default function AmmoEdit(props) {
                         <TextField
                           size="small"
                           type="number"
-                          value={currentMap[section][item.property] || 0}
-                          onChange={(e) => onAmmoChange(e, item.property)}
+                          value={currentMap[section][item.property]}
+                          onChange={(e) => onAmmoChange(e, section, item.property)}
                         />
                       </Grid>
                     </Grid>

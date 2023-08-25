@@ -76,13 +76,18 @@ export default function MapEdit() {
     setIndexMapToDelete(null);
   };
 
-  const onAmmoChange = ({ target: { value } }, type) => {
-    currentMap.ammo[type] = parseInt(value, 10);
+  const onAmmoChange = ({ target: { value } }, section, type) => {
+    currentMap[section][type] = parseInt(value, 10);
     setCurrentMap({ ...currentMap });
   };
 
   const saveCurrentMap = () => {
     saveMap(currentMap);
+  };
+
+  const handleParamChange = (value, param) => {
+    currentMap[param] = value;
+    setCurrentMap({ ...currentMap });
   };
 
   return (
@@ -154,24 +159,43 @@ export default function MapEdit() {
         </Grid>
       </Grid>
 
-      <hr />
-
       {currentMap && (
         <div className="container">
           <Grid container spacing={2}>
             <Grid item>
               <Grid container spacing={1}>
                 <Grid item xs={12}>
-                  <TextField size="small" label="Name" value={currentMap.name} />
+                  <TextField
+                    size="small"
+                    label="Name"
+                    value={currentMap.name}
+                    onChange={(e) => handleParamChange(e.target.value, 'name')}
+                  />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField size="small" label="Index" type="number" value={0} />
+                  <TextField
+                    size="small"
+                    label="Index"
+                    type="number"
+                    value={currentMap.index}
+                    onChange={(e) => handleParamChange(e.target.value, 'index')}
+                  />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField size="small" label="Width" value={currentMap.mapWidth} />
+                  <TextField
+                    size="small"
+                    label="Width"
+                    value={currentMap.mapWidth}
+                    onChange={(e) => handleParamChange(e.target.value, 'mapWidth')}
+                  />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField size="small" label="Height" value={currentMap.mapHeight} />
+                  <TextField
+                    size="small"
+                    label="Height"
+                    value={currentMap.mapHeight}
+                    onChange={(e) => handleParamChange(e.target.value, 'mapHeight')}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -179,13 +203,25 @@ export default function MapEdit() {
             <Grid item>
               <Grid container spacing={1}>
                 <Grid item xs={8}>
-                  Override User Ammo <Checkbox value={currentMap.overrideUserAmmo} />
+                  Override User Ammo
+                  <Checkbox
+                    checked={currentMap.overrideUserAmmo}
+                    onChange={(e, data) => handleParamChange(data, 'overrideUserAmmo')}
+                  />
                 </Grid>
                 <Grid item xs={8}>
-                  Create User Backup <Checkbox value={currentMap.createUserBackup} />
+                  Create User Backup
+                  <Checkbox
+                    checked={currentMap.createUserBackup}
+                    onChange={(e, data) => handleParamChange(data, 'createUserBackup')}
+                  />
                 </Grid>
                 <Grid item xs={8}>
-                  Restore UserAmmo <Checkbox value={currentMap.restoreUserAmmo} />
+                  Restore UserAmmo
+                  <Checkbox
+                    checked={currentMap.restoreUserAmmo}
+                    onChange={(e, data) => handleParamChange(data, 'restoreUserAmmo')}
+                  />
                 </Grid>
               </Grid>
             </Grid>
