@@ -1,15 +1,14 @@
+import BaseUnit from 'units/BaseUnit';
+import Bobomb from 'units/Bobomb';
+import Laser from 'units/Laser';
+import Deflector from 'units/Deflector';
+import Wall from 'units/Wall';
+import Npc from 'units/Npc';
+import Hidden from 'units/Hidden';
+import Portal from 'units/Portal';
+import Teleport from 'units/Teleport';
+
 import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE } from '../config/config';
-import {
-  BaseUnit,
-  Bobomb,
-  Laser,
-  Deflector,
-  Wall,
-  Npc,
-  Hidden,
-  Portal,
-  Teleport,
-} from '../units';
 
 const TestUnitsSet1 = (mapWidth, mapHeight) => {
   const result = [];

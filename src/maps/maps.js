@@ -1,5 +1,6 @@
+import BaseUnit from 'units/BaseUnit';
 import TestUnitsSet1 from './test_units_set1';
-import { BaseUnit } from '../units';
+import unitFactory from '../units/unitFactory';
 
 const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
@@ -36,9 +37,10 @@ const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 
   return result;
 };
 
-export class Map {
+export class LevelMap {
   constructor(params = {}, controls = {}) {
     const {
+      id,
       name,
       index = 0,
       mapWidth = 9,
@@ -90,12 +92,12 @@ export class Map {
     } = params;
 
     const {
-      generateRandomUnits = true,
+      generateRandomUnits = false,
     } = controls;
 
     this.name = name;
     this.index = index;
-    this.id = Math.random().toString(16).substring(2);
+    this.id = id || Math.random().toString(16).substring(2);
     this.mapWidth = mapWidth;
     this.mapHeight = mapHeight;
     this.comboSequence = comboSequence;
@@ -115,15 +117,19 @@ export class Map {
     this.grid = grid || generateGrid(mapWidth, mapHeight);
 
     if (generateRandomUnits) {
-      this.units = units;
-    } else {
       this.units = generateRandomUnitsSet(mapWidth, mapHeight);
+    } else {
+      this.units = units.map((unit) => {
+        const { type, ...unitParams } = unit;
+
+        return unitFactory(unit.type, unitParams);
+      });
     }
   }
 }
 
 const mapSet = () => [
-  new Map({
+  new LevelMap({
     overrideUserAmmo: true,
     ammo: {
       userMoves: 1000,
@@ -145,13 +151,13 @@ const mapSet = () => [
     },
     units: TestUnitsSet1(9, 9),
   }),
-  new Map(),
-  new Map({
+  new LevelMap(),
+  new LevelMap({
     mapWidth: 3,
     mapHeight: 3,
   }),
   /**/
-  new Map({
+  new LevelMap({
     mapWidth: 5,
     mapHeight: 5,
     comboSequence: [3, 5, 8, 13, 21, 34, 55],
@@ -178,7 +184,7 @@ const mapSet = () => [
       jumps: 10,
     },
   }),
-  new Map({
+  new LevelMap({
     mapWidth: 6,
     mapHeight: 6,
     comboSequence: [3, 5, 8, 13, 21, 34, 55],

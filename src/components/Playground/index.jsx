@@ -13,19 +13,17 @@ import {
 } from 'redux/user/actions';
 import { setStash } from 'redux/userStash/actions';
 
-import mapSet, { Map } from 'maps/maps';
+import // mapSet,
+{ LevelMap } from 'maps/maps';
+import { generatePortals, generateTeleports } from 'units/unitFactory';
 
-import {
-  BaseUnit,
-  Bobomb,
-  Laser,
-  generatePortals,
-  generateTeleports,
-  Deflector,
-  Wall,
-} from 'units';
+import BaseUnit from 'units/BaseUnit';
+import Bobomb from 'units/Bobomb';
+import Laser from 'units/Laser';
+import Deflector from 'units/Deflector';
+import Wall from 'units/Wall';
 
-import { readMaps } from 'api/api';
+import { readMaps, writeMaps } from 'api/api';
 import {
   ITEM_MULTISELECT_MODE,
   CELL_MULTISELECT_MODE,
@@ -693,9 +691,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
     const maps = readMaps();
 
-    const maps0 = mapSet();
-
-    console.log('maps0', maps0);
+    // const maps0 = mapSet();
+    console.log('maps', maps);
 
     if (!maps || !maps.length) {
       return;
@@ -705,7 +702,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
     setCurrentLevel(nextLevelIndex);
 
-    const level = new Map(maps[nextLevelIndex]);
+    const level = new LevelMap(maps[nextLevelIndex]);
 
     setMap(level);
 
@@ -748,6 +745,28 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     startLevel(0, true);
   }, []);
 
+  const handleSaveMapClick = () => {
+    const maps = readMaps();
+
+    console.log(maps, map);
+
+    const currentMapIndex = maps.findIndex((item) => item.id === map.id);
+
+    console.log('currentMapIndex', currentMapIndex);
+
+    console.log({
+      ...map,
+      units: [...units],
+    });
+
+    maps[currentMapIndex] = {
+      ...map,
+      units: [...units],
+    };
+
+    writeMaps(maps);
+  };
+
   return (
     <>
       {winScreenVisible && (
@@ -776,6 +795,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         </h3>
 
         <button type="button" className="button" onClick={handleMenuClick}>Back to menu</button>
+        <button type="button" className="button" onClick={handleSaveMapClick}>Save Map</button>
       </div>
 
       <div className="field" id="field">
