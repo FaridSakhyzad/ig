@@ -16,7 +16,6 @@ import IconEdit from '@mui/icons-material/Edit';
 import IconDelete from '@mui/icons-material/Delete';
 
 import { readMaps, saveMap, writeMaps } from 'api/api';
-import { Map } from 'maps/maps';
 
 import AmmoEdit from './AmmoEdit';
 
@@ -26,17 +25,63 @@ export default function MapEdit() {
   const [maps, setMaps] = useState(readMaps() || []);
   const [currentMap, setCurrentMap] = useState(null);
 
+  const defaults = {
+    name: '',
+    index: 0,
+    mapWidth: 9,
+    mapHeight: 9,
+    comboSequence: [1, 1, 2, 3, 5, 8, 13, 21, 34, 55],
+    reward: {
+      userMoves: 1,
+
+      defaults: 1,
+      bobombs: 1,
+      lasers: 1,
+      deflectors: 0,
+      walls: 0,
+      npc: 0,
+      hidden: 0,
+      portals: 0,
+      teleports: 0,
+
+      swaps: 0,
+      rotates: 0,
+      jumps: 0,
+      deletes: 0,
+    },
+    penalty: {
+      userMoves: 0,
+
+      defaults: 0,
+      bobombs: 0,
+      lasers: 0,
+      deflectors: 0,
+      walls: 0,
+      npc: 0,
+      hidden: 0,
+      portals: 0,
+      teleports: 0,
+
+      swaps: 0,
+      rotates: 0,
+      jumps: 0,
+      deletes: 0,
+    },
+    overrideUserAmmo: false,
+    createUserBackup: false,
+    restoreUserAmmo: false,
+    ammo: {},
+    ammoRestrictions: {},
+    grid: null,
+    units: [],
+  };
+
   const createMap = () => {
     const savedMaps = readMaps() || [];
 
-    const newMap = new Map({
-      name: `New Map #${savedMaps.length + 1}`,
-      ammo: {
-        userMoves: 10,
-        defaults: 1,
-        bobombs: 2,
-        lasers: 3,
-      },
+    const newMap = structuredClone({
+      id: Math.random().toString(16).substring(2),
+      ...defaults,
     });
 
     savedMaps.push(newMap);

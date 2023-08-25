@@ -5,11 +5,3 @@ export const BASE_VIEWPORT_WIDTH = 375;
 
 export const UNIT_MAX_VALUE = 4;
 export const UNIT_MIN_VALUE = 0;
-
-export const SCREEN_MODES = {
-  menu: 'menu',
-  levelsList: 'levelsList',
-  levelEdit: 'levelEdit',
-  playground: 'playground',
-  settings: 'settings',
-};

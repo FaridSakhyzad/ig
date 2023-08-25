@@ -13,7 +13,8 @@ import {
 } from 'redux/user/actions';
 import { setStash } from 'redux/userStash/actions';
 
-import mapSet from 'maps/maps';
+import mapSet, { Map } from 'maps/maps';
+
 import {
   BaseUnit,
   Bobomb,
@@ -23,18 +24,20 @@ import {
   Deflector,
   Wall,
 } from 'units';
-import Projectile from '../Projectile';
-import Unit from '../Unit';
-import UserMenu from '../UserMenu';
 
+import { readMaps } from 'api/api';
 import {
   ITEM_MULTISELECT_MODE,
   CELL_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   SELECT_MODE,
   PLACING_MODE,
-} from '../../constants/constants';
-import { SCREEN_MODES } from '../../config/config';
+  SCREEN_MODES,
+} from 'constants/constants';
+
+import Projectile from '../Projectile';
+import Unit from '../Unit';
+import UserMenu from '../UserMenu';
 
 import './Playground.scss';
 
@@ -672,7 +675,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     }
   };
 
-  const applyLevelAmmo = (level) => {
+  const performOverrideUserAmmo = (level) => {
     if (level.createUserBackup) {
       dispatch(setStash(user));
     }
@@ -685,16 +688,24 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     dispatch(setStash({}));
   };
 
-  const startLevel = (levelIndex) => {
+  const startLevel = (levelIndex, inNewGame) => {
     setLevelCounter(levelCounter + 1);
 
-    const maps = mapSet();
+    const maps = readMaps();
+
+    const maps0 = mapSet();
+
+    console.log('maps0', maps0);
+
+    if (!maps || !maps.length) {
+      return;
+    }
 
     const nextLevelIndex = levelIndex >= (maps.length) ? 0 : levelIndex;
 
     setCurrentLevel(nextLevelIndex);
 
-    const level = maps[nextLevelIndex];
+    const level = new Map(maps[nextLevelIndex]);
 
     setMap(level);
 
@@ -704,8 +715,12 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
     applyLevelRestrictions(level);
 
+    if (inNewGame) {
+      dispatch(setAmmo(level.ammo));
+    }
+
     if (level.overrideUserAmmo) {
-      applyLevelAmmo(level);
+      performOverrideUserAmmo(level);
     }
 
     if (level.restoreUserAmmo) {
@@ -730,7 +745,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   };
 
   useEffect(() => {
-    startLevel(0);
+    startLevel(0, true);
   }, []);
 
   return (
@@ -742,21 +757,26 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
       )}
 
       {loseScreenVisible && (
-      <div className="loseMessage">
-        <h1>You Loose</h1>
-        <button type="button" className="button" onClick={handleRestartClick}>Restart</button>
-        <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
-      </div>
+        <div className="loseMessage">
+          <h1>You Loose</h1>
+          <button type="button" className="button" onClick={handleRestartClick}>Restart</button>
+          <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
+        </div>
       )}
 
-      <h1 className="moves">
-        Moves:
-        {userMoves}
-      </h1>
-      <h3 className="currentLevel">
-        CurrentLevel:
-        {levelCounter}
-      </h3>
+      <div className="playgroundHeader">
+        <h1 className="moves">
+          Moves:
+          {userMoves}
+        </h1>
+
+        <h3 className="currentLevel">
+          CurrentLevel:
+          {levelCounter}
+        </h3>
+
+        <button type="button" className="button" onClick={handleMenuClick}>Back to menu</button>
+      </div>
 
       <div className="field" id="field">
         <div className="projectileLayer">

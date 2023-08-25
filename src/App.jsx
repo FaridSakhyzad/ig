@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
-import { BASE_VIEWPORT_WIDTH, SCREEN_MODES } from './config/config';
 import MapEdit from './components/MapEdit';
+import { BASE_VIEWPORT_WIDTH } from './config/config';
+import { SCREEN_MODES } from './constants/constants';
 import './App.scss';
 
 function App() {
@@ -13,6 +14,10 @@ function App() {
 
   const handleStartClick = () => {
     dispatch(setCurrentScreen(SCREEN_MODES.playground));
+  };
+
+  const handleLevelsClick = () => {
+    dispatch(setCurrentScreen(SCREEN_MODES.levelsList));
   };
 
   const handleSettingsClick = () => {
@@ -69,6 +74,7 @@ function App() {
         <div className="screen" id="screen">
           <h2>Menu</h2>
           <button type="button" onClick={handleStartClick} className="button">Start</button>
+          <button type="button" onClick={handleLevelsClick} className="button">Levels</button>
           <button type="button" onClick={handleSettingsClick} className="button">Settings</button>
         </div>
       )}
