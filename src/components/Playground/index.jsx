@@ -691,9 +691,6 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
     const maps = readMaps();
 
-    // const maps0 = mapSet();
-    console.log('maps', maps);
-
     if (!maps || !maps.length) {
       return;
     }
