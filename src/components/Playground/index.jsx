@@ -547,12 +547,15 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
   const combosRewards = [
     () => {
+      // eslint-disable-next-line no-console
       console.log('FIRST COMBO !!!');
     },
     () => {
+      // eslint-disable-next-line no-console
       console.log('SECOND COMBO !!!');
     },
     () => {
+      // eslint-disable-next-line no-console
       console.log('THIRD COMBO !!!');
     },
   ];
