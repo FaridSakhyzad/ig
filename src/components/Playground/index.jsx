@@ -748,16 +748,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const handleSaveMapClick = () => {
     const maps = readMaps();
 
-    console.log(maps, map);
-
     const currentMapIndex = maps.findIndex((item) => item.id === map.id);
-
-    console.log('currentMapIndex', currentMapIndex);
-
-    console.log({
-      ...map,
-      units: [...units],
-    });
 
     maps[currentMapIndex] = {
       ...map,
