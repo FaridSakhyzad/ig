@@ -6,14 +6,34 @@ import LevelList from './components/LevelList';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import { SCREEN_MODES } from './constants/constants';
 import './App.scss';
+import { LevelMap } from './maps/maps';
+import { readMaps, writeMaps } from './api/api';
+import LevelEditComponent from './components/LevelList/LevelEditComponent';
 
 function App() {
   const dispatch = useDispatch();
 
   const { currentScreen } = useSelector((state) => state.ui);
 
-  const handleStartClick = () => {
+  const levels = readMaps() || [];
+
+  const [currentLevel, setCurrentLevel] = useState(new LevelMap(levels[0]));
+
+  const handlePlayClick = () => {
+    setCurrentLevel(new LevelMap(levels[0]));
     dispatch(setCurrentScreen(SCREEN_MODES.playground));
+  };
+
+  const getNextLevel = () => {
+    const currentLevelIndex = levels.findIndex((item) => item.id === currentLevel.id);
+
+    const nextLevelIndex = currentLevelIndex === levels.length - 1 ? 0 : currentLevelIndex + 1;
+
+    return new LevelMap(levels[nextLevelIndex]);
+  };
+
+  const setNextLevel = () => {
+    setCurrentLevel(getNextLevel());
   };
 
   const handleLevelsClick = () => {
@@ -33,6 +53,19 @@ function App() {
     document.documentElement.style.setProperty('--base-width-unit', `${baseWidthUnit}`);
 
     setProjectileMoveStep(baseWidthUnit);
+  };
+
+  const saveEditedLevel = (level, units) => {
+    const maps = readMaps();
+
+    const currentMapIndex = maps.findIndex((item) => item.id === level.id);
+
+    maps[currentMapIndex] = {
+      ...level,
+      units: [...units],
+    };
+
+    writeMaps(maps);
   };
 
   useEffect(() => {
@@ -63,17 +96,30 @@ function App() {
         </div>
       )}
       {currentScreen === SCREEN_MODES.playground && (
-        <div className="screen" id="screen">
-          <Playground
-            projectileExplosionDuration={projectileExplosionDuration}
-            projectileMoveStep={projectileMoveStep}
-          />
-        </div>
+        <>
+          {false && (
+            <div className="serviceScreen">
+              <div className="container">
+                <LevelEditComponent level={currentLevel} />
+              </div>
+            </div>
+          )}
+          <div className="screen" id="screen">
+            <Playground
+              projectileExplosionDuration={projectileExplosionDuration}
+              projectileMoveStep={projectileMoveStep}
+              level={currentLevel}
+              onPlayNextLevel={setNextLevel}
+              onEditStart={() => {}}
+              onSave={saveEditedLevel}
+            />
+          </div>
+        </>
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
           <h2>Menu</h2>
-          <button type="button" onClick={handleStartClick} className="button">Start</button>
+          <button type="button" onClick={handlePlayClick} className="button">Play</button>
           <button type="button" onClick={handleLevelsClick} className="button">Levels</button>
           <button type="button" onClick={handleSettingsClick} className="button">Settings</button>
         </div>

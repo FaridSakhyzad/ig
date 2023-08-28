@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { number } from 'prop-types';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { setCurrentScreen } from 'redux/ui/actions';
@@ -13,8 +13,6 @@ import {
 } from 'redux/user/actions';
 import { setStash } from 'redux/userStash/actions';
 
-import // mapSet,
-{ LevelMap } from 'maps/maps';
 import { generatePortals, generateTeleports } from 'units/unitFactory';
 
 import BaseUnit from 'units/BaseUnit';
@@ -23,7 +21,6 @@ import Laser from 'units/Laser';
 import Deflector from 'units/Deflector';
 import Wall from 'units/Wall';
 
-import { readMaps, writeMaps } from 'api/api';
 import {
   ITEM_MULTISELECT_MODE,
   CELL_MULTISELECT_MODE,
@@ -41,7 +38,15 @@ import './Playground.scss';
 
 const MAX_MULTISELECT = 2;
 
-function Playground({ projectileExplosionDuration, projectileMoveStep }) {
+function Playground(props) {
+  const {
+    projectileExplosionDuration,
+    projectileMoveStep,
+    level: levelFromProp,
+    onPlayNextLevel,
+    onSave,
+  } = props;
+
   const dispatch = useDispatch();
 
   const { user, userStash } = useSelector((state) => state);
@@ -60,10 +65,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
   const [afterInputAction, setAfterInputAction] = useState(null);
 
-  const [currentLevel, setCurrentLevel] = useState(0);
-  const [levelCounter, setLevelCounter] = useState(0);
-
-  const [map, setMap] = useState([]);
+  const [level, setLevel] = useState({});
   const [fieldInfo, setFieldInfo] = useState({});
 
   const [grid, setGrid] = useState([]);
@@ -88,7 +90,13 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     const turretsData = [];
 
     const {
-      turrets, angle: unitAngle, value, type, meta, explosionStart, hitBoxRadius,
+      turrets,
+      angle: unitAngle,
+      value,
+      type,
+      meta,
+      explosionStart,
+      hitBoxRadius,
     } = units[index] || {};
 
     unit.querySelectorAll('.turret').forEach((turret) => {
@@ -489,32 +497,32 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     }
   };
 
-  const applyLevelPenalty = (level) => {
+  const applyLevelPenalty = (penalty) => {
     const reward = {};
 
-    if (!level.penalty) {
+    if (!penalty) {
       return;
     }
 
-    Object.keys(level.penalty).forEach((key) => {
-      reward[key] = user[key] - level.penalty[key];
+    Object.keys(penalty).forEach((key) => {
+      reward[key] = user[key] - penalty[key];
     });
 
     dispatch(setAmmo(reward));
   };
 
-  const applyLevelReward = (level) => {
-    const reward = {};
+  const applyLevelReward = (reward) => {
+    const newReward = {};
 
-    if (!level.reward) {
+    if (!reward) {
       return;
     }
 
-    Object.keys(level.reward).forEach((key) => {
-      reward[key] = user[key] + level.reward[key];
+    Object.keys(reward).forEach((key) => {
+      newReward[key] = user[key] + reward[key];
     });
 
-    dispatch(setAmmo(reward));
+    dispatch(setAmmo(newReward));
   };
 
   const detectGameOutcome = () => {
@@ -533,8 +541,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
       setTimeout(() => {
         setWinScreenVisible(true);
 
-        applyLevelReward(map);
-        applyLevelPenalty(map);
+        applyLevelReward(level.reward);
+        applyLevelPenalty(level.penalty);
       }, projectileExplosionDuration + 300);
     }
   };
@@ -563,7 +571,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   const executeCombo = () => {
     Playground.comboCounter += 1;
 
-    if (Playground.comboCounter === map.comboSequence[Playground.comboCursor]) {
+    if (Playground.comboCounter === level.comboSequence[Playground.comboCursor]) {
       if (combosRewards[Playground.comboCursor]) {
         combosRewards[Playground.comboCursor]();
       }
@@ -670,18 +678,18 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     detectGameOutcome();
   };
 
-  const applyLevelRestrictions = (level) => {
-    if (level.ammoRestrictions) {
-      dispatch(setAmmo({ ammoRestrictions: level.ammoRestrictions }));
+  const applyLevelRestrictions = (restrictions) => {
+    if (restrictions) {
+      dispatch(setAmmo({ ammoRestrictions: restrictions }));
     }
   };
 
-  const performOverrideUserAmmo = (level) => {
-    if (level.createUserBackup) {
+  const performOverrideUserAmmo = (ammo, createUserBackup) => {
+    if (createUserBackup) {
       dispatch(setStash(user));
     }
 
-    dispatch(setAmmo(level.ammo));
+    dispatch(setAmmo(ammo));
   };
 
   const restoreUserAmmo = () => {
@@ -689,38 +697,22 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     dispatch(setStash({}));
   };
 
-  const startLevel = (levelIndex, inNewGame) => {
-    setLevelCounter(levelCounter + 1);
+  const startLevel = () => {
+    setLevel(levelFromProp);
 
-    const maps = readMaps();
+    setGrid(levelFromProp.grid);
 
-    if (!maps || !maps.length) {
-      return;
+    setUnits(levelFromProp.units);
+
+    applyLevelRestrictions(levelFromProp.ammoRestrictions);
+
+    dispatch(setAmmo(levelFromProp.ammo));
+
+    if (levelFromProp.overrideUserAmmo) {
+      performOverrideUserAmmo(levelFromProp.ammo, levelFromProp.createUserBackup);
     }
 
-    const nextLevelIndex = levelIndex >= (maps.length) ? 0 : levelIndex;
-
-    setCurrentLevel(nextLevelIndex);
-
-    const level = new LevelMap(maps[nextLevelIndex]);
-
-    setMap(level);
-
-    setGrid(level.grid);
-
-    setUnits(level.units);
-
-    applyLevelRestrictions(level);
-
-    if (inNewGame) {
-      dispatch(setAmmo(level.ammo));
-    }
-
-    if (level.overrideUserAmmo) {
-      performOverrideUserAmmo(level);
-    }
-
-    if (level.restoreUserAmmo) {
+    if (levelFromProp.restoreUserAmmo) {
       restoreUserAmmo();
     }
 
@@ -730,7 +722,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 
   const handleRestartClick = () => {
     dispatch(resetAmmo());
-    startLevel(0);
+    startLevel();
   };
 
   const handleMenuClick = () => {
@@ -738,28 +730,19 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   };
 
   const startNextLevel = () => {
-    startLevel(currentLevel + 1);
+    onPlayNextLevel();
   };
 
   useEffect(() => {
-    startLevel(0, true);
-  }, []);
+    startLevel();
+  }, [levelFromProp]);
 
   const handleSaveLevelClick = () => {
-    const maps = readMaps();
-
-    const currentMapIndex = maps.findIndex((item) => item.id === map.id);
-
-    maps[currentMapIndex] = {
-      ...map,
-      units: [...units],
-    };
-
-    writeMaps(maps);
+    onSave(level, units);
   };
 
   const handleEditParamsClick = () => {
-    console.log('handleEditParamsClick', map);
+    console.log('handleEditParamsClick', level);
   };
 
   return (
@@ -785,7 +768,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         </h1>
 
         <h3 className="currentLevel">
-          Current Level: {levelCounter}; Name: {map.name}
+          Current Level: {level.index}; Name: {level.name}
         </h3>
 
         <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
@@ -823,8 +806,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
                   style={{
                     top: `${top}%`,
                     left: `${left}%`,
-                    width: `${100 / map.mapWidth}%`,
-                    height: `${100 / map.mapHeight}%`,
+                    width: `${100 / level.mapWidth}%`,
+                    height: `${100 / level.mapHeight}%`,
                   }}
                 />
               ))}
@@ -838,8 +821,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
             <Unit
               top={grid[top] && grid[top][left] && grid[top][left].top}
               left={grid[top] && grid[top][left] && grid[top][left].left}
-              width={100 / map.mapWidth}
-              height={100 / map.mapHeight}
+              width={100 / level.mapWidth}
+              height={100 / level.mapHeight}
               hitBoxRadius={hitBoxRadius}
               key={id}
               isSelected={selectedUnits.some((unit) => unit.unitId === id)}
@@ -867,15 +850,21 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
 }
 
 Playground.propTypes = {
-  projectileExplosionDuration: number,
-  projectileMoveStep: number,
-  baseWidthUnit: number,
+  projectileExplosionDuration: PropTypes.number,
+  projectileMoveStep: PropTypes.number,
+  baseWidthUnit: PropTypes.number,
+  // eslint-disable-next-line react/forbid-prop-types
+  level: PropTypes.any.isRequired,
+  onPlayNextLevel: PropTypes.func,
+  onSave: PropTypes.func,
 };
 
 Playground.defaultProps = {
   projectileExplosionDuration: 100,
   projectileMoveStep: 1,
   baseWidthUnit: 1,
+  onPlayNextLevel: () => {},
+  onSave: () => {},
 };
 
 Playground.actingProjectilesNumber = 0;
