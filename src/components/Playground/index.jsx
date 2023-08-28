@@ -759,7 +759,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
   };
 
   const handleEditParamsClick = () => {
-    console.log('handleEditParamsClick');
+    console.log('handleEditParamsClick', map);
   };
 
   return (
@@ -785,13 +785,12 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         </h1>
 
         <h3 className="currentLevel">
-          CurrentLevel:
-          {levelCounter}
+          Current Level: {levelCounter}; Name: {map.name}
         </h3>
 
-        <button type="button" className="button" onClick={handleMenuClick}>Back to menu</button>
-        <button type="button" className="button" onClick={handleEditParamsClick}>Edit Params</button>
-        <button type="button" className="button" onClick={handleSaveLevelClick}>Save Level</button>
+        <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
+        <button type="button" className="button" onClick={handleEditParamsClick}>Params</button>
+        <button type="button" className="button" onClick={handleSaveLevelClick}>Save</button>
       </div>
 
       <div className="field" id="field">

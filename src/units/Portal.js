@@ -8,6 +8,7 @@ export default class Portal extends BaseUnit {
       valueCountable: false,
       type: 'portal',
       value: UNIT_MAX_VALUE,
+      turrets: [],
     });
 
     this.meta = params.meta || {};
