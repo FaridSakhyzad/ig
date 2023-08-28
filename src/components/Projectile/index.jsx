@@ -78,6 +78,7 @@ function Projectile(props) {
         x: newX + correctionX + offsetLeft,
         y: newY + correctionY + offsetTop,
         angle: projectileAngle,
+        exitPortalId,
       };
     }
 
@@ -316,7 +317,10 @@ function Projectile(props) {
               x,
               y,
               angle: newAngle,
+              exitPortalId,
             } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            impactedUnitId = null;
+            unitOfOriginId = exitPortalId;
 
             newX = x;
             newY = y;
@@ -379,7 +383,11 @@ function Projectile(props) {
               x,
               y,
               angle: newAngle,
+              exitPortalId,
             } = calculatePortalExitPointCoords(impactedUnit, newX, newY, currentAngle);
+            impactedUnitId = null;
+            unitOfOriginId = exitPortalId;
+
             newX = x;
             newY = y;
             currentAngle = newAngle;
