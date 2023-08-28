@@ -473,7 +473,7 @@ Projectile.propTypes = {
   top: PropTypes.number.isRequired,
   left: PropTypes.number.isRequired,
   type: PropTypes.string.isRequired,
-  maxDistance: PropTypes.number.isRequired,
+  maxDistance: PropTypes.number,
   speed: PropTypes.number.isRequired,
   angle: PropTypes.number.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
@@ -485,6 +485,10 @@ Projectile.propTypes = {
   onOutOfFiled: PropTypes.func.isRequired,
   onImpact: PropTypes.func.isRequired,
   moveStep: PropTypes.number.isRequired,
+};
+
+Projectile.defaultProps = {
+  maxDistance: SAFE_MAX_DISTANCE,
 };
 
 export default Projectile;

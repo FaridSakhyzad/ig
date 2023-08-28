@@ -1,12 +1,13 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import Grid from '@mui/material/Grid';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 
 export default function AmmoEdit(props) {
-  const { currentMap, onAmmoChange } = props;
+  const { level, onAmmoChange } = props;
 
   const columns = [
     [
@@ -63,7 +64,7 @@ export default function AmmoEdit(props) {
                         <TextField
                           size="small"
                           type="number"
-                          value={currentMap[section][item.property]}
+                          value={level[section][item.property]}
                           onChange={(e) => onAmmoChange(e, section, item.property)}
                         />
                       </Grid>
@@ -80,7 +81,7 @@ export default function AmmoEdit(props) {
 }
 
 AmmoEdit.propTypes = {
-  currentMap: PropTypes.shape({
+  level: PropTypes.shape({
     ammo: PropTypes.shape({
       userMoves: PropTypes.number,
       defaults: PropTypes.number,

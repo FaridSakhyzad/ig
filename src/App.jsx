@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
-import MapEdit from './components/MapEdit';
+import LevelList from './components/LevelList';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import { SCREEN_MODES } from './constants/constants';
 import './App.scss';
@@ -59,7 +59,7 @@ function App() {
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsList && (
         <div className="serviceScreen" id="screen">
-          <MapEdit />
+          <LevelList />
         </div>
       )}
       {currentScreen === SCREEN_MODES.playground && (

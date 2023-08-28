@@ -745,7 +745,7 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     startLevel(0, true);
   }, []);
 
-  const handleSaveMapClick = () => {
+  const handleSaveLevelClick = () => {
     const maps = readMaps();
 
     const currentMapIndex = maps.findIndex((item) => item.id === map.id);
@@ -756,6 +756,10 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
     };
 
     writeMaps(maps);
+  };
+
+  const handleEditParamsClick = () => {
+    console.log('handleEditParamsClick');
   };
 
   return (
@@ -786,7 +790,8 @@ function Playground({ projectileExplosionDuration, projectileMoveStep }) {
         </h3>
 
         <button type="button" className="button" onClick={handleMenuClick}>Back to menu</button>
-        <button type="button" className="button" onClick={handleSaveMapClick}>Save Map</button>
+        <button type="button" className="button" onClick={handleEditParamsClick}>Edit Params</button>
+        <button type="button" className="button" onClick={handleSaveLevelClick}>Save Level</button>
       </div>
 
       <div className="field" id="field">
