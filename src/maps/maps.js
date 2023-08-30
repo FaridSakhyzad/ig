@@ -38,6 +38,42 @@ const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 
 };
 
 export class LevelMap {
+  rescaleGrid = () => {
+    const initialMapHeight = this.grid.length;
+    const initialMapWidth = this.grid[0].length;
+
+    if (this.mapHeight > this.grid.length) {
+      const patch = generateGrid(this.grid[0].length, this.mapHeight - this.grid.length);
+      this.grid = this.grid.concat(patch);
+    }
+
+    if (this.mapHeight < this.grid.length) {
+      this.grid = this.grid.slice(0, this.mapHeight);
+    }
+
+    if (this.mapWidth > this.grid[0].length) {
+      for (let i = 0; i < this.mapHeight; i += 1) {
+        const patch = generateGrid(this.mapWidth - this.grid[i].length, 1)[0];
+        this.grid[i] = this.grid[i].concat(patch);
+      }
+    }
+
+    if (this.mapWidth < this.grid[0].length) {
+      for (let i = 0; i < this.mapHeight; i += 1) {
+        this.grid[i] = this.grid[i].slice(0, this.mapWidth);
+      }
+    }
+
+    if (this.mapWidth !== initialMapWidth || this.mapHeight !== initialMapHeight) {
+      for (let i = 0; i < this.mapHeight; i += 1) {
+        for (let j = 0; j < this.grid[i].length; j += 1) {
+          this.grid[i][j].top = (i / this.grid.length) * 100;
+          this.grid[i][j].left = (j / this.grid[i].length) * 100;
+        }
+      }
+    }
+  };
+
   constructor(params = {}, controls = {}) {
     const {
       id,

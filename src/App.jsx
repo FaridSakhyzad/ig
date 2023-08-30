@@ -18,6 +18,7 @@ function App() {
   const levels = readMaps() || [];
 
   const [currentLevel, setCurrentLevel] = useState(new LevelMap(levels[0]));
+  const [levelEditMode, setLevelEditMode] = useState(false);
 
   const handlePlayClick = () => {
     setCurrentLevel(new LevelMap(levels[0]));
@@ -55,7 +56,7 @@ function App() {
     setProjectileMoveStep(baseWidthUnit);
   };
 
-  const saveEditedLevel = (level, units) => {
+  const saveEditedUnits = (level, units) => {
     const maps = readMaps();
 
     const currentMapIndex = maps.findIndex((item) => item.id === level.id);
@@ -66,6 +67,31 @@ function App() {
     };
 
     writeMaps(maps);
+  };
+
+  const saveEditedLevel = (levelParams) => {
+    const maps = readMaps();
+
+    const currentMapIndex = maps.findIndex((item) => item.id === currentLevel.id);
+
+    const newLevelParams = {
+      ...currentLevel,
+      ...levelParams,
+    };
+
+    const newLevel = new LevelMap(newLevelParams);
+
+    newLevel.rescaleGrid();
+
+    maps[currentMapIndex] = newLevel;
+
+    writeMaps(maps);
+
+    setCurrentLevel(newLevel);
+  };
+
+  const onEditStart = () => {
+    setLevelEditMode(true);
   };
 
   useEffect(() => {
@@ -88,6 +114,13 @@ function App() {
     setProjectileExplosionDuration(parseFloat(computedStyle.getPropertyValue('--projectile-explosion--duration')) * 1000);
   }, []);
 
+  const {
+    id,
+    units,
+    grid,
+    ...levelParams
+  } = currentLevel;
+
   return (
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsList && (
@@ -97,11 +130,13 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.playground && (
         <>
-          {false && (
+          {levelEditMode && (
             <div className="serviceScreen">
-              <div className="container">
-                <LevelEditComponent level={currentLevel} />
-              </div>
+              <LevelEditComponent
+                levelParams={levelParams}
+                onSave={saveEditedLevel}
+                onClose={() => { setLevelEditMode(false); }}
+              />
             </div>
           )}
           <div className="screen" id="screen">
@@ -110,8 +145,8 @@ function App() {
               projectileMoveStep={projectileMoveStep}
               level={currentLevel}
               onPlayNextLevel={setNextLevel}
-              onEditStart={() => {}}
-              onSave={saveEditedLevel}
+              onEditStart={onEditStart}
+              onSave={saveEditedUnits}
             />
           </div>
         </>

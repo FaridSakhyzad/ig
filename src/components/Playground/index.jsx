@@ -44,6 +44,7 @@ function Playground(props) {
     projectileMoveStep,
     level: levelFromProp,
     onPlayNextLevel,
+    onEditStart,
     onSave,
   } = props;
 
@@ -706,8 +707,6 @@ function Playground(props) {
 
     applyLevelRestrictions(levelFromProp.ammoRestrictions);
 
-    dispatch(setAmmo(levelFromProp.ammo));
-
     if (levelFromProp.overrideUserAmmo) {
       performOverrideUserAmmo(levelFromProp.ammo, levelFromProp.createUserBackup);
     }
@@ -742,7 +741,7 @@ function Playground(props) {
   };
 
   const handleEditParamsClick = () => {
-    console.log('handleEditParamsClick', level);
+    onEditStart();
   };
 
   return (
@@ -856,6 +855,7 @@ Playground.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   level: PropTypes.any.isRequired,
   onPlayNextLevel: PropTypes.func,
+  onEditStart: PropTypes.func,
   onSave: PropTypes.func,
 };
 
@@ -864,6 +864,7 @@ Playground.defaultProps = {
   projectileMoveStep: 1,
   baseWidthUnit: 1,
   onPlayNextLevel: () => {},
+  onEditStart: () => {},
   onSave: () => {},
 };
 

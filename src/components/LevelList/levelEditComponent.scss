@@ -1,0 +1,21 @@
+.levelEdit {
+  padding: 8px 0 0 0;
+}
+
+.levelEdit-header {
+  padding-bottom: 16px;
+}
+
+.levelEdit-footer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  background-color: white;
+  padding: 8px 0;
+  margin-top: 16px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+}
+
+.ammoEditInput input {
+  padding: 6px;
+}
