@@ -43,6 +43,8 @@ function Playground(props) {
     projectileExplosionDuration,
     projectileMoveStep,
     level: levelFromProp,
+    levels,
+    onChangeLevel,
     onPlayNextLevel,
     onEditStart,
     onSave,
@@ -744,6 +746,10 @@ function Playground(props) {
     onEditStart();
   };
 
+  const handleLevelSelectorChange = (e) => {
+    onChangeLevel(e.target.value);
+  };
+
   return (
     <>
       {winScreenVisible && (
@@ -773,6 +779,24 @@ function Playground(props) {
         <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
         <button type="button" className="button" onClick={handleEditParamsClick}>Params</button>
         <button type="button" className="button" onClick={handleSaveLevelClick}>Save</button>
+
+        {levels && (
+          <select
+            className="select"
+            onChange={handleLevelSelectorChange}
+            value={level.id}
+          >
+            {levels.map(({ id, name }) => (
+              <option
+                id={id}
+                key={id}
+                value={id}
+              >
+                {name || id}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       <div className="field" id="field">
@@ -853,7 +877,10 @@ Playground.propTypes = {
   projectileMoveStep: PropTypes.number,
   baseWidthUnit: PropTypes.number,
   // eslint-disable-next-line react/forbid-prop-types
-  level: PropTypes.any.isRequired,
+  level: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  levels: PropTypes.array.isRequired,
+  onChangeLevel: PropTypes.func,
   onPlayNextLevel: PropTypes.func,
   onEditStart: PropTypes.func,
   onSave: PropTypes.func,
@@ -863,6 +890,7 @@ Playground.defaultProps = {
   projectileExplosionDuration: 100,
   projectileMoveStep: 1,
   baseWidthUnit: 1,
+  onChangeLevel: () => {},
   onPlayNextLevel: () => {},
   onEditStart: () => {},
   onSave: () => {},

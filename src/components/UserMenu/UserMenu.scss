@@ -19,7 +19,7 @@
   white-space: nowrap;
 
   &.button {
-    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 12px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 8px);
     border-radius: 65536px;
     font-family: var(--font-family-default);
     font-size: calc(var(--base-width-unit) * 12px);
@@ -34,21 +34,21 @@
   &.userMenu-button_rotate-ccv {
     min-width: 50px;
     border-radius: 65536px 0 0 65536px;
-    padding: calc(var(--base-width-unit) * 8px);
+    padding: calc(var(--base-width-unit) * 6px);
     margin-right: 0;
   }
 
   &.userMenu-button_rotate-cv {
     min-width: 50px;
     border-radius: 0 65536px 65536px 0;
-    padding: calc(var(--base-width-unit) * 8px);
+    padding: calc(var(--base-width-unit) * 6px);
     margin-left: 0;
   }
 
   &.userMenu-button_rotates-count {
     border-radius: 0;
     margin: 0;
-    padding: calc(var(--base-width-unit) * 8px) calc(var(--base-width-unit) * 6px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 6px);
   }
 }
 

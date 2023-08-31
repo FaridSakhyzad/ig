@@ -108,6 +108,15 @@ function App() {
 
   const [projectileExplosionDuration, setProjectileExplosionDuration] = useState();
 
+  const changeCurrentLevel = (newLevelId) => {
+    const storedLevels = readMaps();
+
+    const newLevelIndex = storedLevels.findIndex((item) => item.id === newLevelId);
+
+    const newLevel = new LevelMap(storedLevels[newLevelIndex]);
+    setCurrentLevel(newLevel);
+  };
+
   useEffect(() => {
     const computedStyle = getComputedStyle(document.documentElement);
 
@@ -115,7 +124,6 @@ function App() {
   }, []);
 
   const {
-    id,
     units,
     grid,
     ...levelParams
@@ -144,6 +152,8 @@ function App() {
               projectileExplosionDuration={projectileExplosionDuration}
               projectileMoveStep={projectileMoveStep}
               level={currentLevel}
+              levels={levels}
+              onChangeLevel={changeCurrentLevel}
               onPlayNextLevel={setNextLevel}
               onEditStart={onEditStart}
               onSave={saveEditedUnits}
