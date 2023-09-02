@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import Grid from '@mui/material/Grid';
+
 import { setCurrentScreen } from 'redux/ui/actions';
 import {
   createLevel,
   readLevels,
   updateLevel,
   deleteLevel,
+  saveLevelsSequence,
 } from 'api/api';
 import { SCREEN_MODES } from 'constants/constants';
 
@@ -98,21 +101,64 @@ export default function LevelList() {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
   };
 
+  const updateLevelIndex = (from, to) => {
+    if (from === to) {
+      return;
+    }
+
+    let result = [];
+
+    if (from < to) {
+      const part1 = levels.slice(0, from);
+      const part2 = levels.slice(from + 1, to + 1);
+      const part3 = levels.slice(to + 1);
+
+      result = [
+        ...part1,
+        ...part2,
+        levels[from],
+        ...part3,
+      ];
+    }
+
+    if (from > to) {
+      const part1 = levels.slice(0, to);
+      const part2 = levels.slice(to, from);
+      const part3 = levels.slice(from + 1);
+
+      result = [
+        ...part1,
+        levels[from],
+        ...part2,
+        ...part3,
+      ];
+    }
+
+    setLevels(result);
+    saveLevelsSequence(result);
+  };
+
   return (
     <>
-      <Button
-        type="button"
-        className="button"
-        onClick={handleBackToMenu}
-      >
-        Back To Menu
-      </Button>
+      <Grid container alignItems="center" justifyContent="center" padding={1}>
+        <Grid item>
+          <Button
+            type="button"
+            className="button"
+            variant="outlined"
+            onClick={handleBackToMenu}
+          >
+            Back To Menu
+          </Button>
+        </Grid>
+      </Grid>
 
       <LevelListComponent
-        mapsList={levels}
+        levelList={levels}
         onLevelCreate={onCreateNewLevel}
         onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
         onLevelDelete={onDeleteLevel}
+        onLevelIndexChange={updateLevelIndex}
       />
 
       {currentLevel && (

@@ -1,6 +1,12 @@
 export const readLevels = () => {
-  const savedLevels = JSON.parse(localStorage.getItem('levels')) || {};
-  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence')) || [];
+  const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
+  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence') || '[]') || [];
+
+  if (!savedLevelsSequence.length) {
+    Object.keys(savedLevels).forEach((key) => {
+      savedLevelsSequence.push(key);
+    });
+  }
 
   const levels = [];
 
@@ -16,8 +22,8 @@ export const writeMaps = (data) => {
 };
 
 export const createLevel = (levelData) => {
-  const savedLevels = JSON.parse(localStorage.getItem('levels')) || {};
-  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence')) || [];
+  const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
+  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence') || '[]') || [];
 
   savedLevels[levelData.id] = levelData;
 
@@ -28,8 +34,8 @@ export const createLevel = (levelData) => {
 };
 
 export const deleteLevel = (levelId) => {
-  const savedLevels = JSON.parse(localStorage.getItem('levels')) || {};
-  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence')) || [];
+  const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
+  const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence') || '[]') || [];
 
   delete savedLevels[levelId];
 
@@ -43,7 +49,26 @@ export const deleteLevel = (levelId) => {
 };
 
 export const updateLevel = (levelData) => {
-  const savedLevels = JSON.parse(localStorage.getItem('levels')) || {};
+  const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
+
   savedLevels[levelData.id] = levelData;
   localStorage.setItem('levels', JSON.stringify(savedLevels));
+};
+
+export const saveLevelsSequence = (levelsData) => {
+  const newSequence = [];
+
+  const levels = {};
+
+  levelsData.forEach((level, idx) => {
+    const { id } = level;
+    newSequence[idx] = id;
+
+    // eslint-disable-next-line no-param-reassign
+    level.index = idx;
+    levels[id] = level;
+  });
+
+  localStorage.setItem('levels', JSON.stringify(levels));
+  localStorage.setItem('levels_sequence', JSON.stringify(newSequence));
 };

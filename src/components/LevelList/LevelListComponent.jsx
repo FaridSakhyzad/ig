@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Button from '@mui/material/Button';
 import IconDelete from '@mui/icons-material/Delete';
 import IconEdit from '@mui/icons-material/Edit';
+import IconHeight from '@mui/icons-material/Height';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +18,8 @@ export default function LevelListComponent({
   onLevelCreate,
   onLevelEdit,
   onLevelDelete,
-  mapsList,
+  levelList,
+  onLevelIndexChange,
 }) {
   const [isConfirmDeleteModalOpen, setIsConfirmDeleteModalOpen] = useState(false);
   const [mapIndexToDelete, setIndexMapToDelete] = useState(null);
@@ -42,6 +45,39 @@ export default function LevelListComponent({
   const handleDeletionCancel = () => {
     setIsConfirmDeleteModalOpen(false);
     setIndexMapToDelete(null);
+  };
+
+  const handleLevelDragEnd = (data) => {
+    const { source, destination } = data;
+
+    onLevelIndexChange(source.index, destination.index);
+  };
+
+  const [isChangeIndexModalOpen, setIsChangeIndexModalOpen] = useState(false);
+
+  const [indexFrom, setIndexFrom] = useState(null);
+  const [indexTo, setIndexTo] = useState(null);
+
+  const handleChangeIndex = (from) => {
+    setIndexFrom(from);
+    setIsChangeIndexModalOpen(true);
+  };
+
+  const handleChangeIndexCancel = () => {
+    setIndexFrom(null);
+    setIndexTo(null);
+    setIsChangeIndexModalOpen(false);
+  };
+
+  const handleIndexToChange = (e) => {
+    setIndexTo(parseInt(e.target.value, 10));
+  };
+
+  const handleChangeIndexConfirm = () => {
+    onLevelIndexChange(indexFrom, indexTo);
+    setIndexFrom(null);
+    setIndexTo(null);
+    setIsChangeIndexModalOpen(false);
   };
 
   return (
@@ -84,29 +120,89 @@ export default function LevelListComponent({
         </div>
       </Modal>
 
-      <List>
-        {mapsList.map((mapItem, idx) => (
-          <ListItem
-            key={mapItem.id}
-            className="mapList-item"
+      <Modal
+        open={isChangeIndexModalOpen}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="modalAligner">
+          <Paper
+            elevation={1}
+            className="confirmationModal"
           >
-            <div className="mapList-itemName">{mapItem.name || mapItem.id}</div>
-            <div className="mapList-itemControls">
-              <Button
-                type="button"
-                className="button"
-                onClick={() => handleDeleteMap(mapItem.id)}
-              >
-                <IconDelete />
-              </Button>
-              <Button onClick={() => handleEditMap(idx)}>
-                <IconEdit />
-              </Button>
-            </div>
-          </ListItem>
-        ))}
-      </List>
+            <h4>Please Enter Level Index</h4>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <input type="number" value={indexTo} onChange={handleIndexToChange} />
+              </Grid>
+              <Grid item>
+                <Button onClick={handleChangeIndexCancel}>
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button onClick={handleChangeIndexConfirm}>
+                  Apply
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </div>
+      </Modal>
 
+      <DragDropContext
+        onDragEnd={handleLevelDragEnd}
+      >
+        <Droppable droppableId="droppableList">
+          {(provided) => (
+            <List
+              ref={provided.innerRef}
+            >
+              {levelList.map((mapItem, idx) => (
+                <Draggable
+                  key={mapItem.id}
+                  draggableId={mapItem.id}
+                  index={idx}
+                >
+                  {(liProvided) => (
+                    <ListItem
+                      className="mapList-item"
+                      draggable
+                      ref={liProvided.innerRef}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...liProvided.draggableProps}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...liProvided.dragHandleProps}
+                    >
+                      <div className="mapList-itemName">{mapItem.name || mapItem.id}</div>
+                      <div className="mapList-itemControls">
+                        <Button
+                          type="button"
+                          className="button"
+                          onClick={() => handleChangeIndex(idx)}
+                        >
+                          <IconHeight />
+                        </Button>
+                        <Button
+                          type="button"
+                          className="button"
+                          onClick={() => handleDeleteMap(mapItem.id)}
+                        >
+                          <IconDelete />
+                        </Button>
+                        <Button onClick={() => handleEditMap(idx)}>
+                          <IconEdit />
+                        </Button>
+                      </div>
+                    </ListItem>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
       <Grid container alignItems="center" justifyContent="center">
         <Grid item>
           <Button
@@ -126,13 +222,15 @@ LevelListComponent.propTypes = {
   onLevelCreate: PropTypes.func,
   onLevelEdit: PropTypes.func,
   onLevelDelete: PropTypes.func,
+  onLevelIndexChange: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
-  mapsList: PropTypes.array,
+  levelList: PropTypes.array,
 };
 
 LevelListComponent.defaultProps = {
   onLevelCreate: () => {},
   onLevelEdit: () => {},
   onLevelDelete: () => {},
-  mapsList: [],
+  onLevelIndexChange: () => {},
+  levelList: [],
 };
