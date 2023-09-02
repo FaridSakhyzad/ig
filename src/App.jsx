@@ -7,7 +7,7 @@ import { BASE_VIEWPORT_WIDTH } from './config/config';
 import { SCREEN_MODES } from './constants/constants';
 import './App.scss';
 import { LevelMap } from './maps/maps';
-import { readMaps, writeMaps } from './api/api';
+import { readLevels, writeMaps } from './api/api';
 import LevelEditComponent from './components/LevelList/LevelEditComponent';
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
 
   const { currentScreen } = useSelector((state) => state.ui);
 
-  const levels = readMaps() || [];
+  const levels = readLevels() || [];
 
   const [currentLevel, setCurrentLevel] = useState(new LevelMap(levels[0]));
   const [levelEditMode, setLevelEditMode] = useState(false);
@@ -57,7 +57,7 @@ function App() {
   };
 
   const saveEditedUnits = (level, units) => {
-    const maps = readMaps();
+    const maps = readLevels();
 
     const currentMapIndex = maps.findIndex((item) => item.id === level.id);
 
@@ -70,7 +70,7 @@ function App() {
   };
 
   const saveEditedLevel = (levelParams) => {
-    const maps = readMaps();
+    const maps = readLevels();
 
     const currentMapIndex = maps.findIndex((item) => item.id === currentLevel.id);
 
@@ -109,7 +109,7 @@ function App() {
   const [projectileExplosionDuration, setProjectileExplosionDuration] = useState();
 
   const changeCurrentLevel = (newLevelId) => {
-    const storedLevels = readMaps();
+    const storedLevels = readLevels();
 
     const newLevelIndex = storedLevels.findIndex((item) => item.id === newLevelId);
 

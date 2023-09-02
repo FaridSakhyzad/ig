@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { setCurrentScreen } from 'redux/ui/actions';
-import { readMaps, writeMaps } from 'api/api';
+import {
+  createLevel,
+  readLevels,
+  updateLevel,
+  deleteLevel,
+} from 'api/api';
 import { SCREEN_MODES } from 'constants/constants';
 
 import Button from '@mui/material/Button';
@@ -12,8 +17,8 @@ import LevelEditComponent from './LevelEditComponent';
 import 'mapList.css';
 
 export default function LevelList() {
-  const [currentMap, setCurrentMap] = useState(null);
-  const [maps, setMaps] = useState(readMaps() || []);
+  const [currentLevel, setCurrentLevel] = useState(null);
+  const [levels, setLevels] = useState(readLevels() || []);
 
   const dispatch = useDispatch();
 
@@ -68,27 +73,25 @@ export default function LevelList() {
     units: [],
   };
 
-  const createMap = () => {
-    const savedMaps = readMaps() || [];
-
-    const newMap = structuredClone({
+  const onCreateNewLevel = () => {
+    createLevel(structuredClone({
       id: Math.random().toString(16).substring(2),
       ...defaults,
-    });
+    }));
 
-    savedMaps.push(newMap);
-
-    writeMaps(savedMaps);
-    setMaps(savedMaps);
+    setLevels(readLevels());
   };
 
-  const deleteMap = (mapIndex) => {
-    const savedMaps = readMaps() || [];
+  const onDeleteLevel = (levelId) => {
+    deleteLevel(levelId);
+    setLevels(readLevels());
+  };
 
-    savedMaps.splice(mapIndex, 1);
+  const onSaveLevel = (levelData) => {
+    updateLevel(levelData);
+    setCurrentLevel(null);
 
-    writeMaps(savedMaps);
-    setMaps(savedMaps);
+    setLevels(readLevels());
   };
 
   const handleBackToMenu = () => {
@@ -106,15 +109,19 @@ export default function LevelList() {
       </Button>
 
       <LevelListComponent
-        mapsList={maps}
-        onLevelCreate={createMap}
-        onLevelEdit={(mapIndex) => setCurrentMap(maps[mapIndex])}
-        onLevelDelete={deleteMap}
+        mapsList={levels}
+        onLevelCreate={onCreateNewLevel}
+        onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
+        onLevelDelete={onDeleteLevel}
       />
 
-      {currentMap && (
+      {currentLevel && (
         <div className="container">
-          <LevelEditComponent level={currentMap} />
+          <LevelEditComponent
+            levelParams={currentLevel}
+            onClose={() => { setCurrentLevel(null); }}
+            onSave={onSaveLevel}
+          />
         </div>
       )}
     </>

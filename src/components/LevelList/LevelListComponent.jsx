@@ -95,7 +95,7 @@ export default function LevelListComponent({
               <Button
                 type="button"
                 className="button"
-                onClick={() => handleDeleteMap(idx)}
+                onClick={() => handleDeleteMap(mapItem.id)}
               >
                 <IconDelete />
               </Button>
