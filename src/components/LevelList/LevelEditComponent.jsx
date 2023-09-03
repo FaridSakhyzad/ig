@@ -7,6 +7,8 @@ import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
+import IconAdd from '@mui/icons-material/Add';
+import IconDelete from '@mui/icons-material/Delete';
 
 import AmmoEdit from './AmmoEdit';
 
@@ -36,7 +38,7 @@ export default function LevelEditComponent(props) {
     setLevel({ ...level });
   };
 
-  const [activeMiscTabIndex, setActiveMiscTabIndex] = useState(1);
+  const [activeMiscTabIndex, setActiveMiscTabIndex] = useState(0);
 
   const onMiscTabChange = (e, activeTabIndex) => {
     setActiveMiscTabIndex(activeTabIndex);
@@ -69,6 +71,21 @@ export default function LevelEditComponent(props) {
     ammo.slice(1, 10),
     ammo.slice(10),
   ];
+
+  const onComboSequenceChange = ({ target: { value } }, idx) => {
+    level.comboSequence[idx] = parseInt(value, 10);
+    setLevel({ ...level });
+  };
+
+  const addComboSequenceItem = () => {
+    level.comboSequence.push(1);
+    setLevel({ ...level });
+  };
+
+  const deleteComboSequenceItem = (idx) => {
+    level.comboSequence.splice(idx, 1);
+    setLevel({ ...level });
+  };
 
   return (
     <div className="levelEdit">
@@ -157,31 +174,74 @@ export default function LevelEditComponent(props) {
             </Grid>
 
             <Grid container spacing={1}>
-              {activeMiscTabIndex === 0 && (
-                <Grid item>COMBO</Grid>
-              )}
-              {activeMiscTabIndex === 1 && (
-                ammoColumnsForRestrictions.map((column, index) => (
-                  /* eslint-disable-next-line react/no-array-index-key */
-                  <Grid item xs={6} key={index}>
-                    <Grid container spacing={1}>
-                      {column.map((item) => (
-                        <Grid item xs={12} key={item.property}>
-                          <Grid container spacing={1} alignItems="center">
-                            <Grid item xs={8}>{item.label}</Grid>
-                            <Grid item xs={4}>
-                              <Checkbox
-                                checked={levelParams.ammoRestrictions[item.property]}
-                                onChange={(e, data) => onRestrictionChange(data, item.property)}
-                              />
-                            </Grid>
-                          </Grid>
+              <Grid item xs={12}>
+                {activeMiscTabIndex === 0 && (
+                  <Grid container spacing={1} className="comboSequence">
+                    {levelParams.comboSequence.map((item, idx) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <React.Fragment key={idx}>
+                        <Grid item xs={8}>
+                          <TextField
+                            size="small"
+                            type="number"
+                            value={item}
+                            onChange={(e) => onComboSequenceChange(e, idx)}
+                            classes={{
+                              root: 'comboSequence-input',
+                            }}
+                          />
                         </Grid>
-                      ))}
+                        <Grid item xs={4}>
+                          <Button
+                            variant="outlined"
+                            classes={{
+                              root: 'comboSequence-addButton',
+                            }}
+                            onClick={() => deleteComboSequenceItem(idx)}
+                          >
+                            <IconDelete />
+                          </Button>
+                        </Grid>
+                      </React.Fragment>
+                    ))}
+                    <Grid item xs={12}>
+                      <Button
+                        variant="outlined"
+                        classes={{
+                          root: 'comboSequence-addButton',
+                        }}
+                        onClick={addComboSequenceItem}
+                      >
+                        <IconAdd />
+                      </Button>
                     </Grid>
                   </Grid>
-                ))
-              )}
+                )}
+                {activeMiscTabIndex === 1 && (
+                  <Grid container spacing={1}>
+                    {ammoColumnsForRestrictions.map((column, index) => (
+                      /* eslint-disable-next-line react/no-array-index-key */
+                      <Grid item xs={6} key={index}>
+                        <Grid container spacing={1}>
+                          {column.map((item) => (
+                            <Grid item xs={12} key={item.property}>
+                              <Grid container spacing={1} alignItems="center">
+                                <Grid item xs={8}>{item.label}</Grid>
+                                <Grid item xs={4}>
+                                  <Checkbox
+                                    checked={levelParams.ammoRestrictions[item.property]}
+                                    onChange={(e, data) => onRestrictionChange(data, item.property)}
+                                  />
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
