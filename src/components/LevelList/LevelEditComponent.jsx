@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
@@ -33,6 +35,40 @@ export default function LevelEditComponent(props) {
     level[param] = value;
     setLevel({ ...level });
   };
+
+  const [activeMiscTabIndex, setActiveMiscTabIndex] = useState(1);
+
+  const onMiscTabChange = (e, activeTabIndex) => {
+    setActiveMiscTabIndex(activeTabIndex);
+  };
+
+  const onRestrictionChange = (value, itemProperty) => {
+    level.ammoRestrictions[itemProperty] = value;
+    setLevel({ ...level });
+  };
+
+  const ammo = [
+    { label: 'User Moves:', property: 'userMoves' },
+    { label: 'Base Units:', property: 'defaults' },
+    { label: 'Bobombs:', property: 'bobombs' },
+    { label: 'Lasers:', property: 'lasers' },
+    { label: 'Deflectors:', property: 'deflectors' },
+    { label: 'Walls:', property: 'walls' },
+    { label: 'Npc:', property: 'npc' },
+    { label: 'Hidden:', property: 'hidden' },
+    { label: 'Portals:', property: 'portals' },
+    { label: 'Teleports:', property: 'teleports' },
+
+    { label: 'Deletes:', property: 'deletes' },
+    { label: 'Swaps:', property: 'swaps' },
+    { label: 'Rotates:', property: 'rotates' },
+    { label: 'Jumps:', property: 'jumps' },
+  ];
+
+  const ammoColumnsForRestrictions = [
+    ammo.slice(1, 10),
+    ammo.slice(10),
+  ];
 
   return (
     <div className="levelEdit">
@@ -102,10 +138,52 @@ export default function LevelEditComponent(props) {
             </Grid>
           </Grid>
 
-          <AmmoEdit
-            level={level}
-            onAmmoChange={onAmmoChange}
-          />
+          <Grid item>
+            <AmmoEdit
+              level={level}
+              onAmmoChange={onAmmoChange}
+              ammo={ammo}
+            />
+          </Grid>
+
+          <Grid item>
+            <Grid container spacing={1} marginBottom={1}>
+              <Grid item>
+                <Tabs value={activeMiscTabIndex} onChange={onMiscTabChange} aria-label="basic tabs example">
+                  <Tab label="Combo Sequence" id="ammo" />
+                  <Tab label="Ammo restrictions" id="reward" />
+                </Tabs>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={1}>
+              {activeMiscTabIndex === 0 && (
+                <Grid item>COMBO</Grid>
+              )}
+              {activeMiscTabIndex === 1 && (
+                ammoColumnsForRestrictions.map((column, index) => (
+                  /* eslint-disable-next-line react/no-array-index-key */
+                  <Grid item xs={6} key={index}>
+                    <Grid container spacing={1}>
+                      {column.map((item) => (
+                        <Grid item xs={12} key={item.property}>
+                          <Grid container spacing={1} alignItems="center">
+                            <Grid item xs={8}>{item.label}</Grid>
+                            <Grid item xs={4}>
+                              <Checkbox
+                                checked={levelParams.ammoRestrictions[item.property]}
+                                onChange={(e, data) => onRestrictionChange(data, item.property)}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+                ))
+              )}
+            </Grid>
+          </Grid>
         </Grid>
       </div>
 

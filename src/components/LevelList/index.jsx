@@ -20,8 +20,10 @@ import LevelEditComponent from './LevelEditComponent';
 import 'mapList.css';
 
 export default function LevelList() {
-  const [currentLevel, setCurrentLevel] = useState(null);
-  const [levels, setLevels] = useState(readLevels() || []);
+  const savedLevels = readLevels();
+
+  const [currentLevel, setCurrentLevel] = useState(savedLevels[0]);
+  const [levels, setLevels] = useState(savedLevels || []);
 
   const dispatch = useDispatch();
 
@@ -153,22 +155,22 @@ export default function LevelList() {
         </Grid>
       </Grid>
 
-      <LevelListComponent
-        levelList={levels}
-        onLevelCreate={onCreateNewLevel}
-        onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
-        onLevelDelete={onDeleteLevel}
-        onLevelIndexChange={updateLevelIndex}
-      />
+      {!currentLevel && (
+        <LevelListComponent
+          levelList={levels}
+          onLevelCreate={onCreateNewLevel}
+          onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
+          onLevelDelete={onDeleteLevel}
+          onLevelIndexChange={updateLevelIndex}
+        />
+      )}
 
       {currentLevel && (
-        <div className="container">
-          <LevelEditComponent
-            levelParams={currentLevel}
-            onClose={() => { setCurrentLevel(null); }}
-            onSave={onSaveLevel}
-          />
-        </div>
+        <LevelEditComponent
+          levelParams={currentLevel}
+          onClose={() => { setCurrentLevel(null); }}
+          onSave={onSaveLevel}
+        />
       )}
     </>
   );
