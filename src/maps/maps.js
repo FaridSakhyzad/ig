@@ -143,12 +143,7 @@ export class LevelMap {
     this.createUserBackup = createUserBackup;
     this.restoreUserAmmo = restoreUserAmmo;
     this.ammo = ammo;
-    this.ammoRestrictions = {
-      npc: true,
-      hidden: true,
-
-      ...ammoRestrictions,
-    };
+    this.ammoRestrictions = ammoRestrictions;
 
     this.grid = grid || generateGrid(mapWidth, mapHeight);
 

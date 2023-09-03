@@ -22,7 +22,7 @@ import 'mapList.css';
 export default function LevelList() {
   const savedLevels = readLevels();
 
-  const [currentLevel, setCurrentLevel] = useState(savedLevels[0]);
+  const [currentLevel, setCurrentLevel] = useState(null);
   const [levels, setLevels] = useState(savedLevels || []);
 
   const dispatch = useDispatch();
@@ -73,7 +73,10 @@ export default function LevelList() {
     createUserBackup: false,
     restoreUserAmmo: false,
     ammo: {},
-    ammoRestrictions: {},
+    ammoRestrictions: {
+      npc: true,
+      hidden: true,
+    },
     grid: null,
     units: [],
   };
