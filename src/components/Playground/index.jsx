@@ -47,7 +47,7 @@ function Playground(props) {
     onChangeLevel,
     onPlayNextLevel,
     onEditStart,
-    onSave,
+    onSaveUnits,
   } = props;
 
   const dispatch = useDispatch();
@@ -738,8 +738,8 @@ function Playground(props) {
     startLevel();
   }, [levelFromProp]);
 
-  const handleSaveLevelClick = () => {
-    onSave(level, units);
+  const handleSaveUnitsClick = () => {
+    onSaveUnits(level, units);
   };
 
   const handleEditParamsClick = () => {
@@ -778,7 +778,7 @@ function Playground(props) {
 
         <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
         <button type="button" className="button" onClick={handleEditParamsClick}>Params</button>
-        <button type="button" className="button" onClick={handleSaveLevelClick}>Save</button>
+        <button type="button" className="button" onClick={handleSaveUnitsClick}>Save</button>
 
         {levels && (
           <select
@@ -883,7 +883,7 @@ Playground.propTypes = {
   onChangeLevel: PropTypes.func,
   onPlayNextLevel: PropTypes.func,
   onEditStart: PropTypes.func,
-  onSave: PropTypes.func,
+  onSaveUnits: PropTypes.func,
 };
 
 Playground.defaultProps = {
@@ -893,7 +893,7 @@ Playground.defaultProps = {
   onChangeLevel: () => {},
   onPlayNextLevel: () => {},
   onEditStart: () => {},
-  onSave: () => {},
+  onSaveUnits: () => {},
 };
 
 Playground.actingProjectilesNumber = 0;

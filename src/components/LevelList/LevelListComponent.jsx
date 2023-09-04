@@ -50,6 +50,10 @@ export default function LevelListComponent({
   const handleLevelDragEnd = (data) => {
     const { source, destination } = data;
 
+    if (!source || !destination) {
+      return;
+    }
+
     onLevelIndexChange(source.index, destination.index);
   };
 
@@ -79,6 +83,11 @@ export default function LevelListComponent({
     setIndexTo(null);
     setIsChangeIndexModalOpen(false);
   };
+
+  const getListItemStyle = (isDragging, draggableStyle) => ({
+    boxShadow: isDragging ? '0 0 15px 0 rgba(0, 0, 0, 0.3)' : 'none',
+    ...draggableStyle,
+  });
 
   return (
     <>
@@ -164,7 +173,7 @@ export default function LevelListComponent({
                   draggableId={mapItem.id}
                   index={idx}
                 >
-                  {(liProvided) => (
+                  {(liProvided, liSnapshot) => (
                     <ListItem
                       className="mapList-item"
                       draggable
@@ -173,6 +182,10 @@ export default function LevelListComponent({
                       {...liProvided.draggableProps}
                       // eslint-disable-next-line react/jsx-props-no-spreading
                       {...liProvided.dragHandleProps}
+                      style={getListItemStyle(
+                        liSnapshot.isDragging,
+                        liProvided.draggableProps.style,
+                      )}
                     >
                       <div className="mapList-itemName">{mapItem.name || mapItem.id}</div>
                       <div className="mapList-itemControls">

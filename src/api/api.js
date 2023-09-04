@@ -17,10 +17,6 @@ export const readLevels = () => {
   return levels;
 };
 
-export const writeMaps = (data) => {
-  localStorage.setItem('maps', JSON.stringify(data));
-};
-
 export const createLevel = (levelData) => {
   const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
   const savedLevelsSequence = JSON.parse(localStorage.getItem('levels_sequence') || '[]') || [];

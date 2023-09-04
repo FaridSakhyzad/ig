@@ -5,10 +5,11 @@ import Playground from './components/Playground';
 import LevelList from './components/LevelList';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import { SCREEN_MODES } from './constants/constants';
-import './App.scss';
 import { LevelMap } from './maps/maps';
-import { readLevels, writeMaps } from './api/api';
+import { readLevels, updateLevel } from './api/api';
 import LevelEditComponent from './components/LevelList/LevelEditComponent';
+
+import './App.scss';
 
 function App() {
   const dispatch = useDispatch();
@@ -57,35 +58,18 @@ function App() {
   };
 
   const saveEditedUnits = (level, units) => {
-    const maps = readLevels();
-
-    const currentMapIndex = maps.findIndex((item) => item.id === level.id);
-
-    maps[currentMapIndex] = {
-      ...level,
-      units: [...units],
-    };
-
-    writeMaps(maps);
+    updateLevel({ ...currentLevel, units: [...units] });
   };
 
-  const saveEditedLevel = (levelParams) => {
-    const maps = readLevels();
-
-    const currentMapIndex = maps.findIndex((item) => item.id === currentLevel.id);
-
-    const newLevelParams = {
+  const saveLevelParams = (levelParams) => {
+    const newLevel = new LevelMap({
       ...currentLevel,
       ...levelParams,
-    };
-
-    const newLevel = new LevelMap(newLevelParams);
+    });
 
     newLevel.rescaleGrid();
 
-    maps[currentMapIndex] = newLevel;
-
-    writeMaps(maps);
+    updateLevel(newLevel);
 
     setCurrentLevel(newLevel);
   };
@@ -142,7 +126,7 @@ function App() {
             <div className="serviceScreen">
               <LevelEditComponent
                 levelParams={levelParams}
-                onSave={saveEditedLevel}
+                onSave={saveLevelParams}
                 onClose={() => { setLevelEditMode(false); }}
               />
             </div>
@@ -156,7 +140,7 @@ function App() {
               onChangeLevel={changeCurrentLevel}
               onPlayNextLevel={setNextLevel}
               onEditStart={onEditStart}
-              onSave={saveEditedUnits}
+              onSaveUnits={saveEditedUnits}
             />
           </div>
         </>
