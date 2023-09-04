@@ -1,18 +1,22 @@
 .mapList {
     margin-bottom: 18px;
     width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .mapList-item {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    background-color: white;
 }
 
 .mapList-itemName {}
 
 .mapList-itemControls {
     margin-left: auto;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .mapList-newLevelButton {

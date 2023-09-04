@@ -864,6 +864,10 @@ function Playground(props) {
         </div>
       </div>
 
+      <div>
+        ADMIN MENU
+      </div>
+
       <UserMenu
         afterInputAction={afterInputAction}
         onModeChange={onModeChange}

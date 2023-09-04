@@ -4,6 +4,7 @@ import {
   SET_ROTATES,
   SET_AMMO,
   RESET_AMMO,
+  SET_EDITOR_MODE,
 } from './constants';
 
 export const setUserMoves = (data) => ({
@@ -28,4 +29,9 @@ export const setAmmo = (data) => ({
 
 export const resetAmmo = () => ({
   type: RESET_AMMO,
+});
+
+export const setEditorMode = (data) => ({
+  type: SET_EDITOR_MODE,
+  payload: data,
 });

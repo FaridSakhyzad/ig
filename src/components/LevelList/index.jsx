@@ -72,7 +72,24 @@ export default function LevelList() {
     overrideUserAmmo: false,
     createUserBackup: false,
     restoreUserAmmo: false,
-    ammo: {},
+    ammo: {
+      userMoves: 0,
+
+      defaults: 0,
+      bobombs: 0,
+      lasers: 0,
+      deflectors: 0,
+      walls: 0,
+      npc: 0,
+      hidden: 0,
+      portals: 0,
+      teleports: 0,
+
+      swaps: 0,
+      rotates: 0,
+      jumps: 0,
+      deletes: 0,
+    },
     ammoRestrictions: {
       npc: true,
       hidden: true,

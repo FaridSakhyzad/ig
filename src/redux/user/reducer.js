@@ -1,4 +1,5 @@
 import {
+  SET_EDITOR_MODE,
   SET_USER_MOVES,
   SET_SWAPS,
   SET_ROTATES,
@@ -7,6 +8,8 @@ import {
 } from './constants';
 
 const initialState = {
+  editorMode: false,
+
   userMoves: 0,
 
   defaults: 0,
@@ -44,6 +47,12 @@ const initialState = {
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_EDITOR_MODE: {
+      return {
+        ...state,
+        editorMode: action.payload,
+      };
+    }
     case SET_USER_MOVES: {
       return {
         ...state,

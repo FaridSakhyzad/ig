@@ -1,3 +1,5 @@
+export const SET_EDITOR_MODE = 'SET_EDITOR_MODE';
+
 export const SET_USER_MOVES = 'SET_USER_MOVES';
 
 export const SET_SWAPS = 'SET_SWAPS';

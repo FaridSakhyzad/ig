@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { setEditorMode } from './redux/user/actions';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
 import LevelList from './components/LevelList';
@@ -10,16 +11,22 @@ import { readLevels, updateLevel } from './api/api';
 import LevelEditComponent from './components/LevelList/LevelEditComponent';
 
 import './App.scss';
+import './mainMenu.scss';
 
 function App() {
   const dispatch = useDispatch();
 
   const { currentScreen } = useSelector((state) => state.ui);
+  const { editorMode } = useSelector((state) => state.user);
 
   const levels = readLevels() || [];
 
   const [currentLevel, setCurrentLevel] = useState(new LevelMap(levels[0]));
   const [levelEditMode, setLevelEditMode] = useState(false);
+
+  const handleAdminModeChange = ({ target: { checked } }) => {
+    dispatch(setEditorMode(checked));
+  };
 
   const handlePlayClick = () => {
     setCurrentLevel(new LevelMap(levels[0]));
@@ -44,6 +51,10 @@ function App() {
 
   const handleSettingsClick = () => {
     dispatch(setCurrentScreen(SCREEN_MODES.settings));
+  };
+
+  const handleMenuClick = () => {
+    dispatch(setCurrentScreen(SCREEN_MODES.menu));
   };
 
   const [projectileMoveStep, setProjectileMoveStep] = useState(1);
@@ -148,14 +159,37 @@ function App() {
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
           <h2>Menu</h2>
-          <button type="button" onClick={handlePlayClick} className="button">Play</button>
-          <button type="button" onClick={handleLevelsClick} className="button">Levels</button>
-          <button type="button" onClick={handleSettingsClick} className="button">Settings</button>
+          <ul className="mainMenu">
+            <li className="mainMenu-item">
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+              <label className="mainMenu-editorModeSwitcher">
+                Editor Mode
+                <input
+                  type="checkbox"
+                  className="checkbox mainMenu-editorModeSwitcherInput"
+                  checked={editorMode}
+                  onChange={handleAdminModeChange}
+                />
+              </label>
+            </li>
+            <li className="mainMenu-item">
+              <button type="button" onClick={handlePlayClick} className="button">Play</button>
+            </li>
+            {editorMode && (
+              <li className="mainMenu-item">
+                <button type="button" onClick={handleLevelsClick} className="button">Levels</button>
+              </li>
+            )}
+            <li className="mainMenu-item">
+              <button type="button" onClick={handleSettingsClick} className="button">Settings</button>
+            </li>
+          </ul>
         </div>
       )}
       {currentScreen === SCREEN_MODES.settings && (
         <div className="screen" id="screen">
           <h2>Settings</h2>
+          <button type="button" onClick={handleMenuClick} className="button">Back to Menu</button>
         </div>
       )}
     </div>
