@@ -69,6 +69,14 @@
     transition: none;
   }
 
+  &.sand {
+    .unit-image {
+      background-color: yellow;
+      opacity: 0.5;
+      border-radius: calc(var(--base-width-unit) * 5px);
+    }
+  }
+
   &.water {
     .unit-image {
       background-color: aqua;

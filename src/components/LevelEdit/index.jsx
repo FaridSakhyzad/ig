@@ -19,7 +19,7 @@ import LevelEditComponent from './LevelEditComponent';
 
 import 'mapList.css';
 
-export default function LevelList() {
+export default function LevelEdit() {
   const savedLevels = readLevels();
 
   const [currentLevel, setCurrentLevel] = useState(null);
@@ -162,27 +162,29 @@ export default function LevelList() {
 
   return (
     <>
-      <Grid container alignItems="center" justifyContent="center" padding={1}>
-        <Grid item>
-          <Button
-            type="button"
-            className="button"
-            variant="outlined"
-            onClick={handleBackToMenu}
-          >
-            Back To Menu
-          </Button>
-        </Grid>
-      </Grid>
-
       {!currentLevel && (
-        <LevelListComponent
-          levelList={levels}
-          onLevelCreate={onCreateNewLevel}
-          onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
-          onLevelDelete={onDeleteLevel}
-          onLevelIndexChange={updateLevelIndex}
-        />
+        <>
+          <Grid container alignItems="center" justifyContent="center" padding={1}>
+            <Grid item>
+              <Button
+                type="button"
+                className="button"
+                variant="outlined"
+                onClick={handleBackToMenu}
+              >
+                Back To Menu
+              </Button>
+            </Grid>
+          </Grid>
+
+          <LevelListComponent
+            levelList={levels}
+            onLevelCreate={onCreateNewLevel}
+            onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
+            onLevelDelete={onDeleteLevel}
+            onLevelIndexChange={updateLevelIndex}
+          />
+        </>
       )}
 
       {currentLevel && (

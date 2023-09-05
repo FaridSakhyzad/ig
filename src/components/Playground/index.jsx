@@ -28,7 +28,11 @@ import {
   SELECT_MODE,
   PLACING_MODE,
   SCREEN_MODES,
+  ITEM_EDIT_MODE,
+  CELL_EDIT_MODE,
 } from 'constants/constants';
+
+import PlaygroundEdit from '../LevelEdit/PlaygroundEdit';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -391,6 +395,11 @@ function Playground(props) {
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
+    if (userInputMode === ITEM_EDIT_MODE) {
+      console.log(units[unitIndex]);
+      return;
+    }
+
     if (Playground.actingProjectilesNumber > 0) {
       return;
     }
@@ -455,6 +464,11 @@ function Playground(props) {
   };
 
   const handleMapCellClick = (id, top, left) => {
+    if (userInputMode === CELL_EDIT_MODE) {
+      console.log(level.grid[top][left]);
+      return;
+    }
+
     if (userInputMode === PLACING_MODE) {
       placeUnit(top, left);
       setUserInputMode(GAMEPLAY_MODE);
@@ -750,6 +764,10 @@ function Playground(props) {
     onChangeLevel(e.target.value);
   };
 
+  const onPlaygroundEdit = (mode) => {
+    setUserInputMode(mode);
+  };
+
   return (
     <>
       {winScreenVisible && (
@@ -864,9 +882,9 @@ function Playground(props) {
         </div>
       </div>
 
-      <div>
-        ADMIN MENU
-      </div>
+      <PlaygroundEdit
+        onEdit={onPlaygroundEdit}
+      />
 
       <UserMenu
         afterInputAction={afterInputAction}

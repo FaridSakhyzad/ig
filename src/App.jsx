@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setEditorMode } from './redux/user/actions';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
-import LevelList from './components/LevelList';
+import LevelEdit from './components/LevelEdit';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import { SCREEN_MODES } from './constants/constants';
 import { LevelMap } from './maps/maps';
 import { readLevels, updateLevel } from './api/api';
-import LevelEditComponent from './components/LevelList/LevelEditComponent';
+import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
 
 import './App.scss';
 import './mainMenu.scss';
@@ -128,7 +128,7 @@ function App() {
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsList && (
         <div className="serviceScreen" id="screen">
-          <LevelList />
+          <LevelEdit />
         </div>
       )}
       {currentScreen === SCREEN_MODES.playground && (
