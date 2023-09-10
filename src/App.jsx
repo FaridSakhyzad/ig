@@ -12,6 +12,8 @@ import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
 
 import './App.scss';
 import './mainMenu.scss';
+import UnitEdit from './components/LevelEdit/UnitEdit';
+import CellEdit from './components/LevelEdit/CellEdit';
 
 function App() {
   const dispatch = useDispatch();
@@ -85,7 +87,7 @@ function App() {
     setCurrentLevel(newLevel);
   };
 
-  const onEditStart = () => {
+  const onLevelParamsEditStart = () => {
     setLevelEditMode(true);
   };
 
@@ -124,6 +126,22 @@ function App() {
     ...levelParams
   } = currentLevel;
 
+  const [editedUnitIndex, setEditedUnitIndex] = useState(null);
+  const [editedCellCoords, setEditedCellCoords] = useState(null);
+
+  const onLevelUnitEdit = (index) => {
+    setEditedUnitIndex(index);
+  };
+
+  const onLevelCellEdit = (row, col) => {
+    setEditedCellCoords([row, col]);
+  };
+
+  const editedUnit = editedUnitIndex !== null ? currentLevel.units[editedUnitIndex] : null;
+
+  const editedCell = editedCellCoords !== null
+    ? currentLevel.grid[editedCellCoords[0]][editedCellCoords[1]] : null;
+
   return (
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsList && (
@@ -142,6 +160,24 @@ function App() {
               />
             </div>
           )}
+          {editedUnit !== null && (
+            <div className="serviceScreen">
+              <UnitEdit
+                unit={editedUnit}
+                onApply={() => {}}
+                onClose={() => { setEditedUnitIndex(null); }}
+              />
+            </div>
+          )}
+          {editedCell !== null && (
+            <div className="serviceScreen">
+              <CellEdit
+                cell={editedCell}
+                onApply={() => {}}
+                onClose={() => { setEditedCellCoords(null); }}
+              />
+            </div>
+          )}
           <div className="screen" id="screen">
             <Playground
               projectileExplosionDuration={projectileExplosionDuration}
@@ -150,7 +186,9 @@ function App() {
               levels={levels}
               onChangeLevel={changeCurrentLevel}
               onPlayNextLevel={setNextLevel}
-              onEditStart={onEditStart}
+              onLevelParamsEditStart={onLevelParamsEditStart}
+              onLevelUnitEdit={onLevelUnitEdit}
+              onLevelCellEdit={onLevelCellEdit}
               onSaveUnits={saveEditedUnits}
             />
           </div>

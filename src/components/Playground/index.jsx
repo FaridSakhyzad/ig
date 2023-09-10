@@ -50,7 +50,9 @@ function Playground(props) {
     levels,
     onChangeLevel,
     onPlayNextLevel,
-    onEditStart,
+    onLevelParamsEditStart,
+    onLevelUnitEdit,
+    onLevelCellEdit,
     onSaveUnits,
   } = props;
 
@@ -396,7 +398,7 @@ function Playground(props) {
 
   const handleUnitClick = (e, unitId, unitIndex) => {
     if (userInputMode === ITEM_EDIT_MODE) {
-      console.log(units[unitIndex]);
+      onLevelUnitEdit(unitIndex, units[unitIndex]);
       return;
     }
 
@@ -463,9 +465,9 @@ function Playground(props) {
     }
   };
 
-  const handleMapCellClick = (id, top, left) => {
+  const handleGridCellClick = (id, top, left) => {
     if (userInputMode === CELL_EDIT_MODE) {
-      console.log(level.grid[top][left]);
+      onLevelCellEdit(top, left);
       return;
     }
 
@@ -757,7 +759,7 @@ function Playground(props) {
   };
 
   const handleEditParamsClick = () => {
-    onEditStart();
+    onLevelParamsEditStart();
   };
 
   const handleLevelSelectorChange = (e) => {
@@ -840,7 +842,7 @@ function Playground(props) {
                 id, top, left, type,
               }, colIndex) => (
                 <div
-                  onClick={() => handleMapCellClick(id, rowIndex, colIndex)}
+                  onClick={() => handleGridCellClick(id, rowIndex, colIndex)}
                   className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selectedCells.some((cell) => cell.id === id) })}
                   data-id={id}
                   key={id}
@@ -904,7 +906,9 @@ Playground.propTypes = {
   levels: PropTypes.array.isRequired,
   onChangeLevel: PropTypes.func,
   onPlayNextLevel: PropTypes.func,
-  onEditStart: PropTypes.func,
+  onLevelParamsEditStart: PropTypes.func,
+  onLevelUnitEdit: PropTypes.func,
+  onLevelCellEdit: PropTypes.func,
   onSaveUnits: PropTypes.func,
 };
 
@@ -914,7 +918,9 @@ Playground.defaultProps = {
   baseWidthUnit: 1,
   onChangeLevel: () => {},
   onPlayNextLevel: () => {},
-  onEditStart: () => {},
+  onLevelParamsEditStart: () => {},
+  onLevelUnitEdit: () => {},
+  onLevelCellEdit: () => {},
   onSaveUnits: () => {},
 };
 
