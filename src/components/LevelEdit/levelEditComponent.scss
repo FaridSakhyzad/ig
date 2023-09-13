@@ -16,8 +16,12 @@
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
 }
 
-.ammoEditInput input {
+.levelEditInput input {
   padding: 6px;
+}
+
+.levelEditSelectRoot .levelEditSelect {
+  padding: 6px 32px 6px 6px;
 }
 
 .comboSequence {

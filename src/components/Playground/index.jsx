@@ -755,7 +755,7 @@ function Playground(props) {
   }, [levelFromProp]);
 
   const handleSaveUnitsClick = () => {
-    onSaveUnits(level, units);
+    onSaveUnits(units);
   };
 
   const handleEditParamsClick = () => {

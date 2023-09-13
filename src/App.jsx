@@ -70,7 +70,7 @@ function App() {
     setProjectileMoveStep(baseWidthUnit);
   };
 
-  const saveEditedUnits = (level, units) => {
+  const saveEditedUnits = (units) => {
     updateLevel({ ...currentLevel, units: [...units] });
   };
 

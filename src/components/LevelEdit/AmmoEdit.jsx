@@ -55,7 +55,7 @@ export default function AmmoEdit(props) {
                         value={level[section][item.property]}
                         onChange={(e) => onAmmoChange(e, section, item.property)}
                         classes={{
-                          root: 'ammoEditInput',
+                          root: 'levelEditInput',
                         }}
                       />
                     </Grid>

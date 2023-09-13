@@ -8,6 +8,7 @@ export default class Teleport extends BaseUnit {
       valueCountable: false,
       type: 'teleport',
       value: UNIT_MAX_VALUE,
+      turrets: [],
     });
 
     this.meta = params.meta || {};

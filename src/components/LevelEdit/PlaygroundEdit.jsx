@@ -28,14 +28,14 @@ export default function PlaygroundEdit(props) {
         onClick={handleEditUnitsClick}
         className="button"
       >
-        Edit Units
+        Edit Unit
       </button>
       <button
         type="button"
         onClick={handleEditCellsClick}
         className="button"
       >
-        Edit Cells
+        Edit Cell
       </button>
       <button
         type="button"
