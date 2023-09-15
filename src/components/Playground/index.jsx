@@ -28,8 +28,8 @@ import {
   SELECT_MODE,
   PLACING_MODE,
   SCREEN_MODES,
-  ITEM_EDIT_MODE,
-  CELL_EDIT_MODE,
+  UNIT_EDIT_MODE,
+  CELL_EDIT_MODE, UNIT_DELETE_MODE,
 } from 'constants/constants';
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
@@ -399,8 +399,13 @@ function Playground(props) {
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
-    if (userInputMode === ITEM_EDIT_MODE) {
+    if (userInputMode === UNIT_EDIT_MODE) {
       onLevelUnitEdit(unitIndex, units[unitIndex]);
+      return;
+    }
+
+    if (userInputMode === UNIT_DELETE_MODE) {
+      removeUnit(unitIndex);
       return;
     }
 

@@ -169,6 +169,7 @@ function App() {
       type,
       value,
       valueCountable,
+      kind,
     } = editedUnit;
 
     return {
@@ -179,8 +180,11 @@ function App() {
       type,
       value,
       valueCountable,
+      kind,
     };
   };
+
+  const getUnitTurretsForEdit = () => structuredClone(editedUnit.turrets);
 
   return (
     <div className="app">
@@ -204,7 +208,7 @@ function App() {
             <div className="serviceScreen">
               <UnitEdit
                 unitParams={getUnitParamsForEdit()}
-                unitTurrets={structuredClone(editedUnit.turrets)}
+                unitTurrets={getUnitTurretsForEdit()}
                 onApply={onUnitEditApply}
                 onClose={onUnitEditClose}
               />

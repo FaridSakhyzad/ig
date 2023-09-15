@@ -26,8 +26,6 @@ export default function UnitEdit(props) {
   const [unitTurrets, setUnitTurrets] = useState(turretsFromProps);
 
   const handleParamChange = (value, param) => {
-    console.log(param, value);
-
     setUnitParams({
       ...unitParams,
       [param]: value,
@@ -66,6 +64,9 @@ export default function UnitEdit(props) {
       <div className="container">
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={12}>Type: {unitType.label}</Grid>
+
+          <Grid item xs={6}>Kind:</Grid>
+          <Grid item xs={6}>{unitParams.kind}</Grid>
 
           <Grid item xs={6}>Value</Grid>
           <Grid item xs={6}>
@@ -200,7 +201,7 @@ export default function UnitEdit(props) {
                             size="small"
                             type="number"
                             value={turret.speed}
-                            onChange={(e) => handleTurretParamChange(turretIdx, parseInt(e.target.value, 10), 'speed')}
+                            onChange={(e) => handleTurretParamChange(turretIdx, parseFloat(e.target.value, 10), 'speed')}
                             classes={{
                               root: 'levelEditInput',
                             }}
@@ -213,7 +214,7 @@ export default function UnitEdit(props) {
                             size="small"
                             type="number"
                             value={turret.maxDistance}
-                            onChange={(e) => handleTurretParamChange(turretIdx, parseInt(e.target.value, 10), 'maxDistance')}
+                            onChange={(e) => handleTurretParamChange(turretIdx, parseFloat(e.target.value, 10), 'maxDistance')}
                             classes={{
                               root: 'levelEditInput',
                             }}
@@ -223,7 +224,7 @@ export default function UnitEdit(props) {
                         <Grid item xs={6}>
                           <Button
                             variant="outlined"
-                            onClick={handleDeleteTurretClick}
+                            onClick={() => handleDeleteTurretClick(turretIdx)}
                           >
                             Delete Turret
                           </Button>
@@ -259,7 +260,7 @@ UnitEdit.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   unitParams: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  unitTurrets: PropTypes.object.isRequired,
+  unitTurrets: PropTypes.array.isRequired,
   onApply: PropTypes.func,
   onClose: PropTypes.func,
 };

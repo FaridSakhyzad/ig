@@ -61,6 +61,8 @@ body, html, #root {
   &.selected {
     outline: 1px solid;
     outline-offset: 2px;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.3) inset;
   }
 }
 

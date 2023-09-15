@@ -12,7 +12,7 @@ import IconDelete from '@mui/icons-material/Delete';
 
 import AmmoEdit from './AmmoEdit';
 
-import './levelEditComponent.scss';
+import './levelEdit.scss';
 
 export default function LevelEditComponent(props) {
   const {

@@ -37,3 +37,12 @@
 .comboSequence-input input {
   padding: 6px;
 }
+
+.levelEditToolbar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  padding: 5px 0;
+}
