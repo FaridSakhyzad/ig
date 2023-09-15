@@ -5,7 +5,7 @@ import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
 import LevelEdit from './components/LevelEdit';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
-import { SCREEN_MODES } from './constants/constants';
+import { GAMEPLAY_MODE, SCREEN_MODES } from './constants/constants';
 import { LevelMap } from './maps/maps';
 import { readLevels, updateLevel } from './api/api';
 import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
@@ -74,7 +74,7 @@ function App() {
     updateLevel({ ...currentLevel, units: [...units] });
   };
 
-  const saveLevelParams = (levelParams) => {
+  const saveLevelParams = (levelParams = {}) => {
     const newLevel = new LevelMap({
       ...currentLevel,
       ...levelParams,
@@ -142,6 +142,46 @@ function App() {
   const editedCell = editedCellCoords !== null
     ? currentLevel.grid[editedCellCoords[0]][editedCellCoords[1]] : null;
 
+  const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
+
+  const onUnitEditClose = () => {
+    setEditedUnitIndex(null);
+    setUserInputMode(GAMEPLAY_MODE);
+  };
+
+  const onUnitEditApply = (params, turrets) => {
+    currentLevel.units[editedUnitIndex] = {
+      ...currentLevel.units[editedUnitIndex],
+      ...params,
+      turrets,
+    };
+
+    setCurrentLevel(currentLevel);
+    saveLevelParams();
+  };
+
+  const getUnitParamsForEdit = () => {
+    const {
+      angle,
+      maxValue,
+      minValue,
+      selectable,
+      type,
+      value,
+      valueCountable,
+    } = editedUnit;
+
+    return {
+      angle,
+      maxValue,
+      minValue,
+      selectable,
+      type,
+      value,
+      valueCountable,
+    };
+  };
+
   return (
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsList && (
@@ -163,9 +203,10 @@ function App() {
           {editedUnit !== null && (
             <div className="serviceScreen">
               <UnitEdit
-                unit={editedUnit}
-                onApply={() => {}}
-                onClose={() => { setEditedUnitIndex(null); }}
+                unitParams={getUnitParamsForEdit()}
+                unitTurrets={structuredClone(editedUnit.turrets)}
+                onApply={onUnitEditApply}
+                onClose={onUnitEditClose}
               />
             </div>
           )}
@@ -190,6 +231,7 @@ function App() {
               onLevelUnitEdit={onLevelUnitEdit}
               onLevelCellEdit={onLevelCellEdit}
               onSaveUnits={saveEditedUnits}
+              userInputMode={userInputMode}
             />
           </div>
         </>

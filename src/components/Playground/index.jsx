@@ -32,6 +32,8 @@ import {
   CELL_EDIT_MODE,
 } from 'constants/constants';
 
+import { DEFAULT_MAP_WIDTH } from 'config/config';
+
 import PlaygroundEdit from '../LevelEdit/PlaygroundEdit';
 
 import Projectile from '../Projectile';
@@ -477,7 +479,7 @@ function Playground(props) {
       setAfterInputAction(null);
     }
 
-    if (userInputMode === SELECT_MODE) {
+    if (userInputMode === SELECT_MODE && afterInputAction === 'jump') {
       setSelectedCells([{ id, top, left }]);
 
       if (afterInputAction === 'jump' && selectedUnits.length > 0) {
@@ -768,6 +770,7 @@ function Playground(props) {
 
   const onPlaygroundEdit = (mode) => {
     setUserInputMode(mode);
+    setAfterInputAction(null);
   };
 
   return (
@@ -823,6 +826,7 @@ function Playground(props) {
         <div className="projectileLayer">
           {projectiles && projectiles.map((projectileProps) => (
             <Projectile
+              horCoefficient={DEFAULT_MAP_WIDTH / level.mapWidth}
               key={projectileProps.id}
               units={units}
               potentialTargetsMap={unitsMap}
@@ -885,6 +889,7 @@ function Playground(props) {
       </div>
 
       <PlaygroundEdit
+        currentMode={userInputMode}
         onEdit={onPlaygroundEdit}
       />
 

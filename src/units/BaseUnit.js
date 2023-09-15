@@ -1,7 +1,9 @@
-import { PROJECTILE_MOVE_DELAY, UNIT_MAX_VALUE, UNIT_MIN_VALUE } from '../config/config';
+import { UNIT_MAX_VALUE, UNIT_MIN_VALUE } from '../config/config';
+import BaseTurret from '../turrets/BaseTurret';
+import { BASE_UNIT } from '../constants/units';
 
 export const defaults = {
-  type: 'default',
+  type: BASE_UNIT.id,
   minValue: UNIT_MIN_VALUE,
   maxValue: UNIT_MAX_VALUE,
   selectable: true,
@@ -10,18 +12,10 @@ export const defaults = {
   hitBoxRadius: 4,
   angle: 0,
   turrets: [
-    {
-      name: 'turret1', angle: 0, type: 'default', speed: PROJECTILE_MOVE_DELAY,
-    },
-    {
-      name: 'turret2', angle: 90, type: 'default', speed: PROJECTILE_MOVE_DELAY,
-    },
-    {
-      name: 'turret3', angle: 180, type: 'default', speed: PROJECTILE_MOVE_DELAY,
-    },
-    {
-      name: 'turret4', angle: 270, type: 'default', speed: PROJECTILE_MOVE_DELAY,
-    },
+    new BaseTurret({ angle: 0 }),
+    new BaseTurret({ angle: 90 }),
+    new BaseTurret({ angle: 180 }),
+    new BaseTurret({ angle: 270 }),
   ],
 };
 
@@ -57,6 +51,7 @@ export default class BaseUnit {
 
     this.exploding = false;
     this.hitBoxRadius = hitBoxRadius;
+
     this.angle = angle;
     this.turrets = turrets;
   }

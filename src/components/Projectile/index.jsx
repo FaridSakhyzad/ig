@@ -19,6 +19,7 @@ function Projectile(props) {
     onOutOfFiled,
     onImpact,
     moveStep,
+    horCoefficient,
   } = props;
 
   const [projectileState, setProjectileState] = useState('inFlight');
@@ -225,8 +226,8 @@ function Projectile(props) {
   };
 
   const launchProjectileWithRAF = () => {
-    const maxDist = (maxDistance || SAFE_MAX_DISTANCE) * moveStep;
-    const duration = speed * (maxDistance || SAFE_MAX_DISTANCE);
+    const maxDist = moveStep * (maxDistance || SAFE_MAX_DISTANCE) * horCoefficient;
+    const duration = speed * (maxDistance || SAFE_MAX_DISTANCE) * horCoefficient;
 
     let currentX = 0;
     let currentY = 0;
@@ -493,6 +494,7 @@ Projectile.propTypes = {
   onOutOfFiled: PropTypes.func.isRequired,
   onImpact: PropTypes.func.isRequired,
   moveStep: PropTypes.number.isRequired,
+  horCoefficient: PropTypes.number.isRequired,
 };
 
 Projectile.defaultProps = {

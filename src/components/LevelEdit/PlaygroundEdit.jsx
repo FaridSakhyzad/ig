@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import {
   CELL_EDIT_MODE,
   GAMEPLAY_MODE,
@@ -7,18 +8,32 @@ import {
 } from '../../constants/constants';
 
 export default function PlaygroundEdit(props) {
-  const { onEdit } = props;
+  const { onEdit, currentMode } = props;
 
-  const handleEditCellsClick = () => {
-    onEdit(CELL_EDIT_MODE);
-  };
+  const [mode, setMode] = useState(currentMode);
 
   const handleEditUnitsClick = () => {
+    if (mode === ITEM_EDIT_MODE) {
+      setMode(GAMEPLAY_MODE);
+      onEdit(GAMEPLAY_MODE);
+
+      return;
+    }
+
+    setMode(ITEM_EDIT_MODE);
     onEdit(ITEM_EDIT_MODE);
   };
 
-  const handleOkClick = () => {
-    onEdit(GAMEPLAY_MODE);
+  const handleEditCellsClick = () => {
+    if (mode === CELL_EDIT_MODE) {
+      setMode(GAMEPLAY_MODE);
+      onEdit(GAMEPLAY_MODE);
+
+      return;
+    }
+
+    setMode(CELL_EDIT_MODE);
+    onEdit(CELL_EDIT_MODE);
   };
 
   return (
@@ -26,14 +41,14 @@ export default function PlaygroundEdit(props) {
       <button
         type="button"
         onClick={handleEditUnitsClick}
-        className="button"
+        className={classnames('button', { selected: currentMode === ITEM_EDIT_MODE })}
       >
         Edit Unit
       </button>
       <button
         type="button"
         onClick={handleEditCellsClick}
-        className="button"
+        className={classnames('button', { selected: currentMode === CELL_EDIT_MODE })}
       >
         Edit Cell
       </button>
@@ -51,21 +66,16 @@ export default function PlaygroundEdit(props) {
       >
         Toggle Turrets
       </button>
-      <button
-        type="button"
-        onClick={handleOkClick}
-        className="button"
-      >
-        OK
-      </button>
     </div>
   );
 }
 
 PlaygroundEdit.propTypes = {
+  currentMode: PropTypes.string,
   onEdit: PropTypes.func,
 };
 
 PlaygroundEdit.defaultProps = {
+  currentMode: '',
   onEdit: () => {},
 };
