@@ -5,7 +5,7 @@ import {
   CELL_EDIT_MODE, CELL_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   PERSISTENT_PLACING_MODE,
-  UNIT_DELETE_MODE,
+  PERSISTENT_DELETE_MODE,
   UNIT_EDIT_MODE,
 } from 'constants/constants';
 import {
@@ -18,12 +18,21 @@ import {
   PORTAL,
   TELEPORT,
   WALL,
-  Units,
+  UNITS,
 } from '../../constants/units';
 import Unit from '../Unit';
 
 export default function PlaygroundEdit(props) {
-  const { onEdit, currentMode, currentCallback } = props;
+  const {
+    onEdit,
+    onSave,
+    onLevelParamsEdit,
+    currentMode,
+    currentCallback,
+    currentLevel,
+    levels,
+    changeCurrentLevel,
+  } = props;
 
   const [mode, setMode] = useState(currentMode);
   const [callback, setCallback] = useState(currentCallback);
@@ -93,21 +102,33 @@ export default function PlaygroundEdit(props) {
   };
 
   const handleDeleteUnitsClick = () => {
-    if (mode === UNIT_DELETE_MODE) {
+    if (mode === PERSISTENT_DELETE_MODE) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
 
       return;
     }
 
-    setMode(UNIT_DELETE_MODE);
-    onEdit(UNIT_DELETE_MODE);
+    setMode(PERSISTENT_DELETE_MODE);
+    onEdit(PERSISTENT_DELETE_MODE);
   };
 
   const handleItemButtonClick = (id) => {
     if (callbacks[id]) {
       callbacks[id]();
     }
+  };
+
+  const handleLevelParamsClick = () => {
+    onLevelParamsEdit();
+  };
+
+  const handleSaveClick = () => {
+    onSave();
+  };
+
+  const handleLevelSelectorChange = (e) => {
+    changeCurrentLevel(e.target.value);
   };
 
   const renderUnitButton = (id) => (
@@ -140,42 +161,71 @@ export default function PlaygroundEdit(props) {
         <button
           type="button"
           onClick={handleDeleteUnitsClick}
-          className={classnames('button', { selected: currentMode === UNIT_DELETE_MODE })}
+          className={classnames('button levelEditButton', { selected: currentMode === PERSISTENT_DELETE_MODE })}
         >
-          Delete
+          Del Units
         </button>
         <button
           type="button"
           onClick={handleEditUnitsClick}
-          className={classnames('button', { selected: currentMode === UNIT_EDIT_MODE })}
+          className={classnames('button levelEditButton', { selected: currentMode === UNIT_EDIT_MODE })}
         >
-          Edit Unit
+          Edit Units
         </button>
         <button
           type="button"
           onClick={handleEditCellsClick}
-          className={classnames('button', { selected: currentMode === CELL_EDIT_MODE })}
+          className={classnames('button levelEditButton', { selected: currentMode === CELL_EDIT_MODE })}
         >
-          Edit Cell
+          Edit Cells
         </button>
         <button
           type="button"
           onClick={() => {}}
-          className="button"
+          className="button levelEditButton"
         >
-          Toggle Units
+          Tgl Units
         </button>
         <button
           type="button"
           onClick={() => {}}
-          className="button"
+          className="button levelEditButton"
         >
-          Toggle Turrets
+          Tgl Turrets
         </button>
+        <button
+          type="button"
+          onClick={handleLevelParamsClick}
+          className="button levelEditButton"
+        >
+          Lvl Params
+        </button>
+        <button
+          type="button"
+          onClick={handleSaveClick}
+          className="button levelEditButton"
+        >
+          Save
+        </button>
+        <select
+          className="select"
+          onChange={handleLevelSelectorChange}
+          value={currentLevel.id}
+        >
+          {levels.map(({ id, name }) => (
+            <option
+              id={id}
+              key={id}
+              value={id}
+            >
+              {name || id}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="levelEditItems">
-        {Units.map((unit) => (
+        {UNITS.map((unit) => (
           <div className="levelEditItems-itemButton" key={unit.id} onClick={() => handleItemButtonClick(unit.id)}>
             {renderUnitButton(unit.id)}
           </div>
@@ -189,11 +239,23 @@ export default function PlaygroundEdit(props) {
 PlaygroundEdit.propTypes = {
   currentMode: PropTypes.string,
   currentCallback: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  currentLevel: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
+  levels: PropTypes.array,
+  onLevelParamsEdit: PropTypes.func,
   onEdit: PropTypes.func,
+  onSave: PropTypes.func,
+  changeCurrentLevel: PropTypes.func,
 };
 
 PlaygroundEdit.defaultProps = {
   currentMode: '',
   currentCallback: '',
+  currentLevel: {},
+  levels: [],
+  onLevelParamsEdit: () => {},
   onEdit: () => {},
+  onSave: () => {},
+  changeCurrentLevel: () => {},
 };

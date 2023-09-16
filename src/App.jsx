@@ -5,7 +5,14 @@ import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
 import LevelEdit from './components/LevelEdit';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
-import { GAMEPLAY_MODE, SCREEN_MODES } from './constants/constants';
+import {
+  CELL_EDIT_MODE,
+  GAMEPLAY_MODE,
+  PERSISTENT_DELETE_MODE,
+  PERSISTENT_PLACING_MODE,
+  SCREEN_MODES,
+  UNIT_EDIT_MODE,
+} from './constants/constants';
 import { LevelMap } from './maps/maps';
 import { readLevels, updateLevel } from './api/api';
 import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
@@ -14,6 +21,23 @@ import './App.scss';
 import './mainMenu.scss';
 import UnitEdit from './components/LevelEdit/UnitEdit';
 import CellEdit from './components/LevelEdit/CellEdit';
+import PlaygroundEdit from './components/LevelEdit/PlaygroundEdit';
+import {
+  BASE_UNIT,
+  BOBOMB,
+  DEFLECTOR,
+  HIDDEN,
+  LASER,
+  NPC,
+  WALL,
+} from './constants/units';
+import BaseUnit from './units/BaseUnit';
+import Bobomb from './units/Bobomb';
+import Laser from './units/Laser';
+import Deflector from './units/Deflector';
+import Wall from './units/Wall';
+import Npc from './units/Npc';
+import Hidden from './units/Hidden';
 
 function App() {
   const dispatch = useDispatch();
@@ -70,8 +94,8 @@ function App() {
     setProjectileMoveStep(baseWidthUnit);
   };
 
-  const saveEditedUnits = (units) => {
-    updateLevel({ ...currentLevel, units: [...units] });
+  const saveEditedUnits = () => {
+    updateLevel(currentLevel);
   };
 
   const saveLevelParams = (levelParams = {}) => {
@@ -143,6 +167,7 @@ function App() {
     ? currentLevel.grid[editedCellCoords[0]][editedCellCoords[1]] : null;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
+  const [afterInputCallback, setAfterInputCallback] = useState(null);
 
   const onUnitEditClose = () => {
     setEditedUnitIndex(null);
@@ -160,11 +185,6 @@ function App() {
     saveLevelParams();
   };
 
-  const onLevelUnitsChange = (newUnits) => {
-    currentLevel.units = newUnits;
-    setCurrentLevel(currentLevel);
-  };
-
   const getUnitParamsForEdit = () => {
     const {
       angle,
@@ -175,6 +195,7 @@ function App() {
       value,
       valueCountable,
       kind,
+      meta,
     } = editedUnit;
 
     return {
@@ -186,10 +207,72 @@ function App() {
       value,
       valueCountable,
       kind,
+      meta,
     };
   };
 
   const getUnitTurretsForEdit = () => structuredClone(editedUnit.turrets);
+
+  const onPlaygroundEdit = (mode, data = {}) => {
+    setAfterInputCallback(data.callback || null);
+    setUserInputMode(mode);
+  };
+
+  const placeUnit = (newUnitTop, newUnitLeft) => {
+    const generators = {
+      [BASE_UNIT.id]: (unitTop, unitLeft, params) => new BaseUnit(unitTop, unitLeft, params),
+      [BOBOMB.id]: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
+      [LASER.id]: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
+      [DEFLECTOR.id]: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
+      [WALL.id]: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
+      [NPC.id]: (unitTop, unitLeft, params) => new Npc(unitTop, unitLeft, params),
+      [HIDDEN.id]: (unitTop, unitLeft, params) => new Hidden(unitTop, unitLeft, params),
+    };
+
+    const newUnit = generators[afterInputCallback](newUnitTop, newUnitLeft, { value: 4 });
+
+    currentLevel.units.push(newUnit);
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
+  const removeUnit = (index) => {
+    currentLevel.units.splice(parseInt(index, 10), 1);
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
+  const onUnitClick = (unitId, unitIndex) => {
+    if (userInputMode === UNIT_EDIT_MODE) {
+      onLevelUnitEdit(unitIndex, units[unitIndex]);
+    }
+
+    if (userInputMode === PERSISTENT_DELETE_MODE) {
+      removeUnit(unitIndex);
+    }
+  };
+  const onCellClick = (id, top, left) => {
+    if (userInputMode === CELL_EDIT_MODE) {
+      onLevelCellEdit(top, left);
+    }
+
+    if (userInputMode === PERSISTENT_PLACING_MODE) {
+      placeUnit(top, left);
+    }
+  };
+
+  const renderPlayGroundEdit = () => (
+    <PlaygroundEdit
+      onLevelParamsEdit={onLevelParamsEdit}
+      onEdit={onPlaygroundEdit}
+      currentMode={userInputMode}
+      currentCallback={afterInputCallback}
+      onSave={saveEditedUnits}
+      currentLevel={currentLevel}
+      levels={levels}
+      changeCurrentLevel={changeCurrentLevel}
+    />
+  );
 
   return (
     <div className="app">
@@ -233,15 +316,10 @@ function App() {
               projectileExplosionDuration={projectileExplosionDuration}
               projectileMoveStep={projectileMoveStep}
               level={currentLevel}
-              levels={levels}
-              onChangeLevel={changeCurrentLevel}
               onPlayNextLevel={setNextLevel}
-              onLevelParamsEdit={onLevelParamsEdit}
-              onLevelUnitsChange={onLevelUnitsChange}
-              onLevelUnitEdit={onLevelUnitEdit}
-              onLevelCellEdit={onLevelCellEdit}
-              onSaveUnits={saveEditedUnits}
-              userInputMode={userInputMode}
+              renderPlayGroundEdit={renderPlayGroundEdit}
+              onUnitClick={onUnitClick}
+              onCellClick={onCellClick}
             />
           </div>
         </>

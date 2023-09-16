@@ -10,7 +10,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 
-import { Units } from '../../constants/units';
+import { PORTAL, TELEPORT, UNITS } from '../../constants/units';
 import { TURRETS } from '../../constants/turrets';
 import BaseTurret from '../../turrets/BaseTurret';
 
@@ -57,16 +57,22 @@ export default function UnitEdit(props) {
     setUnitTurrets([...unitTurrets]);
   };
 
-  const unitType = Units.find(({ id }) => id === unitParams.type);
+  const unitType = UNITS.find(({ id }) => id === unitParams.type);
 
   return (
     <div className="levelEdit">
       <div className="container">
         <Grid container spacing={1} alignItems="center">
-          <Grid item xs={12}>Type: {unitType.label}</Grid>
+          <Grid item xs={12}>
+            <h2 className="titleH2">{unitType.label}</h2>
+          </Grid>
 
-          <Grid item xs={6}>Kind:</Grid>
-          <Grid item xs={6}>{unitParams.kind}</Grid>
+          {unitParams.kind && (
+            <>
+              <Grid item xs={6}>Kind:</Grid>
+              <Grid item xs={6}>{unitParams.kind}</Grid>
+            </>
+          )}
 
           <Grid item xs={6}>Value</Grid>
           <Grid item xs={6}>
@@ -134,6 +140,31 @@ export default function UnitEdit(props) {
               onChange={(e, data) => handleParamChange(data, 'valueCountable')}
             />
           </Grid>
+
+          {unitParams.meta && (
+            <>
+              {unitParams.type === PORTAL.id && (
+                <>
+                  <Grid item xs={6}>
+                    Exit Point ID
+                  </Grid>
+                  <Grid item xs={6}>
+                    {unitParams.meta.exitPortalId}
+                  </Grid>
+                </>
+              )}
+              {unitParams.type === TELEPORT.id && (
+                <>
+                  <Grid item xs={6}>
+                    Exit Point ID
+                  </Grid>
+                  <Grid item xs={6}>
+                    {unitParams.meta.exitTeleportId}
+                  </Grid>
+                </>
+              )}
+            </>
+          )}
 
           {(unitTurrets && unitTurrets.length > 0) && (
             <>

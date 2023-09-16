@@ -50,7 +50,7 @@ export const TELEPORT = {
   id: 'teleport',
 };
 
-export const Units = [
+export const UNITS = [
   BASE_UNIT,
   BOBOMB,
   LASER,

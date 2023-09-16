@@ -10,11 +10,11 @@ export const PLACING_MODE = 'placing';
 
 export const PERSISTENT_PLACING_MODE = 'persistentPlacing';
 
+export const PERSISTENT_DELETE_MODE = 'unitDelete';
+
 export const UNIT_EDIT_MODE = 'itemEdit';
 
 export const CELL_EDIT_MODE = 'cellEdit';
-
-export const UNIT_DELETE_MODE = 'unitDelete';
 
 export const SCREEN_MODES = {
   menu: 'menu',

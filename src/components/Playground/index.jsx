@@ -30,15 +30,9 @@ import {
   SELECT_MODE,
   PLACING_MODE,
   SCREEN_MODES,
-  UNIT_EDIT_MODE,
-  CELL_EDIT_MODE,
-  UNIT_DELETE_MODE,
-  PERSISTENT_PLACING_MODE,
 } from 'constants/constants';
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
-
-import PlaygroundEdit from '../LevelEdit/PlaygroundEdit';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -62,14 +56,10 @@ function Playground(props) {
     projectileExplosionDuration,
     projectileMoveStep,
     level: levelFromProp,
-    levels,
-    onChangeLevel,
     onPlayNextLevel,
-    onLevelParamsEdit,
-    onLevelUnitEdit,
-    onLevelUnitsChange,
-    onLevelCellEdit,
-    onSaveUnits,
+    renderPlayGroundEdit,
+    onUnitClick,
+    onCellClick,
   } = props;
 
   const dispatch = useDispatch();
@@ -82,6 +72,7 @@ function Playground(props) {
     defaults,
     lasers,
     portals,
+    teleports,
     swaps,
     rotates,
     jumps,
@@ -269,8 +260,6 @@ function Playground(props) {
     newUnits.push(portal2);
 
     setUnits(newUnits);
-
-    dispatch(setAmmo({ portals: portals - 1 }));
   };
 
   const placeTeleports = () => {
@@ -387,7 +376,6 @@ function Playground(props) {
     const newUnits = [...units];
 
     setUnits(newUnits);
-    onLevelUnitsChange(newUnits);
   };
 
   const placeUnit = (newUnitTop, newUnitLeft) => {
@@ -420,18 +408,11 @@ function Playground(props) {
     setUnits(newUnits);
 
     callbacks[afterInputAction]();
-
-    onLevelUnitsChange(newUnits);
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
-    if (userInputMode === UNIT_EDIT_MODE) {
-      onLevelUnitEdit(unitIndex, units[unitIndex]);
-      return;
-    }
-
-    if (userInputMode === UNIT_DELETE_MODE) {
-      removeUnit(unitIndex);
+    if (onUnitClick) {
+      onUnitClick(unitId, unitIndex);
       return;
     }
 
@@ -499,13 +480,9 @@ function Playground(props) {
   };
 
   const handleGridCellClick = (id, top, left) => {
-    if (userInputMode === CELL_EDIT_MODE) {
-      onLevelCellEdit(top, left);
+    if (onCellClick) {
+      onCellClick(id, top, left);
       return;
-    }
-
-    if (userInputMode === PERSISTENT_PLACING_MODE) {
-      placeUnit(top, left);
     }
 
     if (userInputMode === PLACING_MODE) {
@@ -536,13 +513,16 @@ function Playground(props) {
         if (afterInputAction === 'portal') {
           placePortals();
 
-          setUserInputMode(GAMEPLAY_MODE);
+          dispatch(setAmmo({ portals: portals - 1 }));
 
+          setUserInputMode(GAMEPLAY_MODE);
           setSelectedCells([]);
         }
 
         if (afterInputAction === 'teleport') {
           placeTeleports();
+
+          dispatch(setAmmo({ teleports: teleports - 1 }));
 
           setUserInputMode(GAMEPLAY_MODE);
           setSelectedCells([]);
@@ -791,23 +771,6 @@ function Playground(props) {
     startLevel();
   }, [levelFromProp]);
 
-  const handleSaveUnitsClick = () => {
-    onSaveUnits(units);
-  };
-
-  const handleEditParamsClick = () => {
-    onLevelParamsEdit();
-  };
-
-  const handleLevelSelectorChange = (e) => {
-    onChangeLevel(e.target.value);
-  };
-
-  const onPlaygroundEdit = (mode, data = {}) => {
-    setAfterInputAction(data.callback || null);
-    setUserInputMode(mode);
-  };
-
   return (
     <>
       {winScreenVisible && (
@@ -835,26 +798,6 @@ function Playground(props) {
         </h3>
 
         <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
-        <button type="button" className="button" onClick={handleEditParamsClick}>Params</button>
-        <button type="button" className="button" onClick={handleSaveUnitsClick}>Save</button>
-
-        {levels && (
-          <select
-            className="select"
-            onChange={handleLevelSelectorChange}
-            value={level.id}
-          >
-            {levels.map(({ id, name }) => (
-              <option
-                id={id}
-                key={id}
-                value={id}
-              >
-                {name || id}
-              </option>
-            ))}
-          </select>
-        )}
       </div>
 
       <div className="field" id="field">
@@ -923,11 +866,7 @@ function Playground(props) {
         </div>
       </div>
 
-      <PlaygroundEdit
-        onEdit={onPlaygroundEdit}
-        currentMode={userInputMode}
-        currentCallback={afterInputAction}
-      />
+      {renderPlayGroundEdit()}
 
       <UserMenu
         afterInputAction={afterInputAction}
@@ -944,27 +883,20 @@ Playground.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   level: PropTypes.object.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  levels: PropTypes.array.isRequired,
-  onChangeLevel: PropTypes.func,
   onPlayNextLevel: PropTypes.func,
-  onLevelParamsEdit: PropTypes.func,
-  onLevelUnitEdit: PropTypes.func,
-  onLevelUnitsChange: PropTypes.func,
-  onLevelCellEdit: PropTypes.func,
-  onSaveUnits: PropTypes.func,
+  renderPlayGroundEdit: PropTypes.func,
+  onUnitClick: PropTypes.func,
+  onCellClick: PropTypes.func,
 };
 
 Playground.defaultProps = {
   projectileExplosionDuration: 100,
   projectileMoveStep: 1,
   baseWidthUnit: 1,
-  onChangeLevel: () => {},
   onPlayNextLevel: () => {},
-  onLevelParamsEdit: () => {},
-  onLevelUnitEdit: () => {},
-  onLevelUnitsChange: () => {},
-  onLevelCellEdit: () => {},
-  onSaveUnits: () => {},
+  renderPlayGroundEdit: () => null,
+  onUnitClick: null,
+  onCellClick: null,
 };
 
 Playground.actingProjectilesNumber = 0;
