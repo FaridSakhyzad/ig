@@ -20,6 +20,8 @@ import Bobomb from 'units/Bobomb';
 import Laser from 'units/Laser';
 import Deflector from 'units/Deflector';
 import Wall from 'units/Wall';
+import Npc from 'units/Npc';
+import Hidden from 'units/Hidden';
 
 import {
   ITEM_MULTISELECT_MODE,
@@ -29,7 +31,9 @@ import {
   PLACING_MODE,
   SCREEN_MODES,
   UNIT_EDIT_MODE,
-  CELL_EDIT_MODE, UNIT_DELETE_MODE,
+  CELL_EDIT_MODE,
+  UNIT_DELETE_MODE,
+  PERSISTENT_PLACING_MODE,
 } from 'constants/constants';
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
@@ -41,6 +45,15 @@ import Unit from '../Unit';
 import UserMenu from '../UserMenu';
 
 import './Playground.scss';
+import {
+  BASE_UNIT,
+  BOBOMB,
+  LASER,
+  DEFLECTOR,
+  WALL,
+  NPC,
+  HIDDEN,
+} from '../../constants/units';
 
 const MAX_MULTISELECT = 2;
 
@@ -52,8 +65,9 @@ function Playground(props) {
     levels,
     onChangeLevel,
     onPlayNextLevel,
-    onLevelParamsEditStart,
+    onLevelParamsEdit,
     onLevelUnitEdit,
+    onLevelUnitsChange,
     onLevelCellEdit,
     onSaveUnits,
   } = props;
@@ -71,6 +85,8 @@ function Playground(props) {
     swaps,
     rotates,
     jumps,
+    deflectors,
+    walls,
   } = user;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
@@ -367,24 +383,32 @@ function Playground(props) {
 
   const removeUnit = (index) => {
     units.splice(parseInt(index, 10), 1);
-    setUnits([...units]);
+
+    const newUnits = [...units];
+
+    setUnits(newUnits);
+    onLevelUnitsChange(newUnits);
   };
 
   const placeUnit = (newUnitTop, newUnitLeft) => {
     const generators = {
-      default: (unitTop, unitLeft, params) => new BaseUnit(unitTop, unitLeft, params),
-      bobomb: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
-      laser: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
-      deflector: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
-      wall: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
+      [BASE_UNIT.id]: (unitTop, unitLeft, params) => new BaseUnit(unitTop, unitLeft, params),
+      [BOBOMB.id]: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
+      [LASER.id]: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
+      [DEFLECTOR.id]: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
+      [WALL.id]: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
+      [NPC.id]: (unitTop, unitLeft, params) => new Npc(unitTop, unitLeft, params),
+      [HIDDEN.id]: (unitTop, unitLeft, params) => new Hidden(unitTop, unitLeft, params),
     };
 
     const callbacks = {
-      default: () => dispatch(setAmmo({ defaults: defaults - 1 })),
-      bobomb: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
-      laser: () => dispatch(setAmmo({ lasers: lasers - 1 })),
-      deflector: () => {},
-      wall: () => {},
+      [BASE_UNIT.id]: () => dispatch(setAmmo({ defaults: defaults - 1 })),
+      [BOBOMB.id]: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
+      [LASER.id]: () => dispatch(setAmmo({ lasers: lasers - 1 })),
+      [DEFLECTOR.id]: () => dispatch(setAmmo({ deflectors: deflectors - 1 })),
+      [WALL.id]: () => dispatch(setAmmo({ walls: walls - 1 })),
+      [NPC.id]: () => {},
+      [HIDDEN.id]: () => {},
     };
 
     const newUnit = generators[afterInputAction](newUnitTop, newUnitLeft, { value: 4 });
@@ -396,6 +420,8 @@ function Playground(props) {
     setUnits(newUnits);
 
     callbacks[afterInputAction]();
+
+    onLevelUnitsChange(newUnits);
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
@@ -476,6 +502,10 @@ function Playground(props) {
     if (userInputMode === CELL_EDIT_MODE) {
       onLevelCellEdit(top, left);
       return;
+    }
+
+    if (userInputMode === PERSISTENT_PLACING_MODE) {
+      placeUnit(top, left);
     }
 
     if (userInputMode === PLACING_MODE) {
@@ -766,16 +796,16 @@ function Playground(props) {
   };
 
   const handleEditParamsClick = () => {
-    onLevelParamsEditStart();
+    onLevelParamsEdit();
   };
 
   const handleLevelSelectorChange = (e) => {
     onChangeLevel(e.target.value);
   };
 
-  const onPlaygroundEdit = (mode) => {
+  const onPlaygroundEdit = (mode, data = {}) => {
+    setAfterInputAction(data.callback || null);
     setUserInputMode(mode);
-    setAfterInputAction(null);
   };
 
   return (
@@ -894,8 +924,9 @@ function Playground(props) {
       </div>
 
       <PlaygroundEdit
-        currentMode={userInputMode}
         onEdit={onPlaygroundEdit}
+        currentMode={userInputMode}
+        currentCallback={afterInputAction}
       />
 
       <UserMenu
@@ -916,8 +947,9 @@ Playground.propTypes = {
   levels: PropTypes.array.isRequired,
   onChangeLevel: PropTypes.func,
   onPlayNextLevel: PropTypes.func,
-  onLevelParamsEditStart: PropTypes.func,
+  onLevelParamsEdit: PropTypes.func,
   onLevelUnitEdit: PropTypes.func,
+  onLevelUnitsChange: PropTypes.func,
   onLevelCellEdit: PropTypes.func,
   onSaveUnits: PropTypes.func,
 };
@@ -928,8 +960,9 @@ Playground.defaultProps = {
   baseWidthUnit: 1,
   onChangeLevel: () => {},
   onPlayNextLevel: () => {},
-  onLevelParamsEditStart: () => {},
+  onLevelParamsEdit: () => {},
   onLevelUnitEdit: () => {},
+  onLevelUnitsChange: () => {},
   onLevelCellEdit: () => {},
   onSaveUnits: () => {},
 };

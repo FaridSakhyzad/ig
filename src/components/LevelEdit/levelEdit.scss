@@ -40,9 +40,35 @@
 
 .levelEditToolbar {
   width: 100%;
+  padding: 5px;
+}
+
+.levelEditButtons {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   grid-column-gap: 5px;
   grid-row-gap: 5px;
-  padding: 5px 0;
+  margin: 0 0 10px 0;
+}
+
+.levelEditItems {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.levelEditItems-itemButton {
+  width: 39px;
+  height: 39px;
+
+  .unit {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .unit-hitBox {
+    display: none;
+  }
 }

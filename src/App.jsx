@@ -87,7 +87,7 @@ function App() {
     setCurrentLevel(newLevel);
   };
 
-  const onLevelParamsEditStart = () => {
+  const onLevelParamsEdit = () => {
     setLevelEditMode(true);
   };
 
@@ -158,6 +158,11 @@ function App() {
 
     setCurrentLevel(currentLevel);
     saveLevelParams();
+  };
+
+  const onLevelUnitsChange = (newUnits) => {
+    currentLevel.units = newUnits;
+    setCurrentLevel(currentLevel);
   };
 
   const getUnitParamsForEdit = () => {
@@ -231,7 +236,8 @@ function App() {
               levels={levels}
               onChangeLevel={changeCurrentLevel}
               onPlayNextLevel={setNextLevel}
-              onLevelParamsEditStart={onLevelParamsEditStart}
+              onLevelParamsEdit={onLevelParamsEdit}
+              onLevelUnitsChange={onLevelUnitsChange}
               onLevelUnitEdit={onLevelUnitEdit}
               onLevelCellEdit={onLevelCellEdit}
               onSaveUnits={saveEditedUnits}

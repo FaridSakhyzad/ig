@@ -101,6 +101,11 @@
 }
 
 .wall {
+  .unit-image {
+    background: rgb(162, 162, 162);
+    opacity: 1;
+  }
+
   &.stone {
     .unit-image {
       background: rgb(192, 192, 192);
