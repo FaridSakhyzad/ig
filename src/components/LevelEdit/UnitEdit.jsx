@@ -20,6 +20,7 @@ export default function UnitEdit(props) {
     unitTurrets: turretsFromProps,
     onApply,
     onClose,
+    portalExitPoints,
   } = props;
 
   const [unitParams, setUnitParams] = useState(paramsFromProps);
@@ -59,12 +60,25 @@ export default function UnitEdit(props) {
 
   const unitType = UNITS.find(({ id }) => id === unitParams.type);
 
+  const portalExitPointsFiltered = portalExitPoints.filter(
+    ({ exitPortalId }) => unitParams.id !== exitPortalId,
+  );
+
+  const handlePortalExitPoint = (newExitId) => {
+    setUnitParams({
+      ...unitParams,
+      meta: {
+        exitPortalId: newExitId,
+      },
+    });
+  };
+
   return (
     <div className="levelEdit">
       <div className="container">
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={12}>
-            <h2 className="titleH2">{unitType.label}</h2>
+            <h2 className="titleH2">{unitType.label} | {unitParams.id}</h2>
           </Grid>
 
           {unitParams.kind && (
@@ -149,7 +163,25 @@ export default function UnitEdit(props) {
                     Exit Point ID
                   </Grid>
                   <Grid item xs={6}>
-                    {unitParams.meta.exitPortalId}
+                    <FormControl fullWidth className="levelEditSelectRoot">
+                      <InputLabel id="portal-exit-label">Portal Exit</InputLabel>
+                      <Select
+                        labelId="portal-exit-label"
+                        id="portal-exit"
+                        value={unitParams.meta.exitPortalId}
+                        label="Portal Exit"
+                        onChange={(e) => handlePortalExitPoint(e.target.value)}
+                        classes={{
+                          select: 'levelEditSelect',
+                        }}
+                      >
+                        {portalExitPointsFiltered.map(({ top, left, exitPortalId }) => (
+                          <MenuItem value={exitPortalId} key={exitPortalId}>
+                            {top} | {left} | {exitPortalId}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </>
               )}
@@ -159,6 +191,7 @@ export default function UnitEdit(props) {
                     Exit Point ID
                   </Grid>
                   <Grid item xs={6}>
+                    portalExitPoints
                     {unitParams.meta.exitTeleportId}
                   </Grid>
                 </>
@@ -294,9 +327,15 @@ UnitEdit.propTypes = {
   unitTurrets: PropTypes.array.isRequired,
   onApply: PropTypes.func,
   onClose: PropTypes.func,
+  portalExitPoints: PropTypes.arrayOf(PropTypes.shape({
+    top: PropTypes.number,
+    left: PropTypes.number,
+    exitPortalId: PropTypes.string,
+  })),
 };
 
 UnitEdit.defaultProps = {
   onApply: () => {},
   onClose: () => {},
+  portalExitPoints: [],
 };

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {
-  CELL_EDIT_MODE, CELL_MULTISELECT_MODE,
+  CELL_EDIT_MODE,
+  CELL_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   PERSISTENT_PLACING_MODE,
   PERSISTENT_DELETE_MODE,
   UNIT_EDIT_MODE,
+  SELECT_MODE,
 } from 'constants/constants';
 import {
   BASE_UNIT,
@@ -21,6 +24,7 @@ import {
   UNITS,
 } from '../../constants/units';
 import Unit from '../Unit';
+import { setEditorMode } from '../../redux/user/actions';
 
 export default function PlaygroundEdit(props) {
   const {
@@ -33,9 +37,17 @@ export default function PlaygroundEdit(props) {
     levels,
     changeCurrentLevel,
   } = props;
+  const dispatch = useDispatch();
 
   const [mode, setMode] = useState(currentMode);
   const [callback, setCallback] = useState(currentCallback);
+
+  const { editorMode } = useSelector((state) => state.user);
+
+  const handleAdminModeChange = ({ target: { checked } }) => {
+    localStorage.setItem('editorMode', checked);
+    dispatch(setEditorMode(checked));
+  };
 
   const placeUnit = (id) => {
     if (mode === PERSISTENT_PLACING_MODE && currentCallback === id) {
@@ -62,7 +74,7 @@ export default function PlaygroundEdit(props) {
 
     setMode(CELL_MULTISELECT_MODE);
     setCallback(id);
-    onEdit(CELL_MULTISELECT_MODE, { callback: id });
+    onEdit(CELL_MULTISELECT_MODE, { callback: id, maxMultiSelect: 2 });
   };
 
   const callbacks = {
@@ -113,6 +125,18 @@ export default function PlaygroundEdit(props) {
     onEdit(PERSISTENT_DELETE_MODE);
   };
 
+  const handleMoveUnitsClick = () => {
+    if (mode === SELECT_MODE) {
+      setMode(GAMEPLAY_MODE);
+      onEdit(GAMEPLAY_MODE);
+
+      return;
+    }
+
+    setMode(SELECT_MODE);
+    onEdit(SELECT_MODE, { callback: 'moveUnit' });
+  };
+
   const handleItemButtonClick = (id) => {
     if (callbacks[id]) {
       callbacks[id]();
@@ -158,6 +182,13 @@ export default function PlaygroundEdit(props) {
   return (
     <div className="levelEditToolbar">
       <div className="levelEditButtons">
+        <button
+          type="button"
+          onClick={handleMoveUnitsClick}
+          className={classnames('button levelEditButton', { selected: currentMode === SELECT_MODE })}
+        >
+          Move Units
+        </button>
         <button
           type="button"
           onClick={handleDeleteUnitsClick}
@@ -222,6 +253,16 @@ export default function PlaygroundEdit(props) {
             </option>
           ))}
         </select>
+
+        <label className="mainMenu-editorModeSwitcher">
+          Editor Mode
+          <input
+            type="checkbox"
+            className="checkbox mainMenu-editorModeSwitcherInput"
+            checked={editorMode}
+            onChange={handleAdminModeChange}
+          />
+        </label>
       </div>
 
       <div className="levelEditItems">

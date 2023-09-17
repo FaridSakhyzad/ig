@@ -67,6 +67,8 @@ function Playground(props) {
   const { user, userStash } = useSelector((state) => state);
 
   const {
+    editorMode,
+
     userMoves,
     bobombs,
     defaults,
@@ -411,7 +413,7 @@ function Playground(props) {
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
-    if (onUnitClick) {
+    if (editorMode) {
       onUnitClick(unitId, unitIndex);
       return;
     }
@@ -480,7 +482,7 @@ function Playground(props) {
   };
 
   const handleGridCellClick = (id, top, left) => {
-    if (onCellClick) {
+    if (editorMode) {
       onCellClick(id, top, left);
       return;
     }
@@ -821,11 +823,11 @@ function Playground(props) {
             /* eslint-disable-next-line react/no-array-index-key */
             <React.Fragment key={rowIndex}>
               {row.map(({
-                id, top, left, type,
+                id, top, left, type, selected,
               }, colIndex) => (
                 <div
                   onClick={() => handleGridCellClick(id, rowIndex, colIndex)}
-                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selectedCells.some((cell) => cell.id === id) })}
+                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selected || selectedCells.some((cell) => cell.id === id) })}
                   data-id={id}
                   key={id}
                   style={{

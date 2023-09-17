@@ -10,7 +10,7 @@ export const PLACING_MODE = 'placing';
 
 export const PERSISTENT_PLACING_MODE = 'persistentPlacing';
 
-export const PERSISTENT_DELETE_MODE = 'unitDelete';
+export const PERSISTENT_DELETE_MODE = 'persistentUnitDelete';
 
 export const UNIT_EDIT_MODE = 'itemEdit';
 

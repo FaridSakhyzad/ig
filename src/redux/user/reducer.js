@@ -8,7 +8,7 @@ import {
 } from './constants';
 
 const initialState = {
-  editorMode: false,
+  editorMode: localStorage ? localStorage.getItem('editorMode') === 'true' : false,
 
   userMoves: 0,
 

@@ -7,10 +7,11 @@ import LevelEdit from './components/LevelEdit';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import {
   CELL_EDIT_MODE,
+  CELL_MULTISELECT_MODE,
   GAMEPLAY_MODE,
   PERSISTENT_DELETE_MODE,
   PERSISTENT_PLACING_MODE,
-  SCREEN_MODES,
+  SCREEN_MODES, SELECT_MODE,
   UNIT_EDIT_MODE,
 } from './constants/constants';
 import { LevelMap } from './maps/maps';
@@ -28,7 +29,7 @@ import {
   DEFLECTOR,
   HIDDEN,
   LASER,
-  NPC,
+  NPC, PORTAL, TELEPORT,
   WALL,
 } from './constants/units';
 import BaseUnit from './units/BaseUnit';
@@ -38,6 +39,7 @@ import Deflector from './units/Deflector';
 import Wall from './units/Wall';
 import Npc from './units/Npc';
 import Hidden from './units/Hidden';
+import { generatePortals, generateTeleports } from './units/unitFactory';
 
 function App() {
   const dispatch = useDispatch();
@@ -51,6 +53,7 @@ function App() {
   const [levelEditMode, setLevelEditMode] = useState(false);
 
   const handleAdminModeChange = ({ target: { checked } }) => {
+    localStorage.setItem('editorMode', checked);
     dispatch(setEditorMode(checked));
   };
 
@@ -153,6 +156,8 @@ function App() {
   const [editedUnitIndex, setEditedUnitIndex] = useState(null);
   const [editedCellCoords, setEditedCellCoords] = useState(null);
 
+  const [selectedCells, setSelectedCells] = useState([]);
+
   const onLevelUnitEdit = (index) => {
     setEditedUnitIndex(index);
   };
@@ -167,7 +172,7 @@ function App() {
     ? currentLevel.grid[editedCellCoords[0]][editedCellCoords[1]] : null;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
-  const [afterInputCallback, setAfterInputCallback] = useState(null);
+  const [afterInputData, setAfterInputData] = useState(null);
 
   const onUnitEditClose = () => {
     setEditedUnitIndex(null);
@@ -187,6 +192,7 @@ function App() {
 
   const getUnitParamsForEdit = () => {
     const {
+      id,
       angle,
       maxValue,
       minValue,
@@ -199,6 +205,7 @@ function App() {
     } = editedUnit;
 
     return {
+      id,
       angle,
       maxValue,
       minValue,
@@ -214,7 +221,7 @@ function App() {
   const getUnitTurretsForEdit = () => structuredClone(editedUnit.turrets);
 
   const onPlaygroundEdit = (mode, data = {}) => {
-    setAfterInputCallback(data.callback || null);
+    setAfterInputData(data);
     setUserInputMode(mode);
   };
 
@@ -229,7 +236,7 @@ function App() {
       [HIDDEN.id]: (unitTop, unitLeft, params) => new Hidden(unitTop, unitLeft, params),
     };
 
-    const newUnit = generators[afterInputCallback](newUnitTop, newUnitLeft, { value: 4 });
+    const newUnit = generators[afterInputData.callback](newUnitTop, newUnitLeft, { value: 4 });
 
     currentLevel.units.push(newUnit);
 
@@ -242,6 +249,17 @@ function App() {
     setCurrentLevel({ ...currentLevel });
   };
 
+  const moveUnit = (unitIndex, top, left) => {
+    const newUnits = [...units];
+
+    newUnits[unitIndex].top = top;
+    newUnits[unitIndex].left = left;
+
+    currentLevel.units = newUnits;
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
   const onUnitClick = (unitId, unitIndex) => {
     if (userInputMode === UNIT_EDIT_MODE) {
       onLevelUnitEdit(unitIndex, units[unitIndex]);
@@ -250,14 +268,103 @@ function App() {
     if (userInputMode === PERSISTENT_DELETE_MODE) {
       removeUnit(unitIndex);
     }
+
+    if (userInputMode === SELECT_MODE) {
+      if (afterInputData.callback === 'moveUnit' && selectedCells.length > 0) {
+        const { top, left } = selectedCells[0];
+
+        moveUnit(unitIndex, top, left);
+
+        selectedCells.forEach((cell) => {
+          currentLevel.grid[cell.top][cell.left].selected = false;
+        });
+        setSelectedCells([]);
+      }
+    }
   };
+
+  const placePortals = () => {
+    const newUnits = [...units];
+
+    const { top: top0, left: left0 } = selectedCells[0];
+    const { top: top1, left: left1 } = selectedCells[1];
+
+    const [portal1, portal2] = generatePortals(top0, left0, top1, left1);
+
+    newUnits.push(portal1);
+    newUnits.push(portal2);
+
+    currentLevel.units = newUnits;
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
+  const placeTeleports = () => {
+    const newUnits = [...units];
+
+    const { top: top0, left: left0 } = selectedCells[0];
+    const { top: top1, left: left1 } = selectedCells[1];
+
+    const [teleport1, teleport2] = generateTeleports(top0, left0, top1, left1);
+
+    newUnits.push(teleport1);
+    newUnits.push(teleport2);
+
+    currentLevel.units = newUnits;
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
   const onCellClick = (id, top, left) => {
+    if (userInputMode === SELECT_MODE) {
+      selectedCells.forEach((cell) => {
+        currentLevel.grid[cell.top][cell.left].selected = false;
+      });
+
+      const newSelectedCells = [{ id, top, left }];
+
+      setSelectedCells(newSelectedCells);
+
+      newSelectedCells.forEach((cell) => {
+        currentLevel.grid[cell.top][cell.left].selected = true;
+      });
+    }
+
     if (userInputMode === CELL_EDIT_MODE) {
       onLevelCellEdit(top, left);
     }
 
     if (userInputMode === PERSISTENT_PLACING_MODE) {
       placeUnit(top, left);
+    }
+
+    if (userInputMode === CELL_MULTISELECT_MODE) {
+      selectedCells.push({ id, top, left });
+      setSelectedCells([...selectedCells]);
+
+      selectedCells.forEach((cell) => {
+        currentLevel.grid[cell.top][cell.left].selected = true;
+      });
+
+      if (selectedCells.length >= afterInputData.maxMultiSelect) {
+        if (afterInputData.callback === PORTAL.id) {
+          placePortals();
+
+          selectedCells.forEach((cell) => {
+            currentLevel.grid[cell.top][cell.left].selected = false;
+          });
+          setSelectedCells([]);
+        }
+
+        if (afterInputData.callback === TELEPORT.id) {
+          placeTeleports();
+
+          selectedCells.forEach((cell) => {
+            currentLevel.grid[cell.top][cell.left].selected = false;
+          });
+          setSelectedCells([]);
+        }
+      }
     }
   };
 
@@ -266,13 +373,29 @@ function App() {
       onLevelParamsEdit={onLevelParamsEdit}
       onEdit={onPlaygroundEdit}
       currentMode={userInputMode}
-      currentCallback={afterInputCallback}
+      currentCallback={afterInputData && afterInputData.callback}
       onSave={saveEditedUnits}
       currentLevel={currentLevel}
       levels={levels}
       changeCurrentLevel={changeCurrentLevel}
     />
   );
+
+  const getPortalExitPoints = () => {
+    const portals = currentLevel.units.filter(({ type }) => type === 'portal');
+
+    const exitPoints = [];
+
+    portals.forEach(({ id, top, left }) => {
+      exitPoints.push({
+        top,
+        left,
+        exitPortalId: id,
+      });
+    });
+
+    return exitPoints;
+  };
 
   return (
     <div className="app">
@@ -295,6 +418,7 @@ function App() {
           {editedUnit !== null && (
             <div className="serviceScreen">
               <UnitEdit
+                portalExitPoints={getPortalExitPoints()}
                 unitParams={getUnitParamsForEdit()}
                 unitTurrets={getUnitTurretsForEdit()}
                 onApply={onUnitEditApply}
