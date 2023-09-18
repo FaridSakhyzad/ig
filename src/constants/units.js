@@ -50,6 +50,14 @@ export const TELEPORT = {
   id: 'teleport',
 };
 
+export const UNIT_KINDS = {
+  [WALL.id]: [
+    'stone',
+    'wood',
+    'hill',
+  ],
+};
+
 export const UNITS = [
   BASE_UNIT,
   BOBOMB,

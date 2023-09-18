@@ -10,7 +10,12 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 
-import { PORTAL, TELEPORT, UNITS } from '../../constants/units';
+import {
+  PORTAL,
+  TELEPORT,
+  UNIT_KINDS,
+  UNITS,
+} from '../../constants/units';
 import { TURRETS } from '../../constants/turrets';
 import BaseTurret from '../../turrets/BaseTurret';
 
@@ -21,6 +26,7 @@ export default function UnitEdit(props) {
     onApply,
     onClose,
     portalExitPoints,
+    teleportExitPoints,
   } = props;
 
   const [unitParams, setUnitParams] = useState(paramsFromProps);
@@ -60,8 +66,19 @@ export default function UnitEdit(props) {
 
   const unitType = UNITS.find(({ id }) => id === unitParams.type);
 
+  const handleUnitKindChange = (kind) => {
+    setUnitParams({
+      ...unitParams,
+      kind,
+    });
+  };
+
   const portalExitPointsFiltered = portalExitPoints.filter(
     ({ exitPortalId }) => unitParams.id !== exitPortalId,
+  );
+
+  const teleportExitPointsFiltered = teleportExitPoints.filter(
+    ({ exitTeleportId }) => unitParams.id !== exitTeleportId,
   );
 
   const handlePortalExitPoint = (newExitId) => {
@@ -69,6 +86,15 @@ export default function UnitEdit(props) {
       ...unitParams,
       meta: {
         exitPortalId: newExitId,
+      },
+    });
+  };
+
+  const handleTeleportExitPoint = (newExitId) => {
+    setUnitParams({
+      ...unitParams,
+      meta: {
+        exitTeleportId: newExitId,
       },
     });
   };
@@ -84,7 +110,27 @@ export default function UnitEdit(props) {
           {unitParams.kind && (
             <>
               <Grid item xs={6}>Kind:</Grid>
-              <Grid item xs={6}>{unitParams.kind}</Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth className="levelEditSelectRoot">
+                  <InputLabel id="portal-exit-label">Portal Exit</InputLabel>
+                  <Select
+                    labelId="portal-exit-label"
+                    id="portal-exit"
+                    value={unitParams.kind}
+                    label="Portal Exit"
+                    onChange={(e) => handleUnitKindChange(e.target.value)}
+                    classes={{
+                      select: 'levelEditSelect',
+                    }}
+                  >
+                    {UNIT_KINDS[unitParams.type].map((unitKind) => (
+                      <MenuItem value={unitKind} key={unitKind}>
+                        {unitKind}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </>
           )}
 
@@ -160,7 +206,7 @@ export default function UnitEdit(props) {
               {unitParams.type === PORTAL.id && (
                 <>
                   <Grid item xs={6}>
-                    Exit Point ID
+                    Portal Exit Point ID
                   </Grid>
                   <Grid item xs={6}>
                     <FormControl fullWidth className="levelEditSelectRoot">
@@ -188,11 +234,28 @@ export default function UnitEdit(props) {
               {unitParams.type === TELEPORT.id && (
                 <>
                   <Grid item xs={6}>
-                    Exit Point ID
+                    Teleport Exit Point ID
                   </Grid>
                   <Grid item xs={6}>
-                    portalExitPoints
-                    {unitParams.meta.exitTeleportId}
+                    <FormControl fullWidth className="levelEditSelectRoot">
+                      <InputLabel id="teleport-exit-label">Teleport Exit</InputLabel>
+                      <Select
+                        labelId="teleport-exit-label"
+                        id="teleport-exit"
+                        value={unitParams.meta.exitTeleportId}
+                        label="Teleport Exit"
+                        onChange={(e) => handleTeleportExitPoint(e.target.value)}
+                        classes={{
+                          select: 'levelEditSelect',
+                        }}
+                      >
+                        {teleportExitPointsFiltered.map(({ top, left, exitTeleportId }) => (
+                          <MenuItem value={exitTeleportId} key={exitTeleportId}>
+                            {top} | {left} | {exitTeleportId}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
                 </>
               )}
@@ -332,10 +395,16 @@ UnitEdit.propTypes = {
     left: PropTypes.number,
     exitPortalId: PropTypes.string,
   })),
+  teleportExitPoints: PropTypes.arrayOf(PropTypes.shape({
+    top: PropTypes.number,
+    left: PropTypes.number,
+    exitPortalId: PropTypes.string,
+  })),
 };
 
 UnitEdit.defaultProps = {
   onApply: () => {},
   onClose: () => {},
   portalExitPoints: [],
+  teleportExitPoints: [],
 };

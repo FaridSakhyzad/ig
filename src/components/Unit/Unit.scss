@@ -119,6 +119,14 @@
       opacity: 1;
     }
   }
+
+  &.hill {
+    .unit-image {
+      background: rgba(70, 173, 35, 0.4);
+      opacity: 1;
+      border-radius: 35%;
+    }
+  }
 }
 
 .hidden {

@@ -827,7 +827,7 @@ function Playground(props) {
               }, colIndex) => (
                 <div
                   onClick={() => handleGridCellClick(id, rowIndex, colIndex)}
-                  className={classnames('mapLayer-cell', `mapLayer-cell_${type}`, { selected: selected || selectedCells.some((cell) => cell.id === id) })}
+                  className={classnames('mapLayer-cell', type, { selected: selected || selectedCells.some((cell) => cell.id === id) })}
                   data-id={id}
                   key={id}
                   style={{

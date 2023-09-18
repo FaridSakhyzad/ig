@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { CELL_TYPES } from '../../constants/cells';
 
 export default function CellEdit(props) {
   const {
@@ -9,6 +14,8 @@ export default function CellEdit(props) {
     onApply,
     onClose,
   } = props;
+
+  const [cellParams, setCellParams] = useState(cell);
 
   const handleApplyClick = () => {
     onApply();
@@ -19,12 +26,42 @@ export default function CellEdit(props) {
     onClose();
   };
 
+  const handleCellTypeChange = (type) => {
+    cellParams.type = type;
+
+    setCellParams({ ...cellParams });
+  };
+
   return (
     <div className="levelEdit">
-      <div>
-        Cell ID: {cell.id}
-        Cell Type: {cell.type}
+      <div className="container">
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs={6}>Cell ID:</Grid>
+          <Grid item xs={6}>{cellParams.id}</Grid>
 
+          <Grid item xs={6}>Cell Type:</Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth className="levelEditSelectRoot">
+              <InputLabel id="cell-type-label">Portal Exit</InputLabel>
+              <Select
+                labelId="cell-type-label"
+                id="cell-type"
+                value={cellParams.type}
+                label="Cell Type"
+                onChange={(e) => handleCellTypeChange(e.target.value)}
+                classes={{
+                  select: 'levelEditSelect',
+                }}
+              >
+                {CELL_TYPES.map((cellType) => (
+                  <MenuItem value={cellType} key={cellType}>
+                    {cellType}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
       </div>
       <hr />
       <div className="levelEdit-footer">

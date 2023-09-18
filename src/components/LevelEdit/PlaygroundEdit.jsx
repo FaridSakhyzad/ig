@@ -9,7 +9,7 @@ import {
   PERSISTENT_PLACING_MODE,
   PERSISTENT_DELETE_MODE,
   UNIT_EDIT_MODE,
-  SELECT_MODE,
+  SELECT_MODE, PERSISTENT_ROTATE_MODE,
 } from 'constants/constants';
 import {
   BASE_UNIT,
@@ -32,7 +32,7 @@ export default function PlaygroundEdit(props) {
     onSave,
     onLevelParamsEdit,
     currentMode,
-    currentCallback,
+    afterInputData,
     currentLevel,
     levels,
     changeCurrentLevel,
@@ -40,7 +40,7 @@ export default function PlaygroundEdit(props) {
   const dispatch = useDispatch();
 
   const [mode, setMode] = useState(currentMode);
-  const [callback, setCallback] = useState(currentCallback);
+  const [callback, setCallback] = useState(afterInputData);
 
   const { editorMode } = useSelector((state) => state.user);
 
@@ -50,7 +50,7 @@ export default function PlaygroundEdit(props) {
   };
 
   const placeUnit = (id) => {
-    if (mode === PERSISTENT_PLACING_MODE && currentCallback === id) {
+    if (mode === PERSISTENT_PLACING_MODE && afterInputData.callback === id) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
       setCallback(null);
@@ -59,12 +59,12 @@ export default function PlaygroundEdit(props) {
     }
 
     setMode(PERSISTENT_PLACING_MODE);
-    setCallback(id);
+    setCallback({ callback: id });
     onEdit(PERSISTENT_PLACING_MODE, { callback: id });
   };
 
   const placeBoundedUnits = (id) => {
-    if (mode === CELL_MULTISELECT_MODE && currentCallback === id) {
+    if (mode === CELL_MULTISELECT_MODE && afterInputData.callback === id) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
       setCallback(null);
@@ -73,7 +73,7 @@ export default function PlaygroundEdit(props) {
     }
 
     setMode(CELL_MULTISELECT_MODE);
-    setCallback(id);
+    setCallback({ callback: id, maxMultiSelect: 2 });
     onEdit(CELL_MULTISELECT_MODE, { callback: id, maxMultiSelect: 2 });
   };
 
@@ -137,6 +137,20 @@ export default function PlaygroundEdit(props) {
     onEdit(SELECT_MODE, { callback: 'moveUnit' });
   };
 
+  const handleRotateUnitsClick = (dir) => {
+    if (mode === PERSISTENT_ROTATE_MODE && callback.direction === dir) {
+      setMode(GAMEPLAY_MODE);
+      onEdit(GAMEPLAY_MODE);
+
+      setCallback(null);
+      return;
+    }
+
+    setMode(PERSISTENT_ROTATE_MODE);
+    setCallback({ callback: 'rotateUnit', direction: dir });
+    onEdit(PERSISTENT_ROTATE_MODE, { callback: 'rotateUnit', direction: dir });
+  };
+
   const handleItemButtonClick = (id) => {
     if (callbacks[id]) {
       callbacks[id]();
@@ -174,9 +188,9 @@ export default function PlaygroundEdit(props) {
   );
 
   useEffect(() => {
-    setCallback(currentCallback);
+    setCallback(afterInputData);
   }, [
-    currentCallback,
+    afterInputData,
   ]);
 
   return (
@@ -189,6 +203,26 @@ export default function PlaygroundEdit(props) {
         >
           Move Units
         </button>
+        <div className="levelEditRotates">
+          <button
+            type="button"
+            onClick={() => handleRotateUnitsClick('ccv')}
+            className={classnames('button levelEditButton levelEditButton_rotate', {
+              selected: currentMode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'ccv',
+            })}
+          >
+            &lt;-
+          </button>
+          <button
+            type="button"
+            onClick={() => handleRotateUnitsClick('cv')}
+            className={classnames('button levelEditButton levelEditButton_rotate', {
+              selected: currentMode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'cv',
+            })}
+          >
+            -&gt;
+          </button>
+        </div>
         <button
           type="button"
           onClick={handleDeleteUnitsClick}
@@ -254,7 +288,7 @@ export default function PlaygroundEdit(props) {
           ))}
         </select>
 
-        <label className="mainMenu-editorModeSwitcher">
+        <label className="levelEdit-modeSwitcher">
           Editor Mode
           <input
             type="checkbox"
@@ -279,7 +313,8 @@ export default function PlaygroundEdit(props) {
 
 PlaygroundEdit.propTypes = {
   currentMode: PropTypes.string,
-  currentCallback: PropTypes.string,
+  // eslint-disable-next-line react/forbid-prop-types
+  afterInputData: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   currentLevel: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
@@ -292,7 +327,7 @@ PlaygroundEdit.propTypes = {
 
 PlaygroundEdit.defaultProps = {
   currentMode: '',
-  currentCallback: '',
+  afterInputData: {},
   currentLevel: {},
   levels: [],
   onLevelParamsEdit: () => {},

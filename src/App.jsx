@@ -11,6 +11,7 @@ import {
   GAMEPLAY_MODE,
   PERSISTENT_DELETE_MODE,
   PERSISTENT_PLACING_MODE,
+  PERSISTENT_ROTATE_MODE,
   SCREEN_MODES, SELECT_MODE,
   UNIT_EDIT_MODE,
 } from './constants/constants';
@@ -260,6 +261,18 @@ function App() {
     setCurrentLevel({ ...currentLevel });
   };
 
+  const rotateUnit = (unitIndex, angle = 45) => {
+    const newUnits = [...units];
+
+    const directionMultiplier = afterInputData.direction === 'ccv' ? -1 : 1;
+
+    newUnits[unitIndex].angle += (angle * directionMultiplier);
+
+    currentLevel.units = newUnits;
+
+    setCurrentLevel({ ...currentLevel });
+  };
+
   const onUnitClick = (unitId, unitIndex) => {
     if (userInputMode === UNIT_EDIT_MODE) {
       onLevelUnitEdit(unitIndex, units[unitIndex]);
@@ -267,6 +280,10 @@ function App() {
 
     if (userInputMode === PERSISTENT_DELETE_MODE) {
       removeUnit(unitIndex);
+    }
+
+    if (userInputMode === PERSISTENT_ROTATE_MODE) {
+      rotateUnit(unitIndex);
     }
 
     if (userInputMode === SELECT_MODE) {
@@ -373,7 +390,7 @@ function App() {
       onLevelParamsEdit={onLevelParamsEdit}
       onEdit={onPlaygroundEdit}
       currentMode={userInputMode}
-      currentCallback={afterInputData && afterInputData.callback}
+      afterInputData={afterInputData}
       onSave={saveEditedUnits}
       currentLevel={currentLevel}
       levels={levels}
@@ -382,7 +399,7 @@ function App() {
   );
 
   const getPortalExitPoints = () => {
-    const portals = currentLevel.units.filter(({ type }) => type === 'portal');
+    const portals = currentLevel.units.filter(({ type }) => type === PORTAL.id);
 
     const exitPoints = [];
 
@@ -391,6 +408,22 @@ function App() {
         top,
         left,
         exitPortalId: id,
+      });
+    });
+
+    return exitPoints;
+  };
+
+  const getTeleportExitPoints = () => {
+    const teleports = currentLevel.units.filter(({ type }) => type === TELEPORT.id);
+
+    const exitPoints = [];
+
+    teleports.forEach(({ id, top, left }) => {
+      exitPoints.push({
+        top,
+        left,
+        exitTeleportId: id,
       });
     });
 
@@ -419,6 +452,7 @@ function App() {
             <div className="serviceScreen">
               <UnitEdit
                 portalExitPoints={getPortalExitPoints()}
+                teleportExitPoints={getTeleportExitPoints()}
                 unitParams={getUnitParamsForEdit()}
                 unitTurrets={getUnitTurretsForEdit()}
                 onApply={onUnitEditApply}
