@@ -32,7 +32,7 @@ export default function PlaygroundEdit(props) {
     onSave,
     onLevelParamsEdit,
     currentMode,
-    afterInputData,
+    afterInputData: afterInputDataFromProps,
     currentLevel,
     levels,
     changeCurrentLevel,
@@ -40,7 +40,7 @@ export default function PlaygroundEdit(props) {
   const dispatch = useDispatch();
 
   const [mode, setMode] = useState(currentMode);
-  const [callback, setCallback] = useState(afterInputData);
+  const [afterInputData, setAfterInputData] = useState(afterInputDataFromProps);
 
   const { editorMode } = useSelector((state) => state.user);
 
@@ -53,13 +53,13 @@ export default function PlaygroundEdit(props) {
     if (mode === PERSISTENT_PLACING_MODE && afterInputData.callback === id) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
-      setCallback(null);
+      setAfterInputData(null);
 
       return;
     }
 
     setMode(PERSISTENT_PLACING_MODE);
-    setCallback({ callback: id });
+    setAfterInputData({ callback: id });
     onEdit(PERSISTENT_PLACING_MODE, { callback: id });
   };
 
@@ -67,13 +67,13 @@ export default function PlaygroundEdit(props) {
     if (mode === CELL_MULTISELECT_MODE && afterInputData.callback === id) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
-      setCallback(null);
+      setAfterInputData(null);
 
       return;
     }
 
     setMode(CELL_MULTISELECT_MODE);
-    setCallback({ callback: id, maxMultiSelect: 2 });
+    setAfterInputData({ callback: id, maxMultiSelect: 2 });
     onEdit(CELL_MULTISELECT_MODE, { callback: id, maxMultiSelect: 2 });
   };
 
@@ -138,16 +138,16 @@ export default function PlaygroundEdit(props) {
   };
 
   const handleRotateUnitsClick = (dir) => {
-    if (mode === PERSISTENT_ROTATE_MODE && callback.direction === dir) {
+    if (mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === dir) {
       setMode(GAMEPLAY_MODE);
       onEdit(GAMEPLAY_MODE);
 
-      setCallback(null);
+      setAfterInputData(null);
       return;
     }
 
     setMode(PERSISTENT_ROTATE_MODE);
-    setCallback({ callback: 'rotateUnit', direction: dir });
+    setAfterInputData({ callback: 'rotateUnit', direction: dir });
     onEdit(PERSISTENT_ROTATE_MODE, { callback: 'rotateUnit', direction: dir });
   };
 
@@ -172,7 +172,7 @@ export default function PlaygroundEdit(props) {
   const renderUnitButton = (id) => (
     <Unit
       key={id}
-      isSelected={callback === id}
+      isSelected={afterInputData && afterInputData.callback === id}
       isDisabled={false}
       id={id}
       type={id}
@@ -188,7 +188,7 @@ export default function PlaygroundEdit(props) {
   );
 
   useEffect(() => {
-    setCallback(afterInputData);
+    setAfterInputData(afterInputData);
   }, [
     afterInputData,
   ]);
