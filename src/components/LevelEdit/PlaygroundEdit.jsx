@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+
 import {
   CELL_EDIT_MODE,
   CELL_MULTISELECT_MODE,
@@ -36,6 +37,8 @@ export default function PlaygroundEdit(props) {
     currentLevel,
     levels,
     changeCurrentLevel,
+    toggleUnits,
+    toggleTurrets,
   } = props;
   const dispatch = useDispatch();
 
@@ -151,6 +154,14 @@ export default function PlaygroundEdit(props) {
     onEdit(PERSISTENT_ROTATE_MODE, { callback: 'rotateUnit', direction: dir });
   };
 
+  const handleToggleUnitsClick = () => {
+    toggleUnits();
+  };
+
+  const handleToggleTurretsClick = () => {
+    toggleTurrets();
+  };
+
   const handleItemButtonClick = (id) => {
     if (callbacks[id]) {
       callbacks[id]();
@@ -246,14 +257,14 @@ export default function PlaygroundEdit(props) {
         </button>
         <button
           type="button"
-          onClick={() => {}}
+          onClick={handleToggleUnitsClick}
           className="button levelEditButton"
         >
           Tgl Units
         </button>
         <button
           type="button"
-          onClick={() => {}}
+          onClick={handleToggleTurretsClick}
           className="button levelEditButton"
         >
           Tgl Turrets
@@ -323,6 +334,8 @@ PlaygroundEdit.propTypes = {
   onEdit: PropTypes.func,
   onSave: PropTypes.func,
   changeCurrentLevel: PropTypes.func,
+  toggleUnits: PropTypes.func,
+  toggleTurrets: PropTypes.func,
 };
 
 PlaygroundEdit.defaultProps = {
@@ -334,4 +347,6 @@ PlaygroundEdit.defaultProps = {
   onEdit: () => {},
   onSave: () => {},
   changeCurrentLevel: () => {},
+  toggleUnits: () => {},
+  toggleTurrets: () => {},
 };

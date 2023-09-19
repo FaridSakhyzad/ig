@@ -48,11 +48,25 @@
   }
 }
 
+.hideUnits {
+  .unitLayer {
+    visibility: collapse;
+  }
+}
+
+.hideTurrets {
+  .unit-hitBox {
+    opacity: 0;
+  }
+  .weapon {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
 .unitLayer {
   height: 100%;
   width: 100%;
   position: absolute;
-
 }
 
 .projectileLayer {

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import classnames from 'classnames';
+
 import { setEditorMode } from './redux/user/actions';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
@@ -385,6 +387,17 @@ function App() {
     }
   };
 
+  const [hideUnits, setHideUnits] = useState(false);
+  const [hideTurrets, setHideTurrets] = useState(true);
+
+  const toggleUnits = () => {
+    setHideUnits(!hideUnits);
+  };
+
+  const toggleTurrets = () => {
+    setHideTurrets(!hideTurrets);
+  };
+
   const renderPlayGroundEdit = () => (
     <PlaygroundEdit
       onLevelParamsEdit={onLevelParamsEdit}
@@ -395,6 +408,8 @@ function App() {
       currentLevel={currentLevel}
       levels={levels}
       changeCurrentLevel={changeCurrentLevel}
+      toggleUnits={toggleUnits}
+      toggleTurrets={toggleTurrets}
     />
   );
 
@@ -469,7 +484,10 @@ function App() {
               />
             </div>
           )}
-          <div className="screen" id="screen">
+          <div
+            className={classnames('screen', { hideUnits, hideTurrets })}
+            id="screen"
+          >
             <Playground
               projectileExplosionDuration={projectileExplosionDuration}
               projectileMoveStep={projectileMoveStep}

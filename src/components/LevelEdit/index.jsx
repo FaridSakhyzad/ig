@@ -9,7 +9,7 @@ import {
   readLevels,
   updateLevel,
   deleteLevel,
-  saveLevelsSequence,
+  saveLevels,
 } from 'api/api';
 import { SCREEN_MODES } from 'constants/constants';
 
@@ -102,6 +102,7 @@ export default function LevelEdit() {
     createLevel(structuredClone({
       id: Math.random().toString(16).substring(2),
       ...defaults,
+      index: levels.length,
     }));
 
     setLevels(readLevels());
@@ -157,7 +158,7 @@ export default function LevelEdit() {
     }
 
     setLevels(result);
-    saveLevelsSequence(result);
+    saveLevels(result);
   };
 
   return (
