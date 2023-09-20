@@ -1,6 +1,7 @@
 import BaseUnit from 'units/BaseUnit';
 import TestUnitsSet1 from './test_units_set1';
 import unitFactory from '../units/unitFactory';
+import { GridCell } from '../GridCell';
 
 const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
@@ -9,12 +10,10 @@ const generateGrid = (gridWidth, gridHeight) => {
     const row = [];
 
     for (let j = 0; j < gridWidth; j += 1) {
-      row[j] = {
-        id: Math.random().toString(16).substring(2),
+      row[j] = new GridCell({
         left: (j / gridWidth) * 100,
         top: (i / gridHeight) * 100,
-        type: 'turf',
-      };
+      });
     }
 
     grid.push(row);
@@ -38,7 +37,7 @@ const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 
 };
 
 export class LevelMap {
-  rescaleGrid = () => {
+  rescaleGrid() {
     const initialMapHeight = this.grid.length;
     const initialMapWidth = this.grid[0].length;
 
@@ -72,7 +71,7 @@ export class LevelMap {
         }
       }
     }
-  };
+  }
 
   constructor(params = {}, controls = {}) {
     const {
