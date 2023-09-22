@@ -120,20 +120,58 @@
   background-color: lightgray;
 }
 
-.moves {
-  font-size: 14px;
-  line-height: 18px;
-  margin: 0 0 10px 0;
+.playgroundMenuButton {
+  padding: 0;
+  margin: 0;
+  width: 30px;
+  height: 30px;
+  appearance: none;
+  border: none;
+  background-color: #4733ff;
+  color: white;
+  position: relative;
+  font-size: 0;
+  float: right;
+  border-radius: 2px;
 }
 
-.mode {
-  font-size: 13px;
+.playgroundMenuButton {
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    margin: auto;
+    height: 2px;
+    background-color: white;
+  }
+}
+
+.moves {
+  font-size: 14px;
   line-height: 1.4;
-  margin: 0 0 10px 0;
+  margin: 0;
 }
 
 .currentLevel {
   font-size: 18px;
   line-height: 1.4;
+  text-align: center;
   margin: 0;
 }

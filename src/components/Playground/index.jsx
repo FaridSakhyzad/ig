@@ -790,16 +790,15 @@ function Playground(props) {
       )}
 
       <div className="playgroundHeader">
-        <h1 className="moves">
-          Moves:
-          {userMoves}
-        </h1>
-
-        <h3 className="currentLevel">
-          Current Level: {level.index}; Name: {level.name}
-        </h3>
-
-        <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
+        <div className="row">
+          <div className="col">
+            <h1 className="moves">Moves: {userMoves}</h1>
+          </div>
+          <div className="col">
+            <button type="button" className="playgroundMenuButton" onClick={handleMenuClick}>Menu</button>
+          </div>
+        </div>
+        <h3 className="currentLevel">№{level.index + 1}. {level.name}</h3>
       </div>
 
       <div className="field" id="field">

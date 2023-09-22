@@ -15,14 +15,14 @@
 }
 
 .userMenu-button {
-  margin: 0 6px;
+  margin: 0 calc(var(--base-width-unit) * 4px);
   white-space: nowrap;
 
   &.button {
-    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 8px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 7px);
     border-radius: 65536px;
     font-family: var(--font-family-default);
-    font-size: calc(var(--base-width-unit) * 12px);
+    font-size: calc(var(--base-width-unit) * 11px);
     border: 3px solid transparent;
     box-shadow: 0 0 0 1px black;
 
@@ -32,23 +32,23 @@
   }
 
   &.userMenu-button_rotate-ccv {
-    min-width: 50px;
+    min-width: 30px;
     border-radius: 65536px 0 0 65536px;
-    padding: calc(var(--base-width-unit) * 6px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 2px);
     margin-right: 0;
   }
 
   &.userMenu-button_rotate-cv {
-    min-width: 50px;
+    min-width: 30px;
     border-radius: 0 65536px 65536px 0;
-    padding: calc(var(--base-width-unit) * 6px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 2px);
     margin-left: 0;
   }
 
   &.userMenu-button_rotates-count {
     border-radius: 0;
     margin: 0;
-    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 6px);
+    padding: calc(var(--base-width-unit) * 6px) calc(var(--base-width-unit) * 4px);
   }
 }
 
