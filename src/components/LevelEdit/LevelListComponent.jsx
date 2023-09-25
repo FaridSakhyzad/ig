@@ -8,11 +8,13 @@ import Button from '@mui/material/Button';
 import IconDelete from '@mui/icons-material/Delete';
 import IconEdit from '@mui/icons-material/Edit';
 import IconHeight from '@mui/icons-material/Height';
+import Download from '@mui/icons-material/Download';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import Modal from '@mui/material/Modal';
+import { readLevels } from '../../api/api';
 
 export default function LevelListComponent({
   onLevelCreate,
@@ -88,6 +90,32 @@ export default function LevelListComponent({
     boxShadow: isDragging ? '0 0 15px 0 rgba(0, 0, 0, 0.3)' : 'none',
     ...draggableStyle,
   });
+
+  const handleDownloadClick = (idx) => {
+    const level = readLevels()[idx];
+
+    const blob = new Blob([JSON.stringify(level)], { type: 'text/json' });
+
+    const elem = window.document.createElement('a');
+    elem.href = window.URL.createObjectURL(blob);
+    elem.download = `${level.name ? `${level.name}_` : ''}${level.id}.json`;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
+
+  const handleDownloadAllClick = () => {
+    const levels = readLevels();
+
+    const blob = new Blob([JSON.stringify(levels)], { type: 'text/json' });
+
+    const elem = window.document.createElement('a');
+    elem.href = window.URL.createObjectURL(blob);
+    elem.download = `levels_${parseInt(Date.now(), 10)}.json`;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
 
   return (
     <>
@@ -191,19 +219,38 @@ export default function LevelListComponent({
                       <div className="mapList-itemControls">
                         <Button
                           type="button"
-                          className="button"
+                          onClick={() => handleDownloadClick(idx)}
+                          classes={{
+                            root: 'mapList-itemControl',
+                          }}
+                        >
+                          <Download />
+                        </Button>
+                        <Button
+                          type="button"
                           onClick={() => handleChangeIndex(idx)}
+                          classes={{
+                            root: 'mapList-itemControl',
+                          }}
                         >
                           <IconHeight />
                         </Button>
                         <Button
                           type="button"
-                          className="button"
                           onClick={() => handleDeleteMap(mapItem.id)}
+                          classes={{
+                            root: 'mapList-itemControl',
+                          }}
                         >
                           <IconDelete />
                         </Button>
-                        <Button onClick={() => handleEditMap(idx)}>
+                        <Button
+                          type="button"
+                          onClick={() => handleEditMap(idx)}
+                          classes={{
+                            root: 'mapList-itemControl',
+                          }}
+                        >
                           <IconEdit />
                         </Button>
                       </div>
@@ -216,7 +263,16 @@ export default function LevelListComponent({
           )}
         </Droppable>
       </DragDropContext>
-      <Grid container alignItems="center" justifyContent="center">
+      <Grid container alignItems="center" justifyContent="center" spacing={1}>
+        <Grid item>
+          <Button
+            variant="outlined"
+            classes={{ root: 'mapList-newLevelButton' }}
+            onClick={handleDownloadAllClick}
+          >
+            Download All
+          </Button>
+        </Grid>
         <Grid item>
           <Button
             variant="contained"

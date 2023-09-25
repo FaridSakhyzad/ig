@@ -210,7 +210,7 @@ export default function PlaygroundEdit(props) {
         <button
           type="button"
           onClick={handleMoveUnitsClick}
-          className={classnames('button levelEditButton', { selected: currentMode === SELECT_MODE })}
+          className={classnames('button levelEditButton', { selected: mode === SELECT_MODE })}
         >
           Move Units
         </button>
@@ -219,7 +219,7 @@ export default function PlaygroundEdit(props) {
             type="button"
             onClick={() => handleRotateUnitsClick('ccv')}
             className={classnames('button levelEditButton levelEditButton_rotate', {
-              selected: currentMode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'ccv',
+              selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'ccv',
             })}
           >
             &lt;-
@@ -228,7 +228,7 @@ export default function PlaygroundEdit(props) {
             type="button"
             onClick={() => handleRotateUnitsClick('cv')}
             className={classnames('button levelEditButton levelEditButton_rotate', {
-              selected: currentMode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'cv',
+              selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'cv',
             })}
           >
             -&gt;
@@ -237,21 +237,21 @@ export default function PlaygroundEdit(props) {
         <button
           type="button"
           onClick={handleDeleteUnitsClick}
-          className={classnames('button levelEditButton', { selected: currentMode === PERSISTENT_DELETE_MODE })}
+          className={classnames('button levelEditButton', { selected: mode === PERSISTENT_DELETE_MODE })}
         >
           Del Units
         </button>
         <button
           type="button"
           onClick={handleEditUnitsClick}
-          className={classnames('button levelEditButton', { selected: currentMode === UNIT_EDIT_MODE })}
+          className={classnames('button levelEditButton', { selected: mode === UNIT_EDIT_MODE })}
         >
           Edit Units
         </button>
         <button
           type="button"
           onClick={handleEditCellsClick}
-          className={classnames('button levelEditButton', { selected: currentMode === CELL_EDIT_MODE })}
+          className={classnames('button levelEditButton', { selected: mode === CELL_EDIT_MODE })}
         >
           Edit Cells
         </button>

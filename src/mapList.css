@@ -22,3 +22,8 @@
 .mapList-newLevelButton {
     margin:  auto;
 }
+
+.mapList-itemControl {
+    padding: 6px 6px!important;
+    min-width: 44px!important;
+}

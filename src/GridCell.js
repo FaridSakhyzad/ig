@@ -7,6 +7,8 @@ export class GridCell {
 
   type = 'turf';
 
+  selected = false;
+
   constructor(params = {}) {
     const {
       id,

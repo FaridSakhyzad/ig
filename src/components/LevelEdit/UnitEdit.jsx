@@ -47,7 +47,6 @@ export default function UnitEdit(props) {
 
   const handleApplyClick = () => {
     onApply(unitParams, unitTurrets);
-    onClose();
   };
 
   const handleCloseClick = () => {

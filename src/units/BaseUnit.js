@@ -27,6 +27,7 @@ export default class BaseUnit {
       type,
       minValue,
       maxValue,
+      selected = false,
       selectable,
       valueCountable,
       hitBoxRadius,
@@ -47,6 +48,7 @@ export default class BaseUnit {
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.selectable = selectable;
+    this.selected = selected;
     this.valueCountable = valueCountable;
 
     this.exploding = false;

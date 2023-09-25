@@ -773,6 +773,10 @@ function Playground(props) {
     startLevel();
   }, [levelFromProp]);
 
+  const handleSettingsClick = () => {
+    console.log('handleSettingsClick');
+  };
+
   return (
     <>
       {winScreenVisible && (
@@ -792,10 +796,13 @@ function Playground(props) {
       <div className="playgroundHeader">
         <div className="row">
           <div className="col">
+            <button type="button" className="playgroundMenuButton" onClick={handleMenuClick}>Menu</button>
+          </div>
+          <div className="col">
             <h1 className="moves">Moves: {userMoves}</h1>
           </div>
           <div className="col">
-            <button type="button" className="playgroundMenuButton" onClick={handleMenuClick}>Menu</button>
+            <button type="button" className="playgroundSettingsButton" onClick={handleSettingsClick}>Settings</button>
           </div>
         </div>
         <h3 className="currentLevel">№{level.index + 1}. {level.name}</h3>
@@ -842,7 +849,18 @@ function Playground(props) {
         </div>
         <div className="unitLayer">
           {units.map(({
-            id, hitBoxRadius, type, kind, angle, value, maxValue, turrets, exploding, top, left,
+            id,
+            hitBoxRadius,
+            type,
+            kind,
+            angle,
+            value,
+            maxValue,
+            turrets,
+            exploding,
+            top,
+            left,
+            selected,
           }, index) => (
             <Unit
               top={grid[top] && grid[top][left] && grid[top][left].top}
@@ -851,7 +869,7 @@ function Playground(props) {
               height={100 / level.mapHeight}
               hitBoxRadius={hitBoxRadius}
               key={id}
-              isSelected={selectedUnits.some((unit) => unit.unitId === id)}
+              isSelected={selected || selectedUnits.some((unit) => unit.unitId === id)}
               id={id}
               type={type}
               kind={kind}

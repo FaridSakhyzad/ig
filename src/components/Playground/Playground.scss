@@ -131,11 +131,8 @@
   color: white;
   position: relative;
   font-size: 0;
-  float: right;
   border-radius: 2px;
-}
 
-.playgroundMenuButton {
   &:before {
     content: '';
     display: block;
@@ -163,9 +160,25 @@
   }
 }
 
+.playgroundSettingsButton {
+  padding: 0;
+  margin: 0;
+  width: 30px;
+  height: 30px;
+  appearance: none;
+  border: none;
+  background-color: #4733ff;
+  color: white;
+  position: relative;
+  font-size: 0;
+  border-radius: 2px;
+  float: right;
+}
+
 .moves {
   font-size: 14px;
   line-height: 1.4;
+  text-align: center;
   margin: 0;
 }
 

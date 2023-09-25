@@ -160,6 +160,7 @@ function App() {
   const [editedCellCoords, setEditedCellCoords] = useState(null);
 
   const [selectedCells, setSelectedCells] = useState([]);
+  const [selectedUnits, setSelectedUnits] = useState([]);
 
   const onLevelUnitEdit = (index) => {
     setEditedUnitIndex(index);
@@ -191,6 +192,7 @@ function App() {
 
     setCurrentLevel(currentLevel);
     saveLevelParams();
+    setEditedUnitIndex(null);
   };
 
   const getUnitParamsForEdit = () => {
@@ -289,6 +291,13 @@ function App() {
     }
 
     if (userInputMode === SELECT_MODE) {
+      if (selectedUnits[0] && selectedUnits[0].unitIndex) {
+        currentLevel.units[selectedUnits[0].unitIndex].selected = false;
+      }
+
+      setSelectedUnits([{ unitId, unitIndex }]);
+      currentLevel.units[unitIndex].selected = true;
+
       if (afterInputData.callback === 'moveUnit' && selectedCells.length > 0) {
         const { top, left } = selectedCells[0];
 
@@ -297,7 +306,11 @@ function App() {
         selectedCells.forEach((cell) => {
           currentLevel.grid[cell.top][cell.left].selected = false;
         });
+
+        currentLevel.units[unitIndex].selected = false;
+
         setSelectedCells([]);
+        setSelectedUnits([]);
       }
     }
   };
@@ -347,6 +360,21 @@ function App() {
       newSelectedCells.forEach((cell) => {
         currentLevel.grid[cell.top][cell.left].selected = true;
       });
+
+      if (afterInputData.callback === 'moveUnit' && selectedUnits.length > 0) {
+        moveUnit(selectedUnits[0].unitIndex, top, left);
+
+        newSelectedCells.forEach((cell) => {
+          currentLevel.grid[cell.top][cell.left].selected = false;
+        });
+
+        if (selectedUnits[0] && selectedUnits[0].unitIndex) {
+          currentLevel.units[selectedUnits[0].unitIndex].selected = false;
+        }
+
+        setSelectedCells([]);
+        setSelectedUnits([]);
+      }
     }
 
     if (userInputMode === CELL_EDIT_MODE) {
