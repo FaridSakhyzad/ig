@@ -774,6 +774,7 @@ function Playground(props) {
   }, [levelFromProp]);
 
   const handleSettingsClick = () => {
+    // eslint-disable-next-line no-console
     console.log('handleSettingsClick');
   };
 
