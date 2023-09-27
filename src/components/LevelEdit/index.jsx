@@ -108,6 +108,28 @@ export default function LevelEdit() {
     setLevels(readLevels());
   };
 
+  const onLevelsImport = (importedLevels) => {
+    const storedLevels = readLevels();
+
+    importedLevels.forEach((importedLevel) => {
+      const newIdNeeded = storedLevels
+        .findIndex((storedLevel) => storedLevel.id === importedLevel.id) > -1;
+
+      if (newIdNeeded) {
+        storedLevels.push({
+          ...importedLevel,
+          id: Math.random().toString(16).substring(2),
+        });
+      } else {
+        storedLevels.push(importedLevel);
+      }
+
+      setLevels(storedLevels);
+    });
+
+    saveLevels(storedLevels);
+  };
+
   const onDeleteLevel = (levelId) => {
     deleteLevel(levelId);
     setLevels(readLevels());
@@ -183,6 +205,7 @@ export default function LevelEdit() {
             onLevelCreate={onCreateNewLevel}
             onLevelEdit={(levelIndex) => setCurrentLevel(levels[levelIndex])}
             onLevelDelete={onDeleteLevel}
+            onLevelsImport={onLevelsImport}
             onLevelIndexChange={updateLevelIndex}
           />
         </>

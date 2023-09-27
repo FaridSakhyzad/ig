@@ -91,3 +91,25 @@
     display: none;
   }
 }
+
+.uploadLevelsButton {
+  min-width: 64px;
+  padding: 5px 15px;
+  border-radius: 4px;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  color: #1976d2;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+
+  font: normal 500 0.875rem/1.75 "Roboto", "Helvetica", "Arial", sans-serif;
+  letter-spacing: 0.02857em;
+}
+
+.uploadLevelsButton-input {
+  position: absolute;
+  font-size: 144px;
+  top: -10px;
+  left: -10px;
+  opacity: 0;
+}

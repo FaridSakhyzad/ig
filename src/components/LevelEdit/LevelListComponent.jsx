@@ -20,6 +20,7 @@ export default function LevelListComponent({
   onLevelCreate,
   onLevelEdit,
   onLevelDelete,
+  onLevelsImport,
   levelList,
   onLevelIndexChange,
 }) {
@@ -115,6 +116,45 @@ export default function LevelListComponent({
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
+  };
+
+  const parseImportedLevels = (data) => {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const applyImportedLevels = (data) => {
+    if (data.length === undefined) {
+      onLevelsImport([data]);
+    } else {
+      onLevelsImport(data);
+    }
+  };
+
+  const onUploadLevelsChange = (e) => {
+    const file = e.target.files[0];
+
+    const reader = new FileReader();
+    reader.readAsText(file, 'UTF-8');
+
+    reader.onload = (event) => {
+      const { result } = event.target;
+
+      if (!result) {
+        return;
+      }
+
+      const parsed = parseImportedLevels(result);
+
+      if (!parsed) {
+        return;
+      }
+
+      applyImportedLevels(parsed);
+    };
   };
 
   return (
@@ -265,6 +305,17 @@ export default function LevelListComponent({
       </DragDropContext>
       <Grid container alignItems="center" justifyContent="center" spacing={1}>
         <Grid item>
+          <div className="uploadLevelsButton">
+            <input
+              type="file"
+              onChange={onUploadLevelsChange}
+              className="uploadLevelsButton-input"
+              accept=".json"
+            />
+            Import
+          </div>
+        </Grid>
+        <Grid item>
           <Button
             variant="outlined"
             classes={{ root: 'mapList-newLevelButton' }}
@@ -292,6 +343,7 @@ LevelListComponent.propTypes = {
   onLevelEdit: PropTypes.func,
   onLevelDelete: PropTypes.func,
   onLevelIndexChange: PropTypes.func,
+  onLevelsImport: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   levelList: PropTypes.array,
 };
@@ -301,5 +353,6 @@ LevelListComponent.defaultProps = {
   onLevelEdit: () => {},
   onLevelDelete: () => {},
   onLevelIndexChange: () => {},
+  onLevelsImport: () => {},
   levelList: [],
 };
