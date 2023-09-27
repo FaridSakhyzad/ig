@@ -46,26 +46,26 @@
 .levelEditButtons {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   grid-column-gap: 5px;
   grid-row-gap: 5px;
-  margin: 0 0 10px 0;
+  margin: 0 0 5px 0;
 }
 
 .levelEditButton {
   &.button {
-    padding: 8px 4px;
+    font-size: 11px;
+    padding: 4px;
   }
 }
 
-.levelEditRotates {
-  display: grid;
-  grid-column-gap: 3px;
-  grid-template-columns: 1fr 1fr;
+.levelEdit-selectLevel {
+  grid-column: span 2;
 }
 
 .levelEdit-modeSwitcher {
   font-size: 11px;
+  line-height: 11px;
   display: flex;
   align-items: center;
   flex-direction: column;

@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes, { string } from 'prop-types';
+import PropTypes, { bool, string } from 'prop-types';
 import { useSelector } from 'react-redux';
 import classnames from 'classnames';
 import {
@@ -11,7 +11,7 @@ import {
 import Unit from '../Unit';
 import './UserMenu.scss';
 
-function UserMenu({ onModeChange, afterInputAction }) {
+function UserMenu({ onModeChange, afterInputAction, disabled }) {
   const {
     swaps,
     rotates,
@@ -31,7 +31,7 @@ function UserMenu({ onModeChange, afterInputAction }) {
   } = useSelector((state) => state.user);
 
   return (
-    <div className="userMenu">
+    <div className={classnames('userMenu', { disabled })}>
       <div className="userMenu-row">
         {!ammoRestrictions.deletes && (
           <button
@@ -272,10 +272,12 @@ function UserMenu({ onModeChange, afterInputAction }) {
 UserMenu.propTypes = {
   onModeChange: PropTypes.func.isRequired,
   afterInputAction: string,
+  disabled: bool,
 };
 
 UserMenu.defaultProps = {
   afterInputAction: null,
+  disabled: false,
 };
 
 export default UserMenu;

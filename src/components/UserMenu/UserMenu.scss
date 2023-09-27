@@ -2,6 +2,22 @@
   width: 100%;
   background: #4733ff;
   padding: 2%;
+  position: relative;
+
+  &.disabled {
+    opacity: 0.5;
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+    }
+  }
 }
 
 .userMenu-row {

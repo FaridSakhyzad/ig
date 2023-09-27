@@ -160,19 +160,88 @@
   }
 }
 
-.playgroundSettingsButton {
+.playgroundHeader-rightButtons {
+  float: right;
+  display: flex;
+}
+
+.playgroundHeaderButton {
   padding: 0;
   margin: 0;
   width: 30px;
   height: 30px;
   appearance: none;
   border: none;
-  background-color: #4733ff;
+  background-color: #33b8ff;
   color: white;
   position: relative;
   font-size: 0;
   border-radius: 2px;
-  float: right;
+
+  & + & {
+    margin-left: 5px;
+  }
+
+  &.active {
+    background-color: #4733ff;
+  }
+}
+
+.settingsScreen {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 100;
+  display: flex;
+}
+
+.settingsScreen-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    background-color: black;
+    margin: auto;
+  }
+
+  &:before {
+    transform: rotate(45deg);
+  }
+  &:after {
+    transform: rotate(-45deg);
+  }
+}
+
+.playgroundEditBox {
+  position: relative;
+
+  &.disabled {
+    filter: grayscale(1);
+    opacity: 0.5;
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+    }
+  }
 }
 
 .moves {

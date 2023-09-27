@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -25,7 +24,6 @@ import {
   UNITS,
 } from '../../constants/units';
 import Unit from '../Unit';
-import { setEditorMode } from '../../redux/user/actions';
 
 export default function PlaygroundEdit(props) {
   const {
@@ -40,17 +38,8 @@ export default function PlaygroundEdit(props) {
     toggleUnits,
     toggleTurrets,
   } = props;
-  const dispatch = useDispatch();
-
   const [mode, setMode] = useState(currentMode);
   const [afterInputData, setAfterInputData] = useState(afterInputDataFromProps);
-
-  const { editorMode } = useSelector((state) => state.user);
-
-  const handleAdminModeChange = ({ target: { checked } }) => {
-    localStorage.setItem('editorMode', checked);
-    dispatch(setEditorMode(checked));
-  };
 
   const placeUnit = (id) => {
     if (mode === PERSISTENT_PLACING_MODE && afterInputData.callback === id) {
@@ -214,26 +203,24 @@ export default function PlaygroundEdit(props) {
         >
           Move Units
         </button>
-        <div className="levelEditRotates">
-          <button
-            type="button"
-            onClick={() => handleRotateUnitsClick('ccv')}
-            className={classnames('button levelEditButton levelEditButton_rotate', {
-              selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'ccv',
-            })}
-          >
-            &lt;-
-          </button>
-          <button
-            type="button"
-            onClick={() => handleRotateUnitsClick('cv')}
-            className={classnames('button levelEditButton levelEditButton_rotate', {
-              selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'cv',
-            })}
-          >
-            -&gt;
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => handleRotateUnitsClick('ccv')}
+          className={classnames('button levelEditButton levelEditButton_rotate', {
+            selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'ccv',
+          })}
+        >
+          &lt;-
+        </button>
+        <button
+          type="button"
+          onClick={() => handleRotateUnitsClick('cv')}
+          className={classnames('button levelEditButton levelEditButton_rotate', {
+            selected: mode === PERSISTENT_ROTATE_MODE && afterInputData.direction === 'cv',
+          })}
+        >
+          -&gt;
+        </button>
         <button
           type="button"
           onClick={handleDeleteUnitsClick}
@@ -284,7 +271,7 @@ export default function PlaygroundEdit(props) {
           Save
         </button>
         <select
-          className="select"
+          className="select levelEdit-selectLevel"
           onChange={handleLevelSelectorChange}
           value={currentLevel.id}
         >
@@ -298,16 +285,6 @@ export default function PlaygroundEdit(props) {
             </option>
           ))}
         </select>
-
-        <label className="levelEdit-modeSwitcher">
-          Editor Mode
-          <input
-            type="checkbox"
-            className="checkbox mainMenu-editorModeSwitcherInput"
-            checked={editorMode}
-            onChange={handleAdminModeChange}
-          />
-        </label>
       </div>
 
       <div className="levelEditItems">

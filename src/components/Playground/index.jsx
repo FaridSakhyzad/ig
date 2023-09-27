@@ -48,6 +48,7 @@ import {
   NPC,
   HIDDEN,
 } from '../../constants/units';
+import Settings from '../Settings/Settings';
 
 const MAX_MULTISELECT = 2;
 
@@ -100,6 +101,10 @@ function Playground(props) {
 
   const [winScreenVisible, setWinScreenVisible] = useState(false);
   const [loseScreenVisible, setLoseScreenVisible] = useState(false);
+
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+
+  const [isLevelInEdit, setIsLevelInEdit] = useState(editorMode);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
     const { dataset } = unit;
@@ -413,7 +418,7 @@ function Playground(props) {
   };
 
   const handleUnitClick = (e, unitId, unitIndex) => {
-    if (editorMode) {
+    if (isLevelInEdit) {
       onUnitClick(unitId, unitIndex);
       return;
     }
@@ -482,7 +487,7 @@ function Playground(props) {
   };
 
   const handleGridCellClick = (id, top, left) => {
-    if (editorMode) {
+    if (isLevelInEdit) {
       onCellClick(id, top, left);
       return;
     }
@@ -773,13 +778,35 @@ function Playground(props) {
     startLevel();
   }, [levelFromProp]);
 
+  const handleEditClick = () => {
+    setIsLevelInEdit(!isLevelInEdit);
+  };
+
   const handleSettingsClick = () => {
-    // eslint-disable-next-line no-console
-    console.log('handleSettingsClick');
+    setIsSettingsVisible(true);
+  };
+
+  const handleCloseSettingsClick = () => {
+    setIsSettingsVisible(false);
   };
 
   return (
     <>
+      {isSettingsVisible && (
+        <dialog
+          className="settingsScreen"
+          open={isSettingsVisible}
+        >
+          <button
+            type="button"
+            className="button settingsScreen-close"
+            aria-label="Close"
+            onClick={handleCloseSettingsClick}
+          />
+          <Settings />
+        </dialog>
+      )}
+
       {winScreenVisible && (
         <div className="winMessage" onClick={startNextLevel}>
           <h1>You win</h1>
@@ -803,7 +830,24 @@ function Playground(props) {
             <h1 className="moves">Moves: {userMoves}</h1>
           </div>
           <div className="col">
-            <button type="button" className="playgroundSettingsButton" onClick={handleSettingsClick}>Settings</button>
+            <div className="playgroundHeader-rightButtons">
+              {editorMode && (
+                <button
+                  type="button"
+                  className={classnames('playgroundHeaderButton', { active: isLevelInEdit })}
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </button>
+              )}
+              <button
+                type="button"
+                className="playgroundHeaderButton"
+                onClick={handleSettingsClick}
+              >
+                Settings
+              </button>
+            </div>
           </div>
         </div>
         <h3 className="currentLevel">№{level.index + 1}. {level.name}</h3>
@@ -886,9 +930,14 @@ function Playground(props) {
         </div>
       </div>
 
-      {renderPlayGroundEdit()}
+      {editorMode && (
+        <div className={classnames('playgroundEditBox', { disabled: !isLevelInEdit })}>
+          {renderPlayGroundEdit()}
+        </div>
+      )}
 
       <UserMenu
+        disabled={isLevelInEdit}
         afterInputAction={afterInputAction}
         onModeChange={onModeChange}
       />
