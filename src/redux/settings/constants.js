@@ -1,0 +1,1 @@
+export const SET_EDITOR_MODE = 'SET_EDITOR_MODE';

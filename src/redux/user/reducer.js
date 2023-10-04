@@ -1,15 +1,16 @@
 import {
-  SET_EDITOR_MODE,
   SET_USER_MOVES,
   SET_SWAPS,
   SET_ROTATES,
   SET_AMMO,
   RESET_AMMO,
+  SET_AVAILABLE_LEVELS, SET_CURRENT_LEVEL,
 } from './constants';
+import { getUserProfile } from '../../api/user';
+
+const storedUserData = getUserProfile();
 
 const initialState = {
-  editorMode: localStorage ? localStorage.getItem('editorMode') === 'true' : false,
-
   userMoves: 0,
 
   defaults: 0,
@@ -43,16 +44,17 @@ const initialState = {
     portals: false,
     teleports: false,
   },
+
+  currentLevelIndex: 0,
+  availableLevels: [
+    { index: 0 },
+  ],
+
+  ...storedUserData,
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_EDITOR_MODE: {
-      return {
-        ...state,
-        editorMode: action.payload,
-      };
-    }
     case SET_USER_MOVES: {
       return {
         ...state,
@@ -80,6 +82,18 @@ const userReducer = (state = initialState, action) => {
     case RESET_AMMO: {
       return {
         ...initialState,
+      };
+    }
+    case SET_AVAILABLE_LEVELS: {
+      return {
+        ...state,
+        availableLevels: action.payload,
+      };
+    }
+    case SET_CURRENT_LEVEL: {
+      return {
+        ...state,
+        currentLevelIndex: action.payload,
       };
     }
     default:

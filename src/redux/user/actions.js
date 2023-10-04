@@ -4,7 +4,8 @@ import {
   SET_ROTATES,
   SET_AMMO,
   RESET_AMMO,
-  SET_EDITOR_MODE,
+  SET_AVAILABLE_LEVELS,
+  SET_CURRENT_LEVEL,
 } from './constants';
 
 export const setUserMoves = (data) => ({
@@ -31,7 +32,12 @@ export const resetAmmo = () => ({
   type: RESET_AMMO,
 });
 
-export const setEditorMode = (data) => ({
-  type: SET_EDITOR_MODE,
+export const setAvailableLevels = (data) => ({
+  type: SET_AVAILABLE_LEVELS,
+  payload: data,
+});
+
+export const setCurrentLevel = (data) => ({
+  type: SET_CURRENT_LEVEL,
   payload: data,
 });

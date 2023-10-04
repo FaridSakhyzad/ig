@@ -21,6 +21,7 @@ export const CELL_EDIT_MODE = 'cellEdit';
 export const SCREEN_MODES = {
   menu: 'menu',
   levelsList: 'levelsList',
+  levelsListEdit: 'levelsListEdit',
   levelEdit: 'levelEdit',
   playground: 'playground',
   settings: 'settings',

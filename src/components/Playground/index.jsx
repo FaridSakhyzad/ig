@@ -10,9 +10,11 @@ import {
   setRotates,
   setAmmo,
   resetAmmo,
+  setAvailableLevels, setCurrentLevel,
 } from 'redux/user/actions';
 import { setStash } from 'redux/userStash/actions';
 
+import { saveUserProgress } from 'api/user';
 import { generatePortals, generateTeleports } from 'units/unitFactory';
 
 import BaseUnit from 'units/BaseUnit';
@@ -81,6 +83,8 @@ function Playground(props) {
     jumps,
     deflectors,
     walls,
+
+    availableLevels,
   } = user;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
@@ -759,6 +763,20 @@ function Playground(props) {
 
     setWinScreenVisible(false);
     setLoseScreenVisible(false);
+
+    const newAvailableLevels = [...availableLevels];
+
+    if (availableLevels.findIndex(({ index: idx }) => levelFromProp.index === idx) < 0) {
+      newAvailableLevels.push({ index: levelFromProp.index });
+      dispatch(setAvailableLevels(newAvailableLevels));
+    }
+
+    dispatch(setCurrentLevel(levelFromProp.index));
+
+    saveUserProgress({
+      availableLevels: newAvailableLevels,
+      currentLevelIndex: levelFromProp.index,
+    });
   };
 
   const handleRestartClick = () => {
@@ -770,7 +788,7 @@ function Playground(props) {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
   };
 
-  const startNextLevel = () => {
+  const handleWinClick = () => {
     onPlayNextLevel();
   };
 
@@ -808,7 +826,7 @@ function Playground(props) {
       )}
 
       {winScreenVisible && (
-        <div className="winMessage" onClick={startNextLevel}>
+        <div className="winMessage" onClick={handleWinClick}>
           <h1>You win</h1>
         </div>
       )}

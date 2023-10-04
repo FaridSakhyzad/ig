@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classnames from 'classnames';
 
-import { setEditorMode } from './redux/user/actions';
+import { setEditorMode } from './redux/settings/actions';
 import { setCurrentScreen } from './redux/ui/actions';
 import Playground from './components/Playground';
-import LevelEdit from './components/LevelEdit';
+import LevelListEdit from './components/LevelEdit';
 import { BASE_VIEWPORT_WIDTH } from './config/config';
 import {
   CELL_EDIT_MODE,
@@ -17,8 +17,10 @@ import {
   SCREEN_MODES, SELECT_MODE,
   UNIT_EDIT_MODE,
 } from './constants/constants';
+import LevelsList from './components/LevelList/LevelsList';
+
 import { LevelMap } from './maps/maps';
-import { readLevels, updateLevel } from './api/api';
+import { readLevels, updateLevel } from './api/levels';
 import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
 
 import './App.scss';
@@ -48,7 +50,7 @@ function App() {
   const dispatch = useDispatch();
 
   const { currentScreen } = useSelector((state) => state.ui);
-  const { editorMode } = useSelector((state) => state.user);
+  const { editorMode } = useSelector((state) => state.settings);
 
   const levels = readLevels() || [];
 
@@ -61,7 +63,11 @@ function App() {
   };
 
   const handlePlayClick = () => {
-    setCurrentLevel(new LevelMap(levels[0]));
+    dispatch(setCurrentScreen(SCREEN_MODES.levelsList));
+  };
+
+  const startLevel = (idx) => {
+    setCurrentLevel(new LevelMap(levels[idx]));
     dispatch(setCurrentScreen(SCREEN_MODES.playground));
   };
 
@@ -77,8 +83,8 @@ function App() {
     setCurrentLevel(getNextLevel());
   };
 
-  const handleLevelsClick = () => {
-    dispatch(setCurrentScreen(SCREEN_MODES.levelsList));
+  const handleLevelsEditClick = () => {
+    dispatch(setCurrentScreen(SCREEN_MODES.levelsListEdit));
   };
 
   const handleSettingsClick = () => {
@@ -475,9 +481,17 @@ function App() {
 
   return (
     <div className="app">
-      {currentScreen === SCREEN_MODES.levelsList && (
+      {currentScreen === SCREEN_MODES.levelsListEdit && (
         <div className="serviceScreen" id="screen">
-          <LevelEdit />
+          <LevelListEdit />
+        </div>
+      )}
+      {currentScreen === SCREEN_MODES.levelsList && (
+        <div className="screen" id="screen">
+          <LevelsList
+            levels={levels}
+            onLevelClick={startLevel}
+          />
         </div>
       )}
       {currentScreen === SCREEN_MODES.playground && (
@@ -549,7 +563,13 @@ function App() {
             </li>
             {editorMode && (
               <li className="mainMenu-item">
-                <button type="button" onClick={handleLevelsClick} className="button">Levels</button>
+                <button
+                  type="button"
+                  onClick={handleLevelsEditClick}
+                  className="button"
+                >
+                  Level List Edit
+                </button>
               </li>
             )}
             <li className="mainMenu-item">

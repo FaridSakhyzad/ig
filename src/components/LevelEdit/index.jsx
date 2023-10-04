@@ -10,7 +10,7 @@ import {
   updateLevel,
   deleteLevel,
   saveLevels,
-} from 'api/api';
+} from 'api/levels';
 import { SCREEN_MODES } from 'constants/constants';
 
 import Button from '@mui/material/Button';
@@ -19,7 +19,7 @@ import LevelEditComponent from './LevelEditComponent';
 
 import 'mapList.css';
 
-export default function LevelEdit() {
+export default function LevelListEdit() {
   const savedLevels = readLevels();
 
   const [currentLevel, setCurrentLevel] = useState(null);

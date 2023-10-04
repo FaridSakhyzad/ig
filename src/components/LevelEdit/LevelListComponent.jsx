@@ -14,7 +14,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import IconClose from '@mui/icons-material/Close';
 import Modal from '@mui/material/Modal';
-import { readLevels } from '../../api/api';
+import { readLevels } from '../../api/levels';
 
 export default function LevelListComponent({
   onLevelCreate,
