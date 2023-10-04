@@ -67,11 +67,9 @@ function Playground(props) {
 
   const dispatch = useDispatch();
 
-  const { user, userStash } = useSelector((state) => state);
+  const { user, userStash, settings } = useSelector((state) => state);
 
   const {
-    editorMode,
-
     userMoves,
     bobombs,
     defaults,
@@ -86,6 +84,8 @@ function Playground(props) {
 
     availableLevels,
   } = user;
+
+  const { editorMode } = settings;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
   const [afterInputAction, setAfterInputAction] = useState(null);

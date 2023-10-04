@@ -30,14 +30,22 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
     ammoRestrictions,
   } = useSelector((state) => state.user);
 
+  const handleMenuButtonClick = (ammoItem, mode, options) => {
+    if (ammoItem < 1) {
+      return;
+    }
+
+    onModeChange(mode, options);
+  };
+
   return (
     <div className={classnames('userMenu', { disabled })}>
       <div className="userMenu-row">
         {!ammoRestrictions.deletes && (
           <button
             type="button"
-            disabled={swaps < 1}
-            onClick={() => onModeChange(SELECT_MODE, { callback: 'delete' })}
+            disabled={deletes < 1}
+            onClick={() => handleMenuButtonClick(deletes, SELECT_MODE, { callback: 'delete' })}
             className={classnames('button userMenu-button', { selected: afterInputAction === 'delete' })}
           >
             Dels {deletes}
@@ -48,7 +56,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           <button
             type="button"
             disabled={swaps < 1}
-            onClick={() => onModeChange(ITEM_MULTISELECT_MODE, { callback: 'swap' })}
+            onClick={() => handleMenuButtonClick(swaps, ITEM_MULTISELECT_MODE, { callback: 'swap' })}
             className={classnames('button userMenu-button', { selected: afterInputAction === 'swap' })}
           >
             Swaps {swaps}
@@ -59,7 +67,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           <button
             type="button"
             disabled={jumps < 1}
-            onClick={() => onModeChange(SELECT_MODE, { callback: 'jump' })}
+            onClick={() => handleMenuButtonClick(jumps, SELECT_MODE, { callback: 'jump' })}
             className={classnames('button userMenu-button', { selected: afterInputAction === 'jump' })}
           >
             Jumps {jumps}
@@ -71,7 +79,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
             <button
               type="button"
               disabled={rotates < 1}
-              onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_ccv' })}
+              onClick={() => handleMenuButtonClick(rotates, SELECT_MODE, { callback: 'rotate_ccv' })}
               className={classnames('button userMenu-button userMenu-button_rotate-ccv', { selected: afterInputAction === 'rotate_ccv' })}
             >
               &lt;-
@@ -86,7 +94,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
             <button
               type="button"
               disabled={rotates < 1}
-              onClick={() => onModeChange(SELECT_MODE, { callback: 'rotate_cv' })}
+              onClick={() => handleMenuButtonClick(rotates, SELECT_MODE, { callback: 'rotate_cv' })}
               className={classnames('button userMenu-button userMenu-button_rotate-cv', { selected: afterInputAction === 'rotate_cv' })}
             >
               -&gt;
@@ -100,7 +108,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.defaults && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(PLACING_MODE, { callback: 'default' })}
+              onClick={() => handleMenuButtonClick(defaults, PLACING_MODE, { callback: 'default' })}
             >
               <Unit
                 key="default"
@@ -124,7 +132,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.bobombs && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(PLACING_MODE, { callback: 'bobomb' })}
+              onClick={() => handleMenuButtonClick(bobombs, PLACING_MODE, { callback: 'bobomb' })}
             >
               <Unit
                 key="bobomb"
@@ -148,7 +156,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.lasers && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(PLACING_MODE, { callback: 'laser' })}
+              onClick={() => handleMenuButtonClick(lasers, PLACING_MODE, { callback: 'laser' })}
             >
               <Unit
                 key="laser"
@@ -172,7 +180,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.portals && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(CELL_MULTISELECT_MODE, { callback: 'portal' })}
+              onClick={() => handleMenuButtonClick(portals, CELL_MULTISELECT_MODE, { callback: 'portal' })}
             >
               <Unit
                 key="portal"
@@ -196,7 +204,7 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.deflectors && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(PLACING_MODE, { callback: 'deflector' })}
+              onClick={() => handleMenuButtonClick(deflectors, PLACING_MODE, { callback: 'deflector' })}
             >
               <Unit
                 key="deflector"
@@ -220,11 +228,12 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.teleports && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(CELL_MULTISELECT_MODE, { callback: 'teleport' })}
+              onClick={() => handleMenuButtonClick(teleports, CELL_MULTISELECT_MODE, { callback: 'teleport' })}
             >
               <Unit
                 key="teleport"
                 isSelected={afterInputAction === 'teleport'}
+                isDisabled={teleports < 1}
                 id="teleport"
                 top={0}
                 left={0}
@@ -243,12 +252,13 @@ function UserMenu({ onModeChange, afterInputAction, disabled }) {
           {!ammoRestrictions.walls && (
             <div
               className="userMenu-unit"
-              onClick={() => onModeChange(PLACING_MODE, { callback: 'wall' })}
+              onClick={() => handleMenuButtonClick(walls, PLACING_MODE, { callback: 'wall' })}
             >
               <Unit
                 key="wall"
                 kind="stone"
                 isSelected={afterInputAction === 'wall'}
+                isDisabled={walls < 1}
                 id="wall"
                 top={0}
                 left={0}
