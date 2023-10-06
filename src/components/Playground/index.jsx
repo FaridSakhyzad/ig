@@ -784,8 +784,18 @@ function Playground(props) {
     startLevel();
   };
 
+  const [exitDialogVisible, setExitDialogVisible] = useState(false);
+
   const handleMenuClick = () => {
+    setExitDialogVisible(true);
+  };
+
+  const handleConfirmExit = () => {
     dispatch(setCurrentScreen(SCREEN_MODES.menu));
+  };
+
+  const handleCancelExit = () => {
+    setExitDialogVisible(false);
   };
 
   const handleWinClick = () => {
@@ -810,6 +820,22 @@ function Playground(props) {
 
   return (
     <>
+      {exitDialogVisible && (
+        <dialog
+          className="settingsScreen"
+          open={exitDialogVisible}
+        >
+          <div className="exitDialog">
+            <h2 className="exitDialog-title">Exit?</h2>
+            <button type="button" className="button exitDialog-close" onClick={handleCancelExit}>Close</button>
+
+            <div className="exitDialog-buttons">
+              <button type="button" className="button exitDialog-button" onClick={handleCancelExit}>No</button>
+              <button type="button" className="button exitDialog-button" onClick={handleConfirmExit}>Yes</button>
+            </div>
+          </div>
+        </dialog>
+      )}
       {isSettingsVisible && (
         <dialog
           className="settingsScreen"
