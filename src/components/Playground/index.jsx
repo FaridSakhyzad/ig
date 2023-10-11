@@ -444,7 +444,7 @@ function Playground(props) {
         soundEl.current.play();
       }
 
-      if (vibration) {
+      if (vibration && navigator.vibrate) {
         navigator.vibrate(300);
       }
 
