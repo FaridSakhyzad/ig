@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -35,6 +35,8 @@ import {
 } from 'constants/constants';
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
+
+import drop1 from 'assets/sounds/drop-1.mp3';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -85,7 +87,7 @@ function Playground(props) {
     availableLevels,
   } = user;
 
-  const { editorMode } = settings;
+  const { editorMode, sound, vibration } = settings;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
   const [afterInputAction, setAfterInputAction] = useState(null);
@@ -109,6 +111,8 @@ function Playground(props) {
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
 
   const [isLevelInEdit, setIsLevelInEdit] = useState(editorMode);
+
+  const soundEl = useRef(null);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
     const { dataset } = unit;
@@ -436,6 +440,14 @@ function Playground(props) {
     }
 
     if (userInputMode === GAMEPLAY_MODE) {
+      if (sound) {
+        soundEl.current.play();
+      }
+
+      if (vibration) {
+        navigator.vibrate(300);
+      }
+
       makePlayerMove(e, unitId, unitIndex);
     }
 
@@ -984,6 +996,13 @@ function Playground(props) {
         disabled={isLevelInEdit}
         afterInputAction={afterInputAction}
         onModeChange={onModeChange}
+      />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio
+        ref={soundEl}
+        src={drop1}
+        className="mainMenuAudio"
       />
     </>
   );

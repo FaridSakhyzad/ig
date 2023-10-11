@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classnames from 'classnames';
 
@@ -46,11 +46,14 @@ import Npc from './units/Npc';
 import Hidden from './units/Hidden';
 import { generatePortals, generateTeleports } from './units/unitFactory';
 
+import menuMainTheme from './assets/music/menu--main-theme.mp3';
+import Settings from './components/Settings/Settings';
+
 function App() {
   const dispatch = useDispatch();
 
   const { currentScreen } = useSelector((state) => state.ui);
-  const { editorMode } = useSelector((state) => state.settings);
+  const { editorMode, music } = useSelector((state) => state.settings);
 
   const levels = readLevels() || [];
 
@@ -85,14 +88,6 @@ function App() {
 
   const handleLevelsEditClick = () => {
     dispatch(setCurrentScreen(SCREEN_MODES.levelsListEdit));
-  };
-
-  const handleSettingsClick = () => {
-    dispatch(setCurrentScreen(SCREEN_MODES.settings));
-  };
-
-  const handleMenuClick = () => {
-    dispatch(setCurrentScreen(SCREEN_MODES.menu));
   };
 
   const [projectileMoveStep, setProjectileMoveStep] = useState(1);
@@ -479,6 +474,26 @@ function App() {
     return exitPoints;
   };
 
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+
+  const handleSettingsClick = () => {
+    setIsSettingsVisible(true);
+  };
+
+  const handleCloseSettingsClick = () => {
+    setIsSettingsVisible(false);
+  };
+
+  const musicEl = useRef(null);
+
+  useEffect(() => {
+    if (music) {
+      musicEl.current.play();
+    } else {
+      musicEl.current.pause();
+    }
+  }, [music]);
+
   return (
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsListEdit && (
@@ -544,6 +559,14 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <audio
+            ref={musicEl}
+            controls
+            loop
+            src={menuMainTheme}
+            className="mainMenuAudio"
+          />
           <h2>Menu</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
@@ -578,11 +601,20 @@ function App() {
           </ul>
         </div>
       )}
-      {currentScreen === SCREEN_MODES.settings && (
-        <div className="screen" id="screen">
-          <h2>Settings</h2>
-          <button type="button" onClick={handleMenuClick} className="button">Back to Menu</button>
-        </div>
+
+      {isSettingsVisible && (
+        <dialog
+          className="settingsScreen"
+          open={isSettingsVisible}
+        >
+          <button
+            type="button"
+            className="button settingsScreen-close"
+            aria-label="Close"
+            onClick={handleCloseSettingsClick}
+          />
+          <Settings />
+        </dialog>
       )}
     </div>
   );

@@ -136,3 +136,9 @@ body, html, #root {
   top: 0;
   right: 0;
 }
+
+.mainMenuAudio {
+  position: absolute;
+  z-index: -1;
+  transform: scale(0);
+}
