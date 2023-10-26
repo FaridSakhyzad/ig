@@ -47,6 +47,9 @@ import Hidden from './units/Hidden';
 import { generatePortals, generateTeleports } from './units/unitFactory';
 
 import menuMainTheme from './assets/music/menu--main-theme.mp3';
+import levelsMainTheme from './assets/music/level-select--main-theme.mp3';
+import gameplayMainTheme from './assets/music/gameplay--main-theme.mp3';
+
 import Settings from './components/Settings/Settings';
 
 function App() {
@@ -492,7 +495,23 @@ function App() {
     } else {
       musicEl.current.pause();
     }
-  }, [music]);
+  }, [music, currentScreen]);
+
+  const getMainTheme = () => {
+    if (currentScreen === SCREEN_MODES.levelsList) {
+      return levelsMainTheme;
+    }
+
+    if (currentScreen === SCREEN_MODES.playground) {
+      return gameplayMainTheme;
+    }
+
+    if (currentScreen === SCREEN_MODES.menu) {
+      return menuMainTheme;
+    }
+
+    return menuMainTheme;
+  };
 
   return (
     <div className="app">
@@ -559,14 +578,6 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-          <audio
-            ref={musicEl}
-            controls
-            loop
-            src={menuMainTheme}
-            className="mainMenuAudio"
-          />
           <h2>Menu</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
@@ -616,6 +627,15 @@ function App() {
           <Settings />
         </dialog>
       )}
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio
+        ref={musicEl}
+        controls
+        loop
+        src={getMainTheme()}
+        className="mainMenuAudio"
+      />
     </div>
   );
 }

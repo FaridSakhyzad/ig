@@ -121,3 +121,28 @@ export const doesLineInterceptCircle = (A, B, C, radius) => { // eslint-disable-
   }
   return dist < radius * radius;
 };
+
+export function debounce(func, timeout = 300) {
+  let timer;
+
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
+export function throttle(cb, delay) {
+  let wait = false;
+
+  return (...args) => {
+    if (wait) {
+      return;
+    }
+
+    cb(...args);
+    wait = true;
+    setTimeout(() => {
+      wait = false;
+    }, delay);
+  };
+}

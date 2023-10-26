@@ -36,7 +36,17 @@ import {
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
 
+import { throttle } from 'utils';
+
 import drop1 from 'assets/sounds/drop-1.mp3';
+import drop2 from 'assets/sounds/drop-2.mp3';
+import drop3 from 'assets/sounds/drop-3.mp3';
+
+import pop1 from 'assets/sounds/pop-1.mp3';
+import pop2 from 'assets/sounds/pop-2.mp3';
+import pop3 from 'assets/sounds/pop-3.mp3';
+import pop4 from 'assets/sounds/pop-4.mp3';
+import pop5 from 'assets/sounds/pop-5.mp3';
 
 import Projectile from '../Projectile';
 import Unit from '../Unit';
@@ -112,7 +122,15 @@ function Playground(props) {
 
   const [isLevelInEdit, setIsLevelInEdit] = useState(editorMode);
 
-  const soundEl = useRef(null);
+  const dropSoundEl1 = useRef(null);
+  const dropSoundEl2 = useRef(null);
+  const dropSoundEl3 = useRef(null);
+
+  const explosionSoundEl1 = useRef(null);
+  const explosionSoundEl2 = useRef(null);
+  const explosionSoundEl3 = useRef(null);
+  const explosionSoundEl4 = useRef(null);
+  const explosionSoundEl5 = useRef(null);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
     const { dataset } = unit;
@@ -204,7 +222,24 @@ function Playground(props) {
     setProjectiles(projectiles);
   };
 
+  const playExplosionSound = () => {
+    const sounds = [
+      explosionSoundEl1,
+      explosionSoundEl2,
+      explosionSoundEl3,
+      explosionSoundEl4,
+      explosionSoundEl5,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
+  };
+
   const explodeUnit = (unitIndex) => {
+    playExplosionSound();
+
     const newUnits = [...units];
 
     newUnits[unitIndex].exploding = true;
@@ -425,6 +460,19 @@ function Playground(props) {
     callbacks[afterInputAction]();
   };
 
+  const playUnitClickSound = () => {
+    const sounds = [
+      dropSoundEl1,
+      dropSoundEl2,
+      dropSoundEl3,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
+  };
+
   const handleUnitClick = (e, unitId, unitIndex) => {
     if (isLevelInEdit) {
       onUnitClick(unitId, unitIndex);
@@ -441,7 +489,7 @@ function Playground(props) {
 
     if (userInputMode === GAMEPLAY_MODE) {
       if (sound) {
-        soundEl.current.play();
+        playUnitClickSound();
       }
 
       if (vibration && navigator.vibrate) {
@@ -645,8 +693,20 @@ function Playground(props) {
     setUserInputMode(mode);
   };
 
+  const playImpactSound = () => {
+    console.log('playImpactSound');
+  };
+
+  const playImpactSoundThrottled = throttle(playImpactSound, 1000);
+
+  useEffect(() => {
+    window.addEventListener('mousemove', playImpactSoundThrottled);
+  }, []);
+
   const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
     const { maxValue } = units[impactedUnitIndex];
+
+    playImpactSound();
 
     const callbacks = {
       default: () => {
@@ -873,7 +933,6 @@ function Playground(props) {
         <div className="loseMessage">
           <h1>You Loose</h1>
           <button type="button" className="button" onClick={handleRestartClick}>Restart</button>
-          <button type="button" className="button" onClick={handleMenuClick}>Menu</button>
         </div>
       )}
 
@@ -999,11 +1058,22 @@ function Playground(props) {
       />
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio
-        ref={soundEl}
-        src={drop1}
-        className="mainMenuAudio"
-      />
+      <audio ref={dropSoundEl1} src={drop1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={dropSoundEl2} src={drop2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl1} src={pop1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl2} src={pop2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl3} src={pop3} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl4} src={pop4} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" />
     </>
   );
 }

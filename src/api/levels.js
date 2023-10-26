@@ -1,4 +1,8 @@
+import mapSet from '../maps/maps';
+
 export const readLevels = () => {
+  return mapSet();
+
   const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
 
   let levels = [];

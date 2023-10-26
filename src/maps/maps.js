@@ -179,7 +179,9 @@ const mapSet = () => [
       portals: 1,
       teleports: 1,
     },
-    units: TestUnitsSet1(9, 9),
+    //units: TestUnitsSet1(9, 9),
+  }, {
+    generateRandomUnits: true,
   }),
   new LevelMap(),
   new LevelMap({
