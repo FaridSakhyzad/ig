@@ -36,8 +36,6 @@ import {
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
 
-import { throttle } from 'utils';
-
 import drop1 from 'assets/sounds/drop-1.mp3';
 import drop2 from 'assets/sounds/drop-2.mp3';
 import drop3 from 'assets/sounds/drop-3.mp3';
