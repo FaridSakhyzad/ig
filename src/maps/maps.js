@@ -1,4 +1,5 @@
 import BaseUnit from 'units/BaseUnit';
+// eslint-disable-next-line no-unused-vars
 import TestUnitsSet1 from './test_units_set1';
 import unitFactory from '../units/unitFactory';
 import { GridCell } from '../GridCell';
