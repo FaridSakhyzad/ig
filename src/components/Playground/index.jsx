@@ -48,6 +48,10 @@ import pop3 from 'assets/sounds/pop-3.mp3';
 import pop4 from 'assets/sounds/pop-4.mp3';
 import pop5 from 'assets/sounds/pop-5.mp3';
 
+import impact1 from 'assets/sounds/impact-1.wav';
+import impact2 from 'assets/sounds/impact-2.wav';
+import impact3 from 'assets/sounds/impact-3.wav';
+
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import UserMenu from '../UserMenu';
@@ -131,6 +135,10 @@ function Playground(props) {
   const explosionSoundEl3 = useRef(null);
   const explosionSoundEl4 = useRef(null);
   const explosionSoundEl5 = useRef(null);
+
+  const impactSoundEl1 = useRef(null);
+  const impactSoundEl2 = useRef(null);
+  const impactSoundEl3 = useRef(null);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
     const { dataset } = unit;
@@ -694,14 +702,17 @@ function Playground(props) {
   };
 
   const playImpactSound = () => {
-    console.log('playImpactSound');
+    const sounds = [
+      impactSoundEl1,
+      impactSoundEl2,
+      impactSoundEl3,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
   };
-
-  const playImpactSoundThrottled = throttle(playImpactSound, 1000);
-
-  useEffect(() => {
-    window.addEventListener('mousemove', playImpactSoundThrottled);
-  }, []);
 
   const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
     const { maxValue } = units[impactedUnitIndex];
@@ -1074,6 +1085,13 @@ function Playground(props) {
       <audio ref={explosionSoundEl4} src={pop4} className="mainMenuAudio" />
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl1} src={impact1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl2} src={impact2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl3} src={impact3} className="mainMenuAudio" />
     </>
   );
 }
