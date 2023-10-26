@@ -18,11 +18,13 @@ export const readLevels = () => {
     }
   });
 
+  // eslint-disable-next-line no-unreachable
   levels = levels.filter(Boolean);
 
   // eslint-disable-next-line no-param-reassign
   levels.forEach((level, idx) => { level.index = idx; });
 
+  // eslint-disable-next-line no-unreachable
   return levels;
 };
 
