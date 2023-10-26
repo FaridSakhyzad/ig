@@ -3,6 +3,7 @@ import mapSet from '../maps/maps';
 export const readLevels = () => {
   return mapSet();
 
+  // eslint-disable-next-line no-unreachable
   const savedLevels = JSON.parse(localStorage.getItem('levels') || '{}') || {};
 
   let levels = [];
