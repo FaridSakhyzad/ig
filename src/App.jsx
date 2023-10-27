@@ -610,14 +610,15 @@ function App() {
   let audioContext;
   let console2;
 
+  const audioElementPOP = new Audio();
+  audioElementPOP.src = pop1;
+  audioElementPOP.volume = 1;
+  audioElementPOP.load();
+
   const playSound = () => {
     console2 = document.getElementById('console');
 
     console2.innerHTML = 'playSound';
-
-    const audioElementPOP = new Audio();
-    audioElementPOP.src = pop1;
-    audioElementPOP.load();
 
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
