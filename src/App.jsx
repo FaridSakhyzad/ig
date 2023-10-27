@@ -107,7 +107,7 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    //sounds[index].current.currentTime = 0;
+    // sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
@@ -124,7 +124,7 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    //sounds[index].current.currentTime = 0;
+    // sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
@@ -141,7 +141,7 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    //sounds[index].current.currentTime = 0;
+    // sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
