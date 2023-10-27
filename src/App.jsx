@@ -616,7 +616,7 @@ function App() {
     console2.innerHTML = 'playSound';
 
     const audioElementPOP = new Audio();
-    audioElementPOP.src = pop1;
+    audioElementPOP.src = levelsMainTheme;
     audioElementPOP.volume = 1;
     audioElementPOP.load();
 
