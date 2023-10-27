@@ -667,7 +667,7 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <h2>Menu 2</h2>
+          <h2>Menu 3</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
