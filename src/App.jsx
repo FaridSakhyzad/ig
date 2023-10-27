@@ -57,11 +57,11 @@ import drop1 from './assets/sounds/drop-1.mp3';
 import drop2 from './assets/sounds/drop-2.mp3';
 import drop3 from './assets/sounds/drop-3.mp3';
 
-import pop1 from './assets/sounds/pop-1.mp3';
-import pop2 from './assets/sounds/pop-2.mp3';
-import pop3 from './assets/sounds/pop-3.mp3';
-import pop4 from './assets/sounds/pop-4.mp3';
-import pop5 from './assets/sounds/pop-5.mp3';
+import pop1 from './assets/sounds/pop-1.wav';
+import pop2 from './assets/sounds/pop-2.wav';
+import pop3 from './assets/sounds/pop-3.wav';
+import pop4 from './assets/sounds/pop-4.wav';
+import pop5 from './assets/sounds/pop-5.wav';
 
 import impact1 from './assets/sounds/impact-1.wav';
 import impact2 from './assets/sounds/impact-2.wav';
@@ -142,7 +142,7 @@ function App() {
 
     const index = Math.round((Math.random() * (impactSounds.length - 1)));
 
-    impactSounds[index].current.currentTime = 0;
+    // impactSounds[index].current.currentTime = 0;
     impactSounds[index].current.play();
   };
 
@@ -735,27 +735,27 @@ function App() {
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
-        <source src={pop1} type="audio/mpeg" />
+        <source src={pop1} type="audio/wav" />
       </audio>
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
-        <source src={pop2} type="audio/mpeg" />
+        <source src={pop2} type="audio/wav" />
       </audio>
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
-        <source src={pop3} type="audio/mpeg" />
+        <source src={pop3} type="audio/wav" />
       </audio>
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
-        <source src={pop4} type="audio/mpeg" />
+        <source src={pop4} type="audio/wav" />
       </audio>
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
-        <source src={pop5} type="audio/mpeg" />
+        <source src={pop5} type="audio/wav" />
       </audio>
 
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
