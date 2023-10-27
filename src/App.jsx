@@ -125,7 +125,7 @@ function App() {
 
     const index = Math.round((Math.random() * (unitClickSounds.length - 1)));
 
-    // unitClickSounds[index].current.currentTime = 0;
+    unitClickSounds[index].current.currentTime = 0;
     unitClickSounds[index].current.play();
   };
 
@@ -142,12 +142,12 @@ function App() {
 
     const index = Math.round((Math.random() * (impactSounds.length - 1)));
 
-    // impactSounds[index].current.currentTime = 0;
+    impactSounds[index].current.currentTime = 0;
     impactSounds[index].current.play();
   };
 
-  const playExplosionSoundThrottled = throttle(playExplosionSound, 10);
-  const playImpactSoundThrottled = throttle(playImpactSound, 10);
+  const playExplosionSoundThrottled = throttle(playExplosionSound, 100);
+  const playImpactSoundThrottled = throttle(playImpactSound, 100);
 
   const handleAdminModeChange = ({ target: { checked } }) => {
     localStorage.setItem('editorMode', checked);
