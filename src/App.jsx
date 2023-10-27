@@ -136,6 +136,9 @@ function App() {
   ];
 
   const playImpactSound = () => {
+    return;
+
+    // eslint-disable-next-line no-unreachable
     if (!sound) {
       return;
     }
