@@ -92,57 +92,57 @@ function App() {
   const impactSoundEl2 = useRef(null);
   const impactSoundEl3 = useRef(null);
 
+  const explosionSounds = [
+    explosionSoundEl1,
+    explosionSoundEl2,
+    explosionSoundEl3,
+    explosionSoundEl4,
+    explosionSoundEl5,
+  ];
+
   const playExplosionSound = () => {
     if (!sound) {
       return;
     }
 
-    const sounds = [
-      explosionSoundEl1,
-      explosionSoundEl2,
-      explosionSoundEl3,
-      explosionSoundEl4,
-      explosionSoundEl5,
-    ];
+    const index = Math.round((Math.random() * (explosionSounds.length - 1)));
 
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    // sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
+    // explosionSounds[index].current.currentTime = 0;
+    explosionSounds[index].current.play();
   };
+
+  const unitClickSounds = [
+    dropSoundEl1,
+    dropSoundEl2,
+    dropSoundEl3,
+  ];
 
   const playUnitClickSound = () => {
     if (!sound) {
       return;
     }
 
-    const sounds = [
-      dropSoundEl1,
-      dropSoundEl2,
-      dropSoundEl3,
-    ];
+    const index = Math.round((Math.random() * (unitClickSounds.length - 1)));
 
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    // sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
+    // unitClickSounds[index].current.currentTime = 0;
+    unitClickSounds[index].current.play();
   };
+
+  const impactSounds = [
+    impactSoundEl1,
+    impactSoundEl2,
+    impactSoundEl3,
+  ];
 
   const playImpactSound = () => {
     if (!sound) {
       return;
     }
 
-    const sounds = [
-      impactSoundEl1,
-      impactSoundEl2,
-      impactSoundEl3,
-    ];
+    const index = Math.round((Math.random() * (impactSounds.length - 1)));
 
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    // sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
+    // impactSounds[index].current.currentTime = 0;
+    impactSounds[index].current.play();
   };
 
   const handleAdminModeChange = ({ target: { checked } }) => {
@@ -663,7 +663,7 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <h2>Menu 1</h2>
+          <h2>Menu 2</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
