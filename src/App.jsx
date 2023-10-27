@@ -71,7 +71,7 @@ function App() {
   const dispatch = useDispatch();
 
   const { currentScreen } = useSelector((state) => state.ui);
-  const { editorMode, music } = useSelector((state) => state.settings);
+  const { editorMode, music, sound } = useSelector((state) => state.settings);
 
   const levels = readLevels() || [];
 
@@ -93,6 +93,10 @@ function App() {
   const impactSoundEl3 = useRef(null);
 
   const playExplosionSound = () => {
+    if (!sound) {
+      return;
+    }
+
     const sounds = [
       explosionSoundEl1,
       explosionSoundEl2,
@@ -103,11 +107,15 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    sounds[index].current.currentTime = 0;
+    //sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
   const playUnitClickSound = () => {
+    if (!sound) {
+      return;
+    }
+
     const sounds = [
       dropSoundEl1,
       dropSoundEl2,
@@ -116,11 +124,15 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    sounds[index].current.currentTime = 0;
+    //sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
   const playImpactSound = () => {
+    if (!sound) {
+      return;
+    }
+
     const sounds = [
       impactSoundEl1,
       impactSoundEl2,
@@ -129,7 +141,7 @@ function App() {
 
     const index = Math.round((Math.random() * (sounds.length - 1)));
 
-    sounds[index].current.currentTime = 0;
+    //sounds[index].current.currentTime = 0;
     sounds[index].current.play();
   };
 
@@ -651,7 +663,7 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <h2>Menu</h2>
+          <h2>Menu 1</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
