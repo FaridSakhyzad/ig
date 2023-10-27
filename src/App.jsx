@@ -66,6 +66,7 @@ import pop5 from './assets/sounds/pop-5.mp3';
 import impact1 from './assets/sounds/impact-1.wav';
 import impact2 from './assets/sounds/impact-2.wav';
 import impact3 from './assets/sounds/impact-3.wav';
+import { throttle } from './utils';
 
 function App() {
   const dispatch = useDispatch();
@@ -144,6 +145,9 @@ function App() {
     // impactSounds[index].current.currentTime = 0;
     impactSounds[index].current.play();
   };
+
+  const playExplosionSoundThrottled = throttle(playExplosionSound, 10);
+  const playImpactSoundThrottled = throttle(playImpactSound, 10);
 
   const handleAdminModeChange = ({ target: { checked } }) => {
     localStorage.setItem('editorMode', checked);
@@ -654,9 +658,9 @@ function App() {
               renderPlayGroundEdit={renderPlayGroundEdit}
               onUnitClick={onUnitClick}
               onCellClick={onCellClick}
-              playExplosionSound={playExplosionSound}
               playUnitClickSound={playUnitClickSound}
-              playImpactSound={playImpactSound}
+              playExplosionSound={playExplosionSoundThrottled}
+              playImpactSound={playImpactSoundThrottled}
             />
           </div>
         </>
