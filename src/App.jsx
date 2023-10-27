@@ -25,6 +25,7 @@ import LevelEditComponent from './components/LevelEdit/LevelEditComponent';
 
 import './App.scss';
 import './mainMenu.scss';
+
 import UnitEdit from './components/LevelEdit/UnitEdit';
 import CellEdit from './components/LevelEdit/CellEdit';
 import PlaygroundEdit from './components/LevelEdit/PlaygroundEdit';
@@ -52,6 +53,20 @@ import gameplayMainTheme from './assets/music/gameplay--main-theme.mp3';
 
 import Settings from './components/Settings/Settings';
 
+import drop1 from './assets/sounds/drop-1.mp3';
+import drop2 from './assets/sounds/drop-2.mp3';
+import drop3 from './assets/sounds/drop-3.mp3';
+
+import pop1 from './assets/sounds/pop-1.mp3';
+import pop2 from './assets/sounds/pop-2.mp3';
+import pop3 from './assets/sounds/pop-3.mp3';
+import pop4 from './assets/sounds/pop-4.mp3';
+import pop5 from './assets/sounds/pop-5.mp3';
+
+import impact1 from './assets/sounds/impact-1.wav';
+import impact2 from './assets/sounds/impact-2.wav';
+import impact3 from './assets/sounds/impact-3.wav';
+
 function App() {
   const dispatch = useDispatch();
 
@@ -62,6 +77,61 @@ function App() {
 
   const [currentLevel, setCurrentLevel] = useState(new LevelMap(levels[0]));
   const [levelEditMode, setLevelEditMode] = useState(false);
+
+  const dropSoundEl1 = useRef(null);
+  const dropSoundEl2 = useRef(null);
+  const dropSoundEl3 = useRef(null);
+
+  const explosionSoundEl1 = useRef(null);
+  const explosionSoundEl2 = useRef(null);
+  const explosionSoundEl3 = useRef(null);
+  const explosionSoundEl4 = useRef(null);
+  const explosionSoundEl5 = useRef(null);
+
+  const impactSoundEl1 = useRef(null);
+  const impactSoundEl2 = useRef(null);
+  const impactSoundEl3 = useRef(null);
+
+  const playExplosionSound = () => {
+    const sounds = [
+      explosionSoundEl1,
+      explosionSoundEl2,
+      explosionSoundEl3,
+      explosionSoundEl4,
+      explosionSoundEl5,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
+  };
+
+  const playUnitClickSound = () => {
+    const sounds = [
+      dropSoundEl1,
+      dropSoundEl2,
+      dropSoundEl3,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
+  };
+
+  const playImpactSound = () => {
+    const sounds = [
+      impactSoundEl1,
+      impactSoundEl2,
+      impactSoundEl3,
+    ];
+
+    const index = Math.round((Math.random() * (sounds.length - 1)));
+
+    sounds[index].current.currentTime = 0;
+    sounds[index].current.play();
+  };
 
   const handleAdminModeChange = ({ target: { checked } }) => {
     localStorage.setItem('editorMode', checked);
@@ -572,6 +642,9 @@ function App() {
               renderPlayGroundEdit={renderPlayGroundEdit}
               onUnitClick={onUnitClick}
               onCellClick={onCellClick}
+              playExplosionSound={playExplosionSound}
+              playUnitClickSound={playUnitClickSound}
+              playImpactSound={playImpactSound}
             />
           </div>
         </>
@@ -636,6 +709,31 @@ function App() {
         src={getMainTheme()}
         className="mainMenuAudio"
       />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={dropSoundEl1} src={drop1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={dropSoundEl2} src={drop2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl1} src={pop1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl2} src={pop2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl3} src={pop3} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl4} src={pop4} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl1} src={impact1} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl2} src={impact2} className="mainMenuAudio" />
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl3} src={impact3} className="mainMenuAudio" />
     </div>
   );
 }

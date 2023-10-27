@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -36,20 +36,6 @@ import {
 
 import { DEFAULT_MAP_WIDTH } from 'config/config';
 
-import drop1 from 'assets/sounds/drop-1.mp3';
-import drop2 from 'assets/sounds/drop-2.mp3';
-import drop3 from 'assets/sounds/drop-3.mp3';
-
-import pop1 from 'assets/sounds/pop-1.mp3';
-import pop2 from 'assets/sounds/pop-2.mp3';
-import pop3 from 'assets/sounds/pop-3.mp3';
-import pop4 from 'assets/sounds/pop-4.mp3';
-import pop5 from 'assets/sounds/pop-5.mp3';
-
-import impact1 from 'assets/sounds/impact-1.wav';
-import impact2 from 'assets/sounds/impact-2.wav';
-import impact3 from 'assets/sounds/impact-3.wav';
-
 import Projectile from '../Projectile';
 import Unit from '../Unit';
 import UserMenu from '../UserMenu';
@@ -77,6 +63,9 @@ function Playground(props) {
     renderPlayGroundEdit,
     onUnitClick,
     onCellClick,
+    playExplosionSound,
+    playUnitClickSound,
+    playImpactSound,
   } = props;
 
   const dispatch = useDispatch();
@@ -123,20 +112,6 @@ function Playground(props) {
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
 
   const [isLevelInEdit, setIsLevelInEdit] = useState(editorMode);
-
-  const dropSoundEl1 = useRef(null);
-  const dropSoundEl2 = useRef(null);
-  const dropSoundEl3 = useRef(null);
-
-  const explosionSoundEl1 = useRef(null);
-  const explosionSoundEl2 = useRef(null);
-  const explosionSoundEl3 = useRef(null);
-  const explosionSoundEl4 = useRef(null);
-  const explosionSoundEl5 = useRef(null);
-
-  const impactSoundEl1 = useRef(null);
-  const impactSoundEl2 = useRef(null);
-  const impactSoundEl3 = useRef(null);
 
   const generateUnitsMap = (fieldTop, fieldLeft) => [...document.querySelectorAll('.unit')].map((unit) => {
     const { dataset } = unit;
@@ -226,21 +201,6 @@ function Playground(props) {
     Playground.actingProjectilesNumber += turrets.length;
 
     setProjectiles(projectiles);
-  };
-
-  const playExplosionSound = () => {
-    const sounds = [
-      explosionSoundEl1,
-      explosionSoundEl2,
-      explosionSoundEl3,
-      explosionSoundEl4,
-      explosionSoundEl5,
-    ];
-
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
   };
 
   const explodeUnit = (unitIndex) => {
@@ -466,19 +426,6 @@ function Playground(props) {
     callbacks[afterInputAction]();
   };
 
-  const playUnitClickSound = () => {
-    const sounds = [
-      dropSoundEl1,
-      dropSoundEl2,
-      dropSoundEl3,
-    ];
-
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
-  };
-
   const handleUnitClick = (e, unitId, unitIndex) => {
     if (isLevelInEdit) {
       onUnitClick(unitId, unitIndex);
@@ -697,19 +644,6 @@ function Playground(props) {
   const onModeChange = (mode, data) => {
     setAfterInputAction(data.callback);
     setUserInputMode(mode);
-  };
-
-  const playImpactSound = () => {
-    const sounds = [
-      impactSoundEl1,
-      impactSoundEl2,
-      impactSoundEl3,
-    ];
-
-    const index = Math.round((Math.random() * (sounds.length - 1)));
-
-    sounds[index].current.currentTime = 0;
-    sounds[index].current.play();
   };
 
   const onImpact = (projectileType, impactedUnitIndex, impactWithExplodingUnit) => {
@@ -1065,31 +999,6 @@ function Playground(props) {
         afterInputAction={afterInputAction}
         onModeChange={onModeChange}
       />
-
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={dropSoundEl1} src={drop1} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={dropSoundEl2} src={drop2} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
-
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl1} src={pop1} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl2} src={pop2} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl3} src={pop3} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl4} src={pop4} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" />
-
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl1} src={impact1} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl2} src={impact2} className="mainMenuAudio" />
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl3} src={impact3} className="mainMenuAudio" />
     </>
   );
 }
@@ -1105,6 +1014,9 @@ Playground.propTypes = {
   renderPlayGroundEdit: PropTypes.func,
   onUnitClick: PropTypes.func,
   onCellClick: PropTypes.func,
+  playExplosionSound: PropTypes.func,
+  playUnitClickSound: PropTypes.func,
+  playImpactSound: PropTypes.func,
 };
 
 Playground.defaultProps = {
@@ -1115,6 +1027,9 @@ Playground.defaultProps = {
   renderPlayGroundEdit: () => null,
   onUnitClick: null,
   onCellClick: null,
+  playExplosionSound: () => {},
+  playUnitClickSound: () => {},
+  playImpactSound: () => {},
 };
 
 Playground.actingProjectilesNumber = 0;
