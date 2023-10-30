@@ -67,6 +67,7 @@ import impact1 from './assets/sounds/impact-1.wav';
 import impact2 from './assets/sounds/impact-2.wav';
 import impact3 from './assets/sounds/impact-3.wav';
 import { throttle } from './utils';
+import { IFrame } from './IFrame';
 
 function App() {
   const dispatch = useDispatch();
@@ -136,9 +137,6 @@ function App() {
   ];
 
   const playImpactSound = () => {
-    return;
-
-    // eslint-disable-next-line no-unreachable
     if (!sound) {
       return;
     }
@@ -149,8 +147,8 @@ function App() {
     impactSounds[index].current.play();
   };
 
-  const playExplosionSoundThrottled = throttle(playExplosionSound, 100);
-  const playImpactSoundThrottled = throttle(playImpactSound, 100);
+  const playExplosionSoundThrottled = throttle(playExplosionSound, 10);
+  const playImpactSoundThrottled = throttle(playImpactSound, 10);
 
   const handleAdminModeChange = ({ target: { checked } }) => {
     localStorage.setItem('editorMode', checked);
@@ -579,6 +577,10 @@ function App() {
   const musicEl = useRef(null);
 
   useEffect(() => {
+    if (!musicEl.current) {
+      return;
+    }
+
     if (music) {
       musicEl.current.play();
     } else {
@@ -670,7 +672,7 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <h2>Menu 3</h2>
+          <h2>Menu</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -736,43 +738,45 @@ function App() {
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
-        <source src={pop1} type="audio/wav" />
-      </audio>
+      <IFrame>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
+          <source src={pop1} type="audio/wav" />
+        </audio>
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
-        <source src={pop2} type="audio/wav" />
-      </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
+          <source src={pop2} type="audio/wav" />
+        </audio>
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
-        <source src={pop3} type="audio/wav" />
-      </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
+          <source src={pop3} type="audio/wav" />
+        </audio>
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
-        <source src={pop4} type="audio/wav" />
-      </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
+          <source src={pop4} type="audio/wav" />
+        </audio>
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
-        <source src={pop5} type="audio/wav" />
-      </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
+          <source src={pop5} type="audio/wav" />
+        </audio>
 
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl1} className="mainMenuAudio" preload="auto">
-        <source src={impact1} type="audio/wav" />
-      </audio>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl2} className="mainMenuAudio" preload="auto">
-        <source src={impact2} type="audio/wav" />
-      </audio>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <audio ref={impactSoundEl3} className="mainMenuAudio" preload="auto">
-        <source src={impact3} type="audio/wav" />
-      </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={impactSoundEl1} className="mainMenuAudio" preload="auto">
+          <source src={impact1} type="audio/wav" />
+        </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={impactSoundEl2} className="mainMenuAudio" preload="auto">
+          <source src={impact2} type="audio/wav" />
+        </audio>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <audio ref={impactSoundEl3} className="mainMenuAudio" preload="auto">
+          <source src={impact3} type="audio/wav" />
+        </audio>
+      </IFrame>
     </div>
   );
 }
