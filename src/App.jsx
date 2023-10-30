@@ -83,24 +83,22 @@ function App() {
   const dropSoundEl2 = useRef(null);
   const dropSoundEl3 = useRef(null);
 
+  const explosionSoundEl1 = useRef(null);
+  const explosionSoundEl2 = useRef(null);
+  const explosionSoundEl3 = useRef(null);
+  const explosionSoundEl4 = useRef(null);
+  const explosionSoundEl5 = useRef(null);
+
+  const impactSoundEl1 = useRef(null);
+  const impactSoundEl2 = useRef(null);
+  const impactSoundEl3 = useRef(null);
+
   const explosionSounds = [
     pop1,
     pop2,
     pop3,
     pop4,
     pop5,
-  ];
-
-  const unitClickSounds = [
-    dropSoundEl1,
-    dropSoundEl2,
-    dropSoundEl3,
-  ];
-
-  const impactSounds = [
-    impact1,
-    impact2,
-    impact3,
   ];
 
   const playExplosionSound = () => {
@@ -123,6 +121,12 @@ function App() {
     });
   };
 
+  const unitClickSounds = [
+    dropSoundEl1,
+    dropSoundEl2,
+    dropSoundEl3,
+  ];
+
   const playUnitClickSound = () => {
     if (!sound) {
       return;
@@ -133,6 +137,12 @@ function App() {
     unitClickSounds[index].current.currentTime = 0;
     unitClickSounds[index].current.play();
   };
+
+  const impactSounds = [
+    impact1,
+    impact2,
+    impact3,
+  ];
 
   const playImpactSound = () => {
     if (!sound) {
@@ -607,20 +617,6 @@ function App() {
     return menuMainTheme;
   };
 
-  const playSound = () => {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    const audioElement = new Audio();
-    audioElement.src = pop1;
-
-    audioElement.addEventListener('canplaythrough', () => {
-      const source = audioContext.createMediaElementSource(audioElement);
-      source.connect(audioContext.destination);
-
-      audioElement.play();
-    });
-  };
-
   return (
     <div className="app">
       {currentScreen === SCREEN_MODES.levelsListEdit && (
@@ -689,7 +685,6 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <button type="button" className="button" onClick={playSound}>PLAY SOUND</button>
           <h2>Menu 4</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
@@ -755,6 +750,44 @@ function App() {
       <audio ref={dropSoundEl2} src={drop2} className="mainMenuAudio" />
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
+        <source src={pop1} type="audio/wav" />
+      </audio>
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
+        <source src={pop2} type="audio/wav" />
+      </audio>
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
+        <source src={pop3} type="audio/wav" />
+      </audio>
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
+        <source src={pop4} type="audio/wav" />
+      </audio>
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
+        <source src={pop5} type="audio/wav" />
+      </audio>
+
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl1} className="mainMenuAudio" preload="auto">
+        <source src={impact1} type="audio/wav" />
+      </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl2} className="mainMenuAudio" preload="auto">
+        <source src={impact2} type="audio/wav" />
+      </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl3} className="mainMenuAudio" preload="auto">
+        <source src={impact3} type="audio/wav" />
+      </audio>
     </div>
   );
 }
