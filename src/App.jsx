@@ -618,8 +618,6 @@ function App() {
       source.connect(audioContext.destination);
 
       audioElement.play();
-      // eslint-disable-next-line no-alert
-      alert('PLAY');
     });
   };
 
