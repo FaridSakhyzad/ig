@@ -607,31 +607,22 @@ function App() {
     return menuMainTheme;
   };
 
-  let audioContext;
-  let console2;
+  const audioElement = new Audio();
+  audioElement.src = pop1;
 
   const playSound = () => {
-    console2 = document.getElementById('console');
+    const console2 = document.getElementById('console');
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    console2.innerHTML = 'playSound';
+    console2.innerHTML = '<div>CONTEXT CREATED</div>';
 
-    const audioElementPOP = new Audio();
-    audioElementPOP.src = pop1;
+    const source = audioContext.createMediaElementSource(audioElement);
+    source.connect(audioContext.destination);
 
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    console2.innerHTML = `${console2.innerHTML}<div>Source Connected</div>`;
 
-    audioElementPOP.addEventListener('canplaythrough', () => {
-      const source = audioContext.createMediaElementSource(audioElementPOP);
-      source.connect(audioContext.destination);
-
-      console2.innerHTML = '<div>audioContext.destination</div>';
-
-      audioElementPOP.play();
-
-      console2.innerHTML = `${console2.innerHTML}<div>audioElementPOP.play</div>`;
-    });
+    audioElement.play();
+    console2.innerHTML = `${console2.innerHTML}<div>AudioElement Play</div>`;
   };
 
   return (
