@@ -607,20 +607,20 @@ function App() {
     return menuMainTheme;
   };
 
-  const audioElement = new Audio();
-  audioElement.src = pop1;
-
   const playSound = () => {
-    // eslint-disable-next-line no-alert
-    alert('PLAY START');
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    const source = audioContext.createMediaElementSource(audioElement);
-    source.connect(audioContext.destination);
+    const audioElement = new Audio();
+    audioElement.src = pop1;
 
-    audioElement.play();
-    // eslint-disable-next-line no-alert
-    alert('PLAY OK');
+    audioElement.addEventListener('canplaythrough', () => {
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(audioContext.destination);
+
+      audioElement.play();
+      // eslint-disable-next-line no-alert
+      alert('PLAY');
+    });
   };
 
   return (
