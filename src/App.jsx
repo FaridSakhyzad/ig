@@ -617,7 +617,6 @@ function App() {
 
     const audioElementPOP = new Audio();
     audioElementPOP.src = pop1;
-    audioElementPOP.load();
 
     if (!audioContext) {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -707,7 +706,7 @@ function App() {
 
           <div id="console" />
 
-          <h2>Menu 5 | load</h2>
+          <h2>Menu 5</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
