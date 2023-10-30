@@ -94,11 +94,11 @@ function App() {
   const impactSoundEl3 = useRef(null);
 
   const explosionSounds = [
-    pop1,
-    pop2,
-    pop3,
-    pop4,
-    pop5,
+    explosionSoundEl1,
+    explosionSoundEl2,
+    explosionSoundEl3,
+    explosionSoundEl4,
+    explosionSoundEl5,
   ];
 
   const playExplosionSound = () => {
@@ -108,17 +108,8 @@ function App() {
 
     const index = Math.round((Math.random() * (explosionSounds.length - 1)));
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    const audioElement = new Audio();
-    audioElement.src = explosionSounds[index];
-
-    audioElement.addEventListener('canplaythrough', () => {
-      const source = audioContext.createMediaElementSource(audioElement);
-      source.connect(audioContext.destination);
-
-      audioElement.play();
-    });
+    // explosionSounds[index].current.currentTime = 0;
+    explosionSounds[index].current.play();
   };
 
   const unitClickSounds = [
@@ -139,29 +130,23 @@ function App() {
   };
 
   const impactSounds = [
-    impact1,
-    impact2,
-    impact3,
+    impactSoundEl1,
+    impactSoundEl2,
+    impactSoundEl3,
   ];
 
   const playImpactSound = () => {
+    return;
+
+    // eslint-disable-next-line no-unreachable
     if (!sound) {
       return;
     }
 
     const index = Math.round((Math.random() * (impactSounds.length - 1)));
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    const audioElement = new Audio();
-    audioElement.src = impactSounds[index];
-
-    audioElement.addEventListener('canplaythrough', () => {
-      const source = audioContext.createMediaElementSource(audioElement);
-      source.connect(audioContext.destination);
-
-      audioElement.play();
-    });
+    // impactSounds[index].current.currentTime = 0;
+    impactSounds[index].current.play();
   };
 
   const playExplosionSoundThrottled = throttle(playExplosionSound, 100);
@@ -685,7 +670,7 @@ function App() {
       )}
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
-          <h2>Menu 4</h2>
+          <h2>Menu 3</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
