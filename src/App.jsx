@@ -611,18 +611,16 @@ function App() {
   audioElement.src = pop1;
 
   const playSound = () => {
-    const console2 = document.getElementById('console');
+    // eslint-disable-next-line no-alert
+    alert('PLAY START');
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-    console2.innerHTML = '<div>CONTEXT CREATED</div>';
 
     const source = audioContext.createMediaElementSource(audioElement);
     source.connect(audioContext.destination);
 
-    console2.innerHTML = `${console2.innerHTML}<div>Source Connected</div>`;
-
     audioElement.play();
-    console2.innerHTML = `${console2.innerHTML}<div>AudioElement Play</div>`;
+    // eslint-disable-next-line no-alert
+    alert('PLAY OK');
   };
 
   return (
@@ -694,10 +692,7 @@ function App() {
       {currentScreen === SCREEN_MODES.menu && (
         <div className="screen" id="screen">
           <button type="button" className="button" onClick={playSound}>PLAY SOUND</button>
-
-          <div id="console" />
-
-          <h2>Menu 5</h2>
+          <h2>Menu 4</h2>
           <ul className="mainMenu">
             <li className="mainMenu-item">
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
