@@ -8,19 +8,38 @@ const generateGrid = (gridWidth, gridHeight) => {
   const grid = [];
 
   for (let i = 0; i < gridHeight; i += 1) {
+    for (let j = 0; j < gridWidth; j += 1) {
+      const cell = new GridCell({
+        left: j,
+        top: i,
+        offsetLeft: (j / gridWidth) * 100,
+        offsetTop: (i / gridHeight) * 100,
+      });
+
+      grid.push(cell);
+    }
+  }
+
+  return grid;
+};
+
+const generate2DPatch = (gridWidth, gridHeight) => {
+  const patch = [];
+
+  for (let i = 0; i < gridHeight; i += 1) {
     const row = [];
 
     for (let j = 0; j < gridWidth; j += 1) {
       row[j] = new GridCell({
-        left: (j / gridWidth) * 100,
-        top: (i / gridHeight) * 100,
+        offsetLeft: (j / gridWidth) * 100,
+        offsetTop: (i / gridHeight) * 100,
       });
     }
 
-    grid.push(row);
+    patch.push(row);
   }
 
-  return grid;
+  return patch;
 };
 
 const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 4) => {
@@ -38,40 +57,66 @@ const generateRandomUnitsSet = (width, height, unitMinValue = 0, unitMaxValue = 
 };
 
 export class LevelMap {
-  rescaleGrid() {
-    const initialMapHeight = this.grid.length;
-    const initialMapWidth = this.grid[0].length;
+  rescaleGrid(initialMapWidth, initialMapHeight) {
+    let grid2D = [];
 
-    if (this.mapHeight > this.grid.length) {
-      const patch = generateGrid(this.grid[0].length, this.mapHeight - this.grid.length);
-      this.grid = this.grid.concat(patch);
+    let counter = 0;
+    let row = [];
+
+    this.grid.forEach((cell) => {
+      row.push(cell);
+      counter += 1;
+
+      if (counter >= initialMapWidth) {
+        grid2D.push(row);
+        counter = 0;
+        row = [];
+      }
+    });
+
+    if (this.mapHeight > initialMapHeight) {
+      const patch = generate2DPatch(grid2D[0].length, this.mapHeight - grid2D.length);
+      grid2D = grid2D.concat(patch);
     }
 
-    if (this.mapHeight < this.grid.length) {
-      this.grid = this.grid.slice(0, this.mapHeight);
+    if (this.mapHeight < initialMapHeight) {
+      grid2D = grid2D.slice(0, this.mapHeight);
     }
 
-    if (this.mapWidth > this.grid[0].length) {
+    if (this.mapWidth > initialMapWidth) {
       for (let i = 0; i < this.mapHeight; i += 1) {
-        const patch = generateGrid(this.mapWidth - this.grid[i].length, 1)[0];
-        this.grid[i] = this.grid[i].concat(patch);
+        const patch = generate2DPatch(this.mapWidth - grid2D[i].length, 1)[0];
+        grid2D[i] = grid2D[i].concat(patch);
       }
     }
 
-    if (this.mapWidth < this.grid[0].length) {
+    if (this.mapWidth < initialMapWidth) {
       for (let i = 0; i < this.mapHeight; i += 1) {
-        this.grid[i] = this.grid[i].slice(0, this.mapWidth);
+        grid2D[i] = grid2D[i].slice(0, this.mapWidth);
       }
     }
 
     if (this.mapWidth !== initialMapWidth || this.mapHeight !== initialMapHeight) {
       for (let i = 0; i < this.mapHeight; i += 1) {
-        for (let j = 0; j < this.grid[i].length; j += 1) {
-          this.grid[i][j].top = (i / this.grid.length) * 100;
-          this.grid[i][j].left = (j / this.grid[i].length) * 100;
+        for (let j = 0; j < grid2D[i].length; j += 1) {
+          grid2D[i][j].top = i;
+          grid2D[i][j].left = j;
+
+          grid2D[i][j].offsetTop = (i / grid2D.length) * 100;
+          grid2D[i][j].offsetLeft = (j / grid2D[i].length) * 100;
         }
       }
     }
+
+    const grid = [];
+
+    for (let i = 0; i < grid2D.length; i += 1) {
+      for (let j = 0; j < grid2D[i].length; j += 1) {
+        grid.push(grid2D[i][j]);
+      }
+    }
+
+    this.grid = grid;
   }
 
   constructor(params = {}, controls = {}) {

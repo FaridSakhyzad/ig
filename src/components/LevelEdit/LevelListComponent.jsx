@@ -108,7 +108,7 @@ export default function LevelListComponent({
   const handleDownloadAllClick = () => {
     const levels = readLevels();
 
-    const blob = new Blob([JSON.stringify(levels)], { type: 'text/json' });
+    const blob = new Blob([JSON.stringify({ data: levels })], { type: 'text/json' });
 
     const elem = window.document.createElement('a');
     elem.href = window.URL.createObjectURL(blob);
@@ -153,7 +153,7 @@ export default function LevelListComponent({
         return;
       }
 
-      applyImportedLevels(parsed);
+      applyImportedLevels(parsed.data);
     };
   };
 

@@ -35,7 +35,9 @@ import {
   DEFLECTOR,
   HIDDEN,
   LASER,
-  NPC, PORTAL, TELEPORT,
+  NPC,
+  PORTAL,
+  TELEPORT,
   WALL,
 } from './constants/units';
 import BaseUnit from './units/BaseUnit';
@@ -67,7 +69,6 @@ import impact1 from './assets/sounds/impact-1.wav';
 import impact2 from './assets/sounds/impact-2.wav';
 import impact3 from './assets/sounds/impact-3.wav';
 import { throttle } from './utils';
-import { IFrame } from './IFrame';
 
 function App() {
   const dispatch = useDispatch();
@@ -195,13 +196,15 @@ function App() {
     updateLevel(currentLevel);
   };
 
-  const saveLevelParams = (levelParams = {}) => {
+  const saveLevelParams = (levelParams = {}, meta = {}) => {
+    const { initialMapWidth, initialMapHeight } = meta;
+
     const newLevel = new LevelMap({
       ...currentLevel,
       ...levelParams,
     });
 
-    newLevel.rescaleGrid();
+    newLevel.rescaleGrid(initialMapWidth, initialMapHeight);
 
     updateLevel(newLevel);
 
@@ -738,45 +741,43 @@ function App() {
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={dropSoundEl3} src={drop3} className="mainMenuAudio" />
 
-      <IFrame>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
-          <source src={pop1} type="audio/wav" />
-        </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl1} className="mainMenuAudio" preload="auto">
+        <source src={pop1} type="audio/wav" />
+      </audio>
 
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
-          <source src={pop2} type="audio/wav" />
-        </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl2} className="mainMenuAudio" preload="auto">
+        <source src={pop2} type="audio/wav" />
+      </audio>
 
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
-          <source src={pop3} type="audio/wav" />
-        </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl3} className="mainMenuAudio" preload="auto">
+        <source src={pop3} type="audio/wav" />
+      </audio>
 
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
-          <source src={pop4} type="audio/wav" />
-        </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl4} className="mainMenuAudio" preload="auto">
+        <source src={pop4} type="audio/wav" />
+      </audio>
 
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
-          <source src={pop5} type="audio/wav" />
-        </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={explosionSoundEl5} src={pop5} className="mainMenuAudio" preload="auto">
+        <source src={pop5} type="audio/wav" />
+      </audio>
 
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={impactSoundEl1} className="mainMenuAudio" preload="auto">
-          <source src={impact1} type="audio/wav" />
-        </audio>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={impactSoundEl2} className="mainMenuAudio" preload="auto">
-          <source src={impact2} type="audio/wav" />
-        </audio>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio ref={impactSoundEl3} className="mainMenuAudio" preload="auto">
-          <source src={impact3} type="audio/wav" />
-        </audio>
-      </IFrame>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl1} className="mainMenuAudio" preload="auto">
+        <source src={impact1} type="audio/wav" />
+      </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl2} className="mainMenuAudio" preload="auto">
+        <source src={impact2} type="audio/wav" />
+      </audio>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={impactSoundEl3} className="mainMenuAudio" preload="auto">
+        <source src={impact3} type="audio/wav" />
+      </audio>
     </div>
   );
 }

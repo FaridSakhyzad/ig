@@ -503,7 +503,10 @@ function Playground(props) {
     }
   };
 
-  const handleGridCellClick = (id, top, left) => {
+  const handleGridCellClick = (id, cellIndex) => {
+    const top = Math.floor(cellIndex / level.mapHeight);
+    const left = cellIndex - top * level.mapWidth;
+
     if (isLevelInEdit) {
       onCellClick(id, top, left);
       return;
@@ -928,26 +931,24 @@ function Playground(props) {
           ))}
         </div>
         <div className="mapLayer">
-          {grid.map((row, rowIndex) => (
+          {grid.map(({
+            id, offsetTop, offsetLeft, type, selected,
+          }, cellIndex) => (
             /* eslint-disable-next-line react/no-array-index-key */
-            <React.Fragment key={rowIndex}>
-              {row.map(({
-                id, top, left, type, selected,
-              }, colIndex) => (
-                <div
-                  onClick={() => handleGridCellClick(id, rowIndex, colIndex)}
-                  className={classnames('mapLayer-cell', type, { selected: selected || selectedCells.some((cell) => cell.id === id) })}
-                  data-id={id}
-                  key={id}
-                  style={{
-                    top: `${top}%`,
-                    left: `${left}%`,
-                    width: `${100 / level.mapWidth}%`,
-                    height: `${100 / level.mapHeight}%`,
-                  }}
-                />
-              ))}
-            </React.Fragment>
+            <div
+              onClick={() => handleGridCellClick(id, cellIndex)}
+              className={classnames('mapLayer-cell', type, {
+                selected: selected || selectedCells.some((cell) => cell.id === id),
+              })}
+              data-id={id}
+              key={id}
+              style={{
+                top: `${offsetTop}%`,
+                left: `${offsetLeft}%`,
+                width: `${100 / level.mapWidth}%`,
+                height: `${100 / level.mapHeight}%`,
+              }}
+            />
           ))}
         </div>
         <div className="unitLayer">
@@ -964,27 +965,31 @@ function Playground(props) {
             top,
             left,
             selected,
-          }, index) => (
-            <Unit
-              top={grid[top] && grid[top][left] && grid[top][left].top}
-              left={grid[top] && grid[top][left] && grid[top][left].left}
-              width={100 / level.mapWidth}
-              height={100 / level.mapHeight}
-              hitBoxRadius={hitBoxRadius}
-              key={id}
-              isSelected={selected || selectedUnits.some((unit) => unit.unitId === id)}
-              id={id}
-              type={type}
-              kind={kind}
-              angle={angle}
-              value={value}
-              maxValue={maxValue}
-              turrets={turrets}
-              onClickHandler={handleUnitClick}
-              exploding={exploding}
-              idx={index}
-            />
-          ))}
+          }, index) => {
+            const cellIndex = top * level.mapHeight + left;
+
+            return (
+              <Unit
+                top={grid[cellIndex] && grid[cellIndex].offsetTop}
+                left={grid[cellIndex] && grid[cellIndex].offsetLeft}
+                width={100 / level.mapWidth}
+                height={100 / level.mapHeight}
+                hitBoxRadius={hitBoxRadius}
+                key={id}
+                isSelected={selected || selectedUnits.some((unit) => unit.unitId === id)}
+                id={id}
+                type={type}
+                kind={kind}
+                angle={angle}
+                value={value}
+                maxValue={maxValue}
+                turrets={turrets}
+                onClickHandler={handleUnitClick}
+                exploding={exploding}
+                idx={index}
+              />
+            );
+          })}
         </div>
       </div>
 

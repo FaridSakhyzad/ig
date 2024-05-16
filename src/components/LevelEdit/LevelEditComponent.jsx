@@ -21,7 +21,7 @@ export default function LevelEditComponent(props) {
     onSave,
   } = props;
 
-  const [level, setLevel] = useState(levelParams);
+  const [level, setLevel] = useState(JSON.parse(JSON.stringify(levelParams)));
 
   const onAmmoChange = ({ target: { value } }, section, type) => {
     level[section][type] = parseInt(value, 10);
@@ -29,13 +29,26 @@ export default function LevelEditComponent(props) {
   };
 
   const handleApplyClick = () => {
-    onSave(level);
+    const { mapHeight, mapWidth } = levelParams;
+
+    onSave(level, {
+      initialMapWidth: mapWidth,
+      initialMapHeight: mapHeight,
+    });
     onClose();
   };
 
   const handleParamChange = (value, param) => {
     level[param] = value;
     setLevel({ ...level });
+  };
+
+  const handleMapWidthChange = (value) => {
+    handleParamChange(value ? parseInt(value, 10) : value, 'mapWidth');
+  };
+
+  const handleMapHeightChange = (value) => {
+    handleParamChange(value ? parseInt(value, 10) : value, 'mapHeight');
   };
 
   const [activeMiscTabIndex, setActiveMiscTabIndex] = useState(0);
@@ -115,7 +128,7 @@ export default function LevelEditComponent(props) {
                   size="small"
                   label="Width"
                   value={level.mapWidth}
-                  onChange={(e) => handleParamChange(e.target.value ? parseInt(e.target.value, 10) : e.target.value, 'mapWidth')}
+                  onChange={({ target: { value } }) => handleMapWidthChange(value)}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -123,7 +136,7 @@ export default function LevelEditComponent(props) {
                   size="small"
                   label="Height"
                   value={level.mapHeight}
-                  onChange={(e) => handleParamChange(e.target.value ? parseInt(e.target.value, 10) : e.target.value, 'mapHeight')}
+                  onChange={({ target: { value } }) => handleMapHeightChange(value)}
                 />
               </Grid>
             </Grid>

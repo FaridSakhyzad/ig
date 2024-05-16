@@ -2,7 +2,7 @@ import { SCREEN_MODES } from 'constants/constants';
 import { SET_CURRENT_SCREEN } from './constants';
 
 const initialState = {
-  currentScreen: SCREEN_MODES.menu,
+  currentScreen: SCREEN_MODES.playground,
 };
 
 const uiReducer = (state = initialState, action) => {
