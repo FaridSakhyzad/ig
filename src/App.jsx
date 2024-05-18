@@ -267,7 +267,7 @@ function App() {
   const editedUnit = editedUnitIndex !== null ? currentLevel.units[editedUnitIndex] : null;
 
   const editedCell = editedCellCoords !== null
-    ? currentLevel.grid[editedCellCoords[0]][editedCellCoords[1]] : null;
+    ? currentLevel.grid[editedCellCoords[0] * currentLevel.mapWidth + editedCellCoords[1]] : null;
 
   const [userInputMode, setUserInputMode] = useState(GAMEPLAY_MODE);
   const [afterInputData, setAfterInputData] = useState(null);
@@ -398,7 +398,7 @@ function App() {
         moveUnit(unitIndex, top, left);
 
         selectedCells.forEach((cell) => {
-          currentLevel.grid[cell.top][cell.left].selected = false;
+          currentLevel.grid[cell.index].selected = false;
         });
 
         currentLevel.units[unitIndex].selected = false;
@@ -441,25 +441,30 @@ function App() {
     setCurrentLevel({ ...currentLevel });
   };
 
-  const onCellClick = (id, top, left) => {
+  const onCellClick = (id, index, top, left) => {
     if (userInputMode === SELECT_MODE) {
       selectedCells.forEach((cell) => {
-        currentLevel.grid[cell.top][cell.left].selected = false;
+        currentLevel.grid[cell.index].selected = false;
       });
 
-      const newSelectedCells = [{ id, top, left }];
+      const newSelectedCells = [{
+        id,
+        top,
+        left,
+        index,
+      }];
 
       setSelectedCells(newSelectedCells);
 
       newSelectedCells.forEach((cell) => {
-        currentLevel.grid[cell.top][cell.left].selected = true;
+        currentLevel.grid[cell.index].selected = true;
       });
 
       if (afterInputData.callback === 'moveUnit' && selectedUnits.length > 0) {
         moveUnit(selectedUnits[0].unitIndex, top, left);
 
         newSelectedCells.forEach((cell) => {
-          currentLevel.grid[cell.top][cell.left].selected = false;
+          currentLevel.grid[cell.index].selected = false;
         });
 
         if (selectedUnits[0] && selectedUnits[0].unitIndex) {
@@ -480,11 +485,17 @@ function App() {
     }
 
     if (userInputMode === CELL_MULTISELECT_MODE) {
-      selectedCells.push({ id, top, left });
+      selectedCells.push({
+        id,
+        top,
+        left,
+        index,
+      });
+
       setSelectedCells([...selectedCells]);
 
       selectedCells.forEach((cell) => {
-        currentLevel.grid[cell.top][cell.left].selected = true;
+        currentLevel.grid[cell.index].selected = true;
       });
 
       if (selectedCells.length >= afterInputData.maxMultiSelect) {
@@ -492,7 +503,7 @@ function App() {
           placePortals();
 
           selectedCells.forEach((cell) => {
-            currentLevel.grid[cell.top][cell.left].selected = false;
+            currentLevel.grid[cell.index].selected = false;
           });
           setSelectedCells([]);
         }
@@ -501,7 +512,7 @@ function App() {
           placeTeleports();
 
           selectedCells.forEach((cell) => {
-            currentLevel.grid[cell.top][cell.left].selected = false;
+            currentLevel.grid[cell.index].selected = false;
           });
           setSelectedCells([]);
         }

@@ -508,7 +508,7 @@ function Playground(props) {
     const left = cellIndex - top * level.mapWidth;
 
     if (isLevelInEdit) {
-      onCellClick(id, top, left);
+      onCellClick(id, cellIndex, top, left);
       return;
     }
 
