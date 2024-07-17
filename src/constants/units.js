@@ -15,6 +15,12 @@ export const LASER = {
   id: 'laser',
 };
 
+export const RAILGUN = {
+  label: 'Railgun',
+  labelPlural: 'Railguns',
+  id: 'railgun',
+};
+
 export const DEFLECTOR = {
   label: 'Deflector',
   labelPlural: 'Deflectors',
@@ -62,6 +68,7 @@ export const UNITS = [
   BASE_UNIT,
   BOBOMB,
   LASER,
+  RAILGUN,
   DEFLECTOR,
   WALL,
   NPC,

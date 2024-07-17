@@ -395,6 +395,14 @@ function Projectile(props) {
           }
         }
 
+        if (projectileType === 'railgun') {
+          if (impactedUnitType === 'default') {
+            if (impactedUnit.value > 0) {
+              onImpact(projectileType, impactedUnit.index, impactWithExplodingUnit);
+            }
+          }
+        }
+
         if (impactedUnitType === 'wall') {
           impactedUnitId = null;
           setProjectileState('impact');

@@ -72,6 +72,16 @@
   }
 }
 
+.railgun {
+  .projectile-image {
+    background: #e666ff;
+  }
+
+  .projectile-explosion {
+    background: #e666ff;
+  }
+}
+
 .projectile-explosion {
   width: calc(var(--projectile-explosion--radius) * 2);
   min-width: calc(var(--projectile-explosion--radius) * 2);

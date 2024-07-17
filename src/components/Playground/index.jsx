@@ -20,6 +20,7 @@ import { generatePortals, generateTeleports } from 'units/unitFactory';
 import BaseUnit from 'units/BaseUnit';
 import Bobomb from 'units/Bobomb';
 import Laser from 'units/Laser';
+import Railgun from 'units/Railgun';
 import Deflector from 'units/Deflector';
 import Wall from 'units/Wall';
 import Npc from 'units/Npc';
@@ -45,6 +46,7 @@ import {
   BASE_UNIT,
   BOBOMB,
   LASER,
+  RAILGUN,
   DEFLECTOR,
   WALL,
   NPC,
@@ -77,6 +79,7 @@ function Playground(props) {
     bobombs,
     defaults,
     lasers,
+    rails,
     portals,
     teleports,
     swaps,
@@ -370,6 +373,15 @@ function Playground(props) {
         const newMoves = setNewMovesCount(altKey, shiftKey);
         detectUserMoveOutcome(newMoves);
       },
+      railgun: () => {
+        setUnitValue(unitIndex, newValue, () => {
+          dischargeAllTurrets(unitIndex, newUnitsMap);
+          explodeUnit(unitIndex);
+        });
+
+        const newMoves = setNewMovesCount(altKey, shiftKey);
+        detectUserMoveOutcome(newMoves);
+      },
       bobomb: () => {
         setUnitValue(unitIndex, newValue, () => {
           dischargeAllTurrets(unitIndex, newUnitsMap);
@@ -399,6 +411,7 @@ function Playground(props) {
       [BASE_UNIT.id]: (unitTop, unitLeft, params) => new BaseUnit(unitTop, unitLeft, params),
       [BOBOMB.id]: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
       [LASER.id]: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
+      [RAILGUN.id]: (unitTop, unitLeft, params) => new Railgun(unitTop, unitLeft, params),
       [DEFLECTOR.id]: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
       [WALL.id]: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
       [NPC.id]: (unitTop, unitLeft, params) => new Npc(unitTop, unitLeft, params),
@@ -409,6 +422,7 @@ function Playground(props) {
       [BASE_UNIT.id]: () => dispatch(setAmmo({ defaults: defaults - 1 })),
       [BOBOMB.id]: () => dispatch(setAmmo({ bobombs: bobombs - 1 })),
       [LASER.id]: () => dispatch(setAmmo({ lasers: lasers - 1 })),
+      [RAILGUN.id]: () => dispatch(setAmmo({ rails: rails - 1 })),
       [DEFLECTOR.id]: () => dispatch(setAmmo({ deflectors: deflectors - 1 })),
       [WALL.id]: () => dispatch(setAmmo({ walls: walls - 1 })),
       [NPC.id]: () => {},
@@ -672,6 +686,18 @@ function Playground(props) {
 
         if (projectileType === 'laser') {
           setUnitValue(impactedUnitIndex, maxValue + 1, () => {
+            dischargeAllTurrets(impactedUnitIndex, unitsMap);
+            explodeUnit(impactedUnitIndex);
+            executeCombo();
+          });
+        }
+
+        if (projectileType === 'railgun') {
+          if (impactWithExplodingUnit) {
+            return;
+          }
+
+          setUnitValue(impactedUnitIndex, units[impactedUnitIndex].value + 1, () => {
             dischargeAllTurrets(impactedUnitIndex, unitsMap);
             explodeUnit(impactedUnitIndex);
             executeCombo();

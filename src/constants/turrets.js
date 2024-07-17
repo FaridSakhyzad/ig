@@ -13,8 +13,14 @@ export const LASER_TURRET = {
   label: 'Laser Turret',
 };
 
+export const RAILGUN_TURRET = {
+  id: 'railgun',
+  label: 'Railgun Turret',
+};
+
 export const TURRETS = [
   BASE_TURRET,
   BOBOMB_TURRET,
   LASER_TURRET,
+  RAILGUN_TURRET,
 ];

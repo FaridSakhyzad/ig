@@ -35,6 +35,7 @@ import {
   DEFLECTOR,
   HIDDEN,
   LASER,
+  RAILGUN,
   NPC,
   PORTAL,
   TELEPORT,
@@ -69,6 +70,7 @@ import impact1 from './assets/sounds/impact-1.wav';
 import impact2 from './assets/sounds/impact-2.wav';
 import impact3 from './assets/sounds/impact-3.wav';
 import { throttle } from './utils';
+import Railgun from "./units/Railgun";
 
 function App() {
   const dispatch = useDispatch();
@@ -330,6 +332,7 @@ function App() {
       [BOBOMB.id]: (unitTop, unitLeft, params) => new Bobomb(unitTop, unitLeft, params),
       [LASER.id]: (unitTop, unitLeft, params) => new Laser(unitTop, unitLeft, params),
       [DEFLECTOR.id]: (unitTop, unitLeft, params) => new Deflector(unitTop, unitLeft, params),
+      [RAILGUN.id]: (unitTop, unitLeft, params) => new Railgun(unitTop, unitLeft, params),
       [WALL.id]: (unitTop, unitLeft, params) => new Wall(unitTop, unitLeft, params),
       [NPC.id]: (unitTop, unitLeft, params) => new Npc(unitTop, unitLeft, params),
       [HIDDEN.id]: (unitTop, unitLeft, params) => new Hidden(unitTop, unitLeft, params),

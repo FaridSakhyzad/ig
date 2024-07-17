@@ -7,11 +7,13 @@ import Npc from './Npc';
 import Hidden from './Hidden';
 import Portal from './Portal';
 import Teleport from './Teleport';
+import Railgun from './Railgun';
 
 const constructorsMap = {
   default: BaseUnit,
   bobomb: Bobomb,
   laser: Laser,
+  railgun: Railgun,
   deflector: Deflector,
   wall: Wall,
   npc: Npc,
